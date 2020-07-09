@@ -35,7 +35,7 @@
 
 <body>
 
-    <div class="wrapper">
+    <div id="app" class="wrapper">
 
         <div class="sidebar" data-color="orange" data-image="">
         
@@ -84,7 +84,7 @@
                     </nav> --}}
 
                     <p class="copyright pull-right">
-                        &copy; <script>document.write(new Date().getFullYear())</script> 
+                        &copy; @{{ year }} 
                         <a href="https://www.webworkshop.dev">Web Workshop</a> | 
                         template by <a href="http://www.creative-tim.com">Creative Tim</a>
                     </p>

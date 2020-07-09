@@ -8,7 +8,17 @@ Products
 <div class="container-fluid">
     <div class="row justify-content-center">
 
-        123
+        <div class="col-md-12">
+            <div class="card">
+
+                <div class="content">
+
+                    <products-list></products-list>
+
+                </div>
+
+            </div>
+        </div>
 
     </div>
 </div>

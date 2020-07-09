@@ -14,13 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('app.dashboard');
-});
+Route::get('/', 'DashboardController@index');
 
-Route::get('/products', function () {
-    return view('app.products');
-});
+Route::get('/products', 'ProductsController@index');
+Route::post('/products/add-new-product', 'ProductsController@addNewProduct');
+Route::get('/products/get-prod-types-list', 'ProductsController@getProdTypesList');
 
 Auth::routes();
 

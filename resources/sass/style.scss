@@ -3,3 +3,63 @@
     font-size: 21px;
     margin-top: 15px;
 }
+
+.card {
+    .content {
+        div {
+            margin-bottom: 10px;
+        }
+    }
+}
+
+.btn {
+    &.btn-icon {
+        padding-left: 10px;
+        padding-right: 15px;
+    }
+}
+
+textarea {
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100px;
+}
+
+
+/*----- Slide Down Transition ----------------*/
+
+.slide-down-enter-active {
+    -moz-transition-duration: .3s;
+    -webkit-transition-duration: .3s;
+    -o-transition-duration: .3s;
+    transition-duration: .3s;
+    -moz-transition-timing-function: ease-in;
+    -webkit-transition-timing-function: ease-in;
+    -o-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
+}
+
+.slide-down-leave-active {
+    -moz-transition-duration: .3s;
+    -webkit-transition-duration: .3s;
+    -o-transition-duration: .3s;
+    transition-duration: .3s;
+    -moz-transition-timing-function: ease-out;
+    -webkit-transition-timing-function: ease-out;
+    -o-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+}
+
+.slide-down-enter-to,
+.slide-down-leave {
+    max-height: 100px;
+    overflow: hidden;
+}
+
+.slide-down-enter,
+.slide-down-leave-to {
+    max-height: 0;
+    overflow: hidden;
+}
+
+/*-----------------------*/

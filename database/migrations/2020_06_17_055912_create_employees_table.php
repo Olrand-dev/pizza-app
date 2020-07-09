@@ -17,8 +17,8 @@ class CreateEmployeesTable extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('role_id');
-            $table->string('phone', 50);
-            $table->string('address', 150);
+            $table->string('phone', 50)->nullable();
+            $table->string('address', 150)->nullable();
             $table->timestamps();
         });
     }
