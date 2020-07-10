@@ -19,7 +19,7 @@ class CreateProductsTable extends Migration
             $table->string('image', 100)->nullable();
             $table->text('description')->nullable();
             $table->foreignId('type_id');
-            $table->float('cost', 2)->nullable();
+            $table->float('cost', 8, 2)->nullable();
             $table->integer('weight')->nullable();
             $table->timestamps();
         });

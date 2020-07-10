@@ -19,6 +19,15 @@ textarea {
   min-height: 100px;
 }
 
+select,
+input[type=file] {
+  cursor: pointer;
+}
+
+#productsList .prod-image {
+  max-height: 70px;
+}
+
 /*----- Slide Down Transition ----------------*/
 
 .slide-down-enter-active {
