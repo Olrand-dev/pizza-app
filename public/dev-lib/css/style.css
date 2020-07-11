@@ -13,6 +13,11 @@
   padding-right: 15px;
 }
 
+.no-items {
+  color: #999;
+  font-size: 18px;
+}
+
 textarea {
   max-width: 100%;
   min-width: 100%;
@@ -24,8 +29,52 @@ input[type=file] {
   cursor: pointer;
 }
 
+.table.sortable th {
+  padding: 8px 0;
+}
+
+.table.sortable th.sortable {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pagination a:focus,
+.pagination span:focus {
+  outline: none;
+}
+
+.pagination li a,
+.pagination li a:focus,
+.pagination li a:hover,
+.pagination li span,
+.pagination li span:focus,
+.pagination li span:hover {
+  padding: 9px 16px;
+  color: #333;
+}
+
+.pagination .active a,
+.pagination .active a:focus,
+.pagination .active a:hover,
+.pagination .active span,
+.pagination .active span:focus,
+.pagination .active span:hover {
+  background-color: #1DC7EA;
+  border-color: #ddd;
+}
+
 #productsList .prod-image {
   max-height: 70px;
+}
+
+#productsList .list-update {
+  color: #999;
+  font-size: 24px;
+  display: inline-block;
+}
+
+#productsList .list-update.top {
+  margin-top: 27px;
 }
 
 /*----- Slide Down Transition ----------------*/
@@ -53,4 +102,56 @@ input[type=file] {
 }
 
 /*-----------------------*/
+
+/*-------- Animations --------------*/
+
+.anim-rotate {
+  -webkit-animation-name: rotation;
+          animation-name: rotation;
+  -webkit-animation-duration: 1.5s;
+          animation-duration: 1.5s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+}
+
+@-webkit-keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.anim-blink-soft {
+  -webkit-animation: blink-soft 1.6s linear infinite;
+          animation: blink-soft 1.6s linear infinite;
+}
+
+@-webkit-keyframes blink-soft {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes blink-soft {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ------------------------- */
 

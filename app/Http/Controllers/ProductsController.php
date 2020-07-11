@@ -37,15 +37,34 @@ class ProductsController extends Controller
     }
 
 
-    public function getProdsList()
+    public function getProdsList(Request $request)
     {
-        $list = Product::with('type')->get();
+        $input = $request->input();
 
-        /* foreach ($list as &$prod) {
-            $prod->image_url = '123';
-        } */
+        $page = (int) $input['page'];
+        $perPage = (int) $input['per_page'];
+        $byType = (int) $input['by_type'];
+        $sortField = $input['sort_field'];
+        $sortDirection = $input['sort_dir'];
 
-        return $list->toJson();
+        $query = Product::with('type');
+        if ($byType > 0) {
+            $query = $query->where('type_id', $byType);
+        }
+        $query = $query->orderBy($sortField, $sortDirection);
+
+        $allResultsCount = $query->get()->count();
+        $results = $query
+            ->offset($perPage * ($page - 1))
+            ->limit($perPage)
+            ->get();
+
+        $pagesCount = (int) ceil($allResultsCount / $perPage);
+
+        return [
+            'items' => $results->toJson(),
+            'pages_count' => $pagesCount,
+        ];
     }
 
 

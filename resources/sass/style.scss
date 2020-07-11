@@ -1,3 +1,5 @@
+@import 'variables';
+
 .page-name {
     display: inline-block;
     font-size: 21px;
@@ -19,6 +21,11 @@
     }
 }
 
+.no-items {
+    color: $s-gray;
+    font-size: 18px;
+}
+
 textarea {
     max-width: 100%;
     min-width: 100%;
@@ -30,10 +37,58 @@ select, input[type="file"] {
 }
 
 
+.table {
+
+    &.sortable {
+
+        th {
+            padding: 8px 0;
+
+            &.sortable {
+                cursor: pointer;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+
+.pagination {
+
+    a:focus, span:focus {
+        outline: none;
+    }
+
+    li {
+        a, a:focus, a:hover, span, span:focus, span:hover {
+            padding: 9px 16px;
+            color: $s-dark;
+        }
+    }
+
+    .active {
+        a, a:focus, a:hover, span, span:focus, span:hover {
+            background-color: $s-light-blue;
+            border-color: $s-light-gray;
+        }
+    }
+}
+
+
 #productsList {
 
     .prod-image {
         max-height: 70px;
+    }
+
+    .list-update {
+        color: $s-gray;
+        font-size: 24px;
+        display: inline-block;
+        
+        &.top {
+            margin-top: 27px;
+        }
     }
 }
 
@@ -75,3 +130,40 @@ select, input[type="file"] {
 }
 
 /*-----------------------*/
+
+
+/*-------- Animations --------------*/
+
+.anim-rotate {
+    animation-name: rotation;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes rotation {
+    0% {
+        -webkit-transform:rotate(0deg);
+        -moz-transform:rotate(0deg);
+        -o-transform:rotate(0deg);
+        transform:rotate(0deg);
+    }
+    100% {
+        -webkit-transform:rotate(360deg);
+        -moz-transform:rotate(360deg);
+        -o-transform:rotate(360deg);
+        transform:rotate(360deg);
+    }
+}
+
+.anim-blink-soft {
+    animation: blink-soft 1.6s linear infinite;
+}
+  
+@keyframes blink-soft {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ------------------------- */

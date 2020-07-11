@@ -115,6 +115,9 @@
 <!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
 <script src="{{ asset('dev-lib/js/light-bootstrap-dashboard.js?v=1.4.0') }}"></script>
 
+<!--  Vue JS pagination  -->
+<script src="{{ asset('dev-lib/js/vue-paginate.min.js') }}"></script>
+
 <script src="{{ asset('dev-lib/js/app.js') }}"></script>
 
 </html>

@@ -20,6 +20,7 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('products-list', require('./components/ProductsList.vue').default);
+Vue.component('paginate', VuejsPaginate);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
