@@ -22,6 +22,9 @@
     <!--  Light Bootstrap Dashboard CSS    -->
     <link href="{{ asset('dev-lib/css/light-bootstrap-dashboard.css?v=1.4.0') }}" rel="stylesheet"/>
 
+    <!--  Vue image Lightbox CSS  -->
+    <link href="{{ asset('dev-lib/css/vue-image-lightbox.min.css') }}" rel="stylesheet"/>
+
     <link href="{{ asset('dev-lib/css/style.css') }}" rel="stylesheet"/>
 
 

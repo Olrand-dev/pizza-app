@@ -20,6 +20,7 @@ Route::get('/products', 'ProductsController@index');
 Route::post('/products/add-new-product', 'ProductsController@addNewProduct');
 Route::get('/products/get-prod-types-list', 'ProductsController@getProdTypesList');
 Route::get('/products/get-prods-list', 'ProductsController@getProdsList');
+Route::get('/products/delete-prod', 'ProductsController@deleteProd');
 
 Auth::routes();
 

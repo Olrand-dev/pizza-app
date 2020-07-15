@@ -32,7 +32,7 @@
 
                 <transition name="slide-down">
 
-                    <div v-show="mode === 'add_new'" class="col-12">
+                    <div v-show="mode === 'add_new'" class="col-12 mt-10">
                         <div class="row">
 
                             <div class="col-md-6">
@@ -113,7 +113,7 @@
             </div>
 
 
-            <div class="col-12">
+            <div class="col-12 mt-10">
                 <div class="row">
 
                     <div class="col-md-3">
@@ -152,7 +152,7 @@
             </div>
 
 
-            <div v-if="prodsList.length > 0" class="col-12 table-responsive table-full-width">
+            <div v-if="prodsList.length > 0" class="col-12 mt-15 table-responsive table-full-width">
                 <table class="table table-hover table-striped sortable">
 
                     <thead>
@@ -165,19 +165,37 @@
                     </thead>
 
                     <tbody>
-                        <tr v-for="prod in prodsList" :key="prod.id">
+                        <tr v-for="(prod,index) in prodsList" :key="prod.id">
                             <td>{{ prod.id }}</td>
                             <td>
-                                <img class="prod-image" :src="prod.image_url" alt="prod image">
+                                <img class="prod-image gallery-image" :src="prod.image_url" 
+                                    alt="prod image" @click="openGallery(index)">
                             </td>
                             <td>{{ prod.name }}</td>
                             <td>{{ prod.type.name }}</td>
                             <td>${{ prod.cost }}</td>
                             <td>{{ prod.weight }} g.</td>
+
+                            <td class="text-right">
+                                <button v-if="prod.description !== ''" class="btn btn-default btn-sm"
+                                    @click="prodDetailsModal(prod.id)"> 
+                                    <i class="fa fa-info"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm"
+                                    @click="deleteProdModal(prod.id)"> 
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                     
                 </table>
+
+                <LightBox ref="lightbox" :media="lbData" :show-light-box="false" 
+                    :show-caption="false" :show-thumbs="false"></LightBox>
+
+                <v-dialog />
+
             </div>
             <div v-if="prodsList.length === 0" class="col-12 text-center">
                 <span class="no-items">No items to show.</span>
@@ -217,6 +235,8 @@
 
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
+    import LightBox from 'vue-image-lightbox';
+    import ProductDetailsModal from './ProductDetailsModal';
 
     const ProductRef = {
         name: '',
@@ -243,7 +263,7 @@
                 nextText: 'Next',
 
                 tableHeaders: [
-                    'ID', 'Image', 'Name', 'Type', 'Cost', 'Weight',
+                    'ID', 'Image', 'Name', 'Type', 'Cost', 'Weight', "Actions",
                 ],
                 sortableHeaders: {
                     'ID': 'id', 'Name': 'name', 'Cost': 'cost', 'Weight': 'weight',
@@ -256,6 +276,7 @@
                 product: {},
                 productTypesList: [],
                 prodsList: [],
+                lbData: [],
             }
         },
 
@@ -263,6 +284,10 @@
             Utils,
             Notify,
         ],
+
+        components: {
+            LightBox,
+        },
 
         created() {
             this.initEmptyProd();
@@ -326,8 +351,18 @@
                     
                     //console.log(response.data);
                     let data = response.data;
+                    let prods = JSON.parse(data.items);
 
-                    this.prodsList = JSON.parse(data.items);
+                    let _lbData = [];
+                    prods.forEach(function(prod) {
+                        _lbData.push({
+                            thumb: prod.image_url,
+                            src: prod.image_url,
+                        });
+                    });
+                    this.lbData = _lbData;
+
+                    this.prodsList = prods;
                     this.pagesCount = data.pages_count;
 
                     this.updating = false;
@@ -377,8 +412,76 @@
                 this.initEmptyProd();
             },
 
+            prodDetailsModal(id) {
+
+                let prod = this.prodsList.filter((_prod) => _prod.id === id);
+
+                this.$modal.show(
+                    ProductDetailsModal,
+                    {
+                        prodData: prod
+                    },
+                    {
+                        adaptive: true,
+                    }
+                );
+            },
+
+            deleteProdModal(id) {
+                
+                this.$modal.show(
+                    'delete-prod-dialog',
+                    {
+                        title: 'Delete product',
+                        text: `Product with ID:${id} will be deleted.`,
+                        buttons: [
+                            {
+                                title: 'Ok',
+                                handler: () => {
+                                    this.deleteProd(id);
+                                },
+                            },
+                            {
+                                title: 'Cancel',
+                                handler: () => {
+                                    this.$modal.hide('delete-prod-dialog');
+                                },
+                            },
+                        ],
+                    }
+                );
+            },
+
+            deleteProd(id) {
+                
+                axios.get(
+                    '/products/delete-prod',
+                    {
+                        params: {
+                            id
+                        },
+                    }
+                ).then(function(response) {
+
+                    this.$modal.hide('delete-prod-dialog');
+                    this.notifySuccess(`Product ID:${id} successfully deleted.`);
+                    this.getProdsList();
+
+                }.bind(this))
+                .catch(function() {
+
+                    this.$modal.hide('delete-prod-dialog');
+                    this.notifyError('Delete product error.');
+
+                }.bind(this));
+            },
+
             handleFileUpload() {
                 this.product.imageFile = this.$refs.prodImageFile.files[0];
+            },
+
+            openGallery(index) {
+                this.$refs.lightbox.showImage(index);
             }
         }
     }

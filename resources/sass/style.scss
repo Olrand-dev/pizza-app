@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'utilities';
 
 .page-name {
     display: inline-block;
@@ -9,7 +10,7 @@
 .card {
     .content {
         div {
-            margin-bottom: 10px;
+            
         }
     }
 }
@@ -24,6 +25,15 @@
 .no-items {
     color: $s-gray;
     font-size: 18px;
+}
+
+.gallery-image {
+    cursor: pointer;
+}
+
+.vue-dialog-button {
+    text-transform: uppercase;
+    color: $s-soft-gray !important;
 }
 
 textarea {
@@ -79,6 +89,11 @@ select, input[type="file"] {
 
     .prod-image {
         max-height: 70px;
+    }
+
+    .btn-sm {
+        font-size: 14px;
+        padding: 4px 7px;
     }
 
     .list-update {

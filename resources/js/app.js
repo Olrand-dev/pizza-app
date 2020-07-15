@@ -7,6 +7,11 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+import VueLazyLoad from 'vue-lazyload';
+import VModal from 'vue-js-modal';
+
+Vue.use(VueLazyLoad);
+Vue.use(VModal, { dialog: true });
 
 /**
  * The following block of code may be used to automatically register your

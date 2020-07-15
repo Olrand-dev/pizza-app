@@ -16,22 +16,29 @@ class ProductsController extends Controller
 
     public function addNewProduct(Request $request)
     {
-        $prodData = $request->input();
-        $prod = Product::create($prodData);
+        try {
 
-        $prodType = ProductType::find((int) $prodData['typeId']);
-        if (!empty($prodType)) {
-            $prod->type()->associate($prodType);
+            $prodData = $request->input();
+            $prod = Product::create($prodData);
+
+            $prodType = ProductType::find((int) $prodData['typeId']);
+            if (!empty($prodType)) {
+                $prod->type()->associate($prodType);
+            }
+
+            $prodImage = $request->file('imageFile');
+            if (!empty($prodImage) and $prodImage->isValid()) {
+
+                $extension = $prodImage->extension();
+                $prodImagePath = $prodImage->storeAs('prod-images', "prod_{$prod->id}.{$extension}", 'public');
+                $prod->image = $prodImagePath;
+            }
+            $prod->save();
+
+        } catch(\Throwable $e) {
+
+            abort(500, $e->getMessage());
         }
-
-        $prodImage = $request->file('imageFile');
-        if (!empty($prodImage) and $prodImage->isValid()) {
-
-            $extension = $prodImage->extension();
-            $prodImagePath = $prodImage->storeAs('prod-images', "prod_{$prod->id}.{$extension}", 'public');
-            $prod->image = $prodImagePath;
-        }
-        $prod->save();
 
         return $prod->id;
     }
@@ -71,5 +78,19 @@ class ProductsController extends Controller
     public function getProdTypesList()
     {
         return ProductType::all()->toJson();
+    }
+
+
+    public function deleteProd(Request $request)
+    {
+        try {
+
+            $id = (int) $request->input('id');
+            Product::destroy($id);
+
+        } catch(\Throwable $e) {
+
+            abort(500, $e->getMessage());
+        }
     }
 }
