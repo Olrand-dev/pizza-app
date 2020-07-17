@@ -17,7 +17,7 @@
 
                         <div v-if="mode === 'add_new'">
                             <button class="btn btn-success btn-fill btn-icon"
-                                @click="addNewProduct"> 
+                                @click="addNewProd"> 
                                 <i class="fa fa-check"></i> Save
                             </button>
                             <button class="btn btn-warning btn-fill btn-icon"
@@ -52,7 +52,7 @@
                                                     <label for="prodTypesSelect">Type</label>
                                                     <select v-model="product.typeId" class="form-control" 
                                                         id="prodTypesSelect">
-                                                        <option v-for="type in productTypesList" :key="type.id"
+                                                        <option v-for="type in prodTypesList" :key="type.id"
                                                             :value="type.id">
                                                             {{ type.name }}
                                                         </option>
@@ -95,14 +95,12 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label>Description</label>
-                                            <textarea rows="5" class="form-control" v-model="product.description"></textarea>
-                                        </div>
-                                    </div>
+                                
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea rows="5" class="form-control" v-model="product.description"></textarea>
                                 </div>
+                               
                             </div>
 
                         </div>
@@ -121,7 +119,7 @@
                             <label for="prodTypeFilter">Show by type</label>
                             <select v-model="byType" class="form-control" id="prodTypeFilter" @change="getProdsList">
                                 <option value="0">all</option>
-                                <option v-for="type in productTypesList" :key="type.id"
+                                <option v-for="type in prodTypesList" :key="type.id"
                                     :value="type.id">
                                     {{ type.name }}
                                 </option>
@@ -177,14 +175,22 @@
                             <td>{{ prod.weight }} g.</td>
 
                             <td class="text-right">
+
+                                <button class="btn btn-info btn-sm"
+                                    @click="editProdModal(prod.id)"> 
+                                    <i class="fa fa-edit"></i>
+                                </button>
+
                                 <button v-if="prod.description !== ''" class="btn btn-default btn-sm"
                                     @click="prodDetailsModal(prod.id)"> 
                                     <i class="fa fa-info"></i>
                                 </button>
+
                                 <button class="btn btn-danger btn-sm"
                                     @click="deleteProdModal(prod.id)"> 
                                     <i class="fa fa-trash"></i>
                                 </button>
+
                             </td>
                         </tr>
                     </tbody>
@@ -197,7 +203,7 @@
                 <v-dialog />
 
             </div>
-            <div v-if="prodsList.length === 0" class="col-12 text-center">
+            <div v-if="prodsList.length === 0" class="col-12 text-center mt-25">
                 <span class="no-items">No items to show.</span>
             </div>
 
@@ -237,6 +243,7 @@
     import Notify from '../mixins/Notify';
     import LightBox from 'vue-image-lightbox';
     import ProductDetailsModal from './ProductDetailsModal';
+    import EditProductModal from './EditProductModal';
 
     const ProductRef = {
         name: '',
@@ -274,7 +281,7 @@
                 byType: 0,
 
                 product: {},
-                productTypesList: [],
+                prodTypesList: [],
                 prodsList: [],
                 lbData: [],
             }
@@ -328,7 +335,7 @@
                     '/products/get-prod-types-list'
                 ).then(function(response) {
 
-                    this.productTypesList = response.data;
+                    this.prodTypesList = response.data;
 
                 }.bind(this));
             },
@@ -379,7 +386,7 @@
                 this.mode = 'add_new';
             },
 
-            addNewProduct() {
+            addNewProd() {
                 let formData = new FormData();
 
                 for (let prop in this.product) {
@@ -412,17 +419,39 @@
                 this.initEmptyProd();
             },
 
+            getProdById(id) {
+                return this.prodsList.filter((_prod) => _prod.id === id)[0];
+            },
+
+            editProdModal(id) {
+
+                let prod = this.getProdById(id);
+
+                this.$modal.show(
+                    EditProductModal,
+                    {
+                        'prod-data': prod,
+                        'prod-types-list': this.prodTypesList,
+                    },
+                    {
+                        adaptive: true,
+                        height: 'auto',
+                    }
+                );
+            },
+
             prodDetailsModal(id) {
 
-                let prod = this.prodsList.filter((_prod) => _prod.id === id);
+                let prod = this.getProdById(id);
 
                 this.$modal.show(
                     ProductDetailsModal,
                     {
-                        prodData: prod
+                        'prod-data': prod
                     },
                     {
                         adaptive: true,
+                        height: 'auto',
                     }
                 );
             },
@@ -430,7 +459,7 @@
             deleteProdModal(id) {
                 
                 this.$modal.show(
-                    'delete-prod-dialog',
+                    'dialog',
                     {
                         title: 'Delete product',
                         text: `Product with ID:${id} will be deleted.`,
@@ -444,7 +473,7 @@
                             {
                                 title: 'Cancel',
                                 handler: () => {
-                                    this.$modal.hide('delete-prod-dialog');
+                                    this.$modal.hide('dialog');
                                 },
                             },
                         ],
@@ -463,14 +492,14 @@
                     }
                 ).then(function(response) {
 
-                    this.$modal.hide('delete-prod-dialog');
+                    this.$modal.hide('dialog');
                     this.notifySuccess(`Product ID:${id} successfully deleted.`);
                     this.getProdsList();
 
                 }.bind(this))
                 .catch(function() {
 
-                    this.$modal.hide('delete-prod-dialog');
+                    this.$modal.hide('dialog');
                     this.notifyError('Delete product error.');
 
                 }.bind(this));

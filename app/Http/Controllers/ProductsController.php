@@ -14,7 +14,7 @@ class ProductsController extends Controller
     }
 
 
-    public function addNewProduct(Request $request)
+    public function addNewProd(Request $request)
     {
         try {
 
@@ -41,6 +41,12 @@ class ProductsController extends Controller
         }
 
         return $prod->id;
+    }
+
+
+    public function saveProd(Request $request)
+    {
+        dd($request->input());
     }
 
 

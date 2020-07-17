@@ -140,6 +140,19 @@
   margin-top: 15px;
 }
 
+.card.card-modal {
+  margin-bottom: 0;
+  padding: 0 15px;
+}
+
+.card.card-modal .content {
+  padding-bottom: 20px;
+}
+
+.card.card-modal table {
+  border-bottom: 1px solid #333;
+}
+
 .btn.btn-icon {
   padding-left: 10px;
   padding-right: 15px;
