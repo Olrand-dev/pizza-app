@@ -436,6 +436,11 @@
                     {
                         adaptive: true,
                         height: 'auto',
+                    },
+                    { 
+                        'before-close': event => {
+                            this.getProdsList();
+                        } 
                     }
                 );
             },

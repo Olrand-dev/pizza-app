@@ -26,13 +26,10 @@ class ProductsController extends Controller
                 $prod->type()->associate($prodType);
             }
 
-            $prodImage = $request->file('imageFile');
-            if (!empty($prodImage) and $prodImage->isValid()) {
+            $imagePath = $this->saveProdImage($request, $prod->id);
+            $this->handleProdImage($imagePath);
+            $prod->image = $imagePath;
 
-                $extension = $prodImage->extension();
-                $prodImagePath = $prodImage->storeAs('prod-images', "prod_{$prod->id}.{$extension}", 'public');
-                $prod->image = $prodImagePath;
-            }
             $prod->save();
 
         } catch(\Throwable $e) {
@@ -46,7 +43,59 @@ class ProductsController extends Controller
 
     public function saveProd(Request $request)
     {
-        dd($request->input());
+        try {
+
+            $prodData = $request->input();
+            $prodId = (int) $prodData['id'];
+            $prod = Product::find($prodId);
+
+            if ($prod->type_id != $prodData['type_id']) {
+                $prodType = ProductType::find((int) $prodData['type_id']);
+
+                if (!empty($prodType)) {
+                    $prod->type()->associate($prodType);
+                }
+            }
+
+            if ($prodData['image_changed'] === 'true') {
+
+                $imagePath = $this->saveProdImage($request, $prodId);
+                $this->handleProdImage($imagePath);
+                $prod->image = $imagePath;
+            }
+
+            $prod->update($prodData);
+            $prod->save();
+
+        } catch(\Throwable $e) {
+
+            abort(500, $e->getMessage());
+        }
+    }
+
+
+    private function saveProdImage(Request $request, $prodId) 
+    {
+        $prodImage = $request->file('imageFile');
+        $prodImagePath = '';
+
+        if (!empty($prodImage) and $prodImage->isValid()) {
+
+            $extension = $prodImage->extension();
+            $prodImagePath = $prodImage->storeAs('prod-images', "prod_{$prodId}.{$extension}", 'public');
+        }
+        return $prodImagePath;
+    }
+
+
+    private function handleProdImage(string $imagePath)
+    {
+        $fullImagePath = storage_path('app/public/' . $imagePath);
+        $this->resizeImage($fullImagePath);
+        $this->makeImageThumbs(
+            $fullImagePath,
+            'public/prod-images/thumbs'
+        );
     }
 
 

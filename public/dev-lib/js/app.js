@@ -1909,6 +1909,7 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/Utils */ "./resources/js/mixins/Utils.js");
+/* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/Notify */ "./resources/js/mixins/Notify.js");
 //
 //
 //
@@ -2061,6 +2062,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2069,13 +2071,15 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   props: ['prod-data', 'prod-types-list'],
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"]],
   created: function created() {
     this.prodEdit = this.clone(this.prodData);
+    this.prodEdit.image_changed = false;
   },
   methods: {
     changeImage: function changeImage() {
       this.prodImageChanged = true;
+      this.prodEdit.image_changed = true;
     },
     handleFileUpload: function handleFileUpload() {
       this.prodEdit.imageFile = this.$refs.prodImageFile.files[0];
@@ -2092,11 +2096,11 @@ __webpack_require__.r(__webpack_exports__);
           'Content-Type': 'multipart/form-data'
         }
       }).then(function (response) {
-        this.closeModal();
         this.notifySuccess('Product ID:' + this.prodEdit.id + ' successfully updated.');
-      }.bind(this))["catch"](function () {
         this.closeModal();
+      }.bind(this))["catch"](function () {
         this.notifyError('Product update error.');
+        this.closeModal();
       }.bind(this));
     },
     closeModal: function closeModal() {
@@ -2600,6 +2604,8 @@ var ProductRef = {
       })[0];
     },
     editProdModal: function editProdModal(id) {
+      var _this = this;
+
       var prod = this.getProdById(id);
       this.$modal.show(_EditProductModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
         'prod-data': prod,
@@ -2607,6 +2613,10 @@ var ProductRef = {
       }, {
         adaptive: true,
         height: 'auto'
+      }, {
+        'before-close': function beforeClose(event) {
+          _this.getProdsList();
+        }
       });
     },
     prodDetailsModal: function prodDetailsModal(id) {
@@ -2619,7 +2629,7 @@ var ProductRef = {
       });
     },
     deleteProdModal: function deleteProdModal(id) {
-      var _this = this;
+      var _this2 = this;
 
       this.$modal.show('dialog', {
         title: 'Delete product',
@@ -2627,12 +2637,12 @@ var ProductRef = {
         buttons: [{
           title: 'Ok',
           handler: function handler() {
-            _this.deleteProd(id);
+            _this2.deleteProd(id);
           }
         }, {
           title: 'Cancel',
           handler: function handler() {
-            _this.$modal.hide('dialog');
+            _this2.$modal.hide('dialog');
           }
         }]
       });

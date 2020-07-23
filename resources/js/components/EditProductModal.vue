@@ -152,6 +152,7 @@
 <script>
 
     import Utils from '../mixins/Utils';
+    import Notify from '../mixins/Notify';
 
     export default {
 
@@ -168,17 +169,20 @@
         ],
 
         mixins: [
-            Utils
+            Utils,
+            Notify
         ],
 
         created() {
             this.prodEdit = this.clone(this.prodData);
+            this.prodEdit.image_changed = false;
         },
 
         methods: {
 
             changeImage() {
                 this.prodImageChanged = true;
+                this.prodEdit.image_changed = true;
             },
 
             handleFileUpload() {
@@ -201,14 +205,14 @@
                     }
                 ).then(function(response) {
                     
-                    this.closeModal();
                     this.notifySuccess('Product ID:' + this.prodEdit.id + ' successfully updated.');
+                    this.closeModal();
 
                 }.bind(this))
                 .catch(function() {
                     
-                    this.closeModal();
                     this.notifyError('Product update error.');
+                    this.closeModal();
                     
                 }.bind(this));
             },
