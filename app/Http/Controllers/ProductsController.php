@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Consts\SystemConst;
 use App\Product;
 use App\ProductType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
@@ -88,7 +90,7 @@ class ProductsController extends Controller
     }
 
 
-    private function handleProdImage(string $imagePath)
+    private function handleProdImage($imagePath)
     {
         $fullImagePath = storage_path('app/public/' . $imagePath);
         $this->resizeImage($fullImagePath);
@@ -96,6 +98,39 @@ class ProductsController extends Controller
             $fullImagePath,
             'public/prod-images/thumbs'
         );
+    }
+
+
+    private function getProdImagePathesList($prodId)
+    {
+        return array_filter(
+            Storage::allFiles('public/prod-images'), 
+            function($filePath) use ($prodId) {
+                return preg_match("#prod_{$prodId}#u", $filePath);
+            }
+        );
+    }
+
+
+    private function getProdImageThumbs($prodId)
+    {
+        $files = $this->getProdImagePathesList($prodId);
+        $thumbs = [];
+
+        foreach (SystemConst::IMAGE_THUMB_SIZES as $size) {
+            $_thumbs = array_filter(
+                $files, 
+                function($filePath) use ($prodId, $size) {
+                    return preg_match("#thumbs/prod_{$prodId}_w_{$size}#u", $filePath);
+                }
+            );
+
+            $thumbs["w_{$size}"] = (!empty($_thumbs)) ? 
+                asset(str_replace('public', 'storage', array_values($_thumbs)[0])) : 
+                asset('storage/system/no_photo_sm.png');
+        }
+
+        return $thumbs;
     }
 
 
@@ -119,7 +154,10 @@ class ProductsController extends Controller
         $results = $query
             ->offset($perPage * ($page - 1))
             ->limit($perPage)
-            ->get();
+            ->get()
+            ->each(function($item, $key) {
+                $item->image_thumbs = $this->getProdImageThumbs($item->id);
+            });
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
 
@@ -141,6 +179,12 @@ class ProductsController extends Controller
         try {
 
             $id = (int) $request->input('id');
+
+            $prodImages = $this->getProdImagePathesList($id);
+            if (!empty($prodImages)) {
+                Storage::delete($prodImages);
+            }
+
             Product::destroy($id);
 
         } catch(\Throwable $e) {

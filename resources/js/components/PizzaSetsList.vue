@@ -1,6 +1,6 @@
 <template>
 
-    <div id="productsList" class="container">
+    <div id="pizzaSetsList" class="container">
         <div class="row">
 
             <div class="col-12">
@@ -17,7 +17,7 @@
 
                         <div v-if="mode === 'add_new'">
                             <button class="btn btn-success btn-fill btn-icon"
-                                @click="addNewProd"> 
+                                @click="addNewSet"> 
                                 <i class="fa fa-check"></i> Save
                             </button>
                             <button class="btn btn-warning btn-fill btn-icon"
@@ -41,52 +41,43 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Name</label>
-                                            <input type="text" class="form-control" v-model="product.name">
+                                            <input type="text" class="form-control" v-model="pizzaset.name">
                                         </div>
                                     </div>
 
                                     <div class="col-md-12">
                                         <div class="row">
-                                            <div class="col-md-8">
+
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="prodTypesSelect">Type</label>
-                                                    <select v-model="product.typeId" class="form-control" 
-                                                        id="prodTypesSelect">
-                                                        <option v-for="type in prodTypesList" :key="type.id"
-                                                            :value="type.id">
-                                                            {{ type.name }}
+                                                    <label for="pizzaBaseSelect">Base</label>
+                                                    <select v-model="pizzaset.baseId" class="form-control" 
+                                                        id="pizzaBaseSelect">
+                                                        <option v-for="base in pizzaBasesList" :key="base.id"
+                                                            :value="base.id">
+                                                            {{ base.name }}
                                                         </option>
                                                     </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class="row">
-
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label>Cost ($)</label>
-                                                    <input type="number" step="0.01" min="0.01" 
-                                                        class="form-control" v-model="product.cost">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label>Weight (g)</label>
-                                                    <input type="number" step="1" min="1" 
-                                                        class="form-control" v-model="product.weight">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Image (.jpg, .jpeg, .png)</label>
-                                                    <input type="file" id="productImage" ref="prodImageFile"
+                                                    <input type="file" id="pizzasetImage" ref="pizzasetImageFile"
                                                         @change="handleFileUpload">
                                                 </div>
                                             </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="row pizzaset-products-box">
+
+                                            <!-- <div class="col-md-12">
+                                                
+                                            </div> -->
 
                                         </div>
                                     </div>
@@ -98,7 +89,7 @@
                                 
                                 <div class="form-group">
                                     <label>Description</label>
-                                    <textarea rows="5" class="form-control" v-model="product.description"></textarea>
+                                    <textarea rows="5" class="form-control" v-model="pizzaset.description"></textarea>
                                 </div>
                                
                             </div>
@@ -115,7 +106,7 @@
             </div>
 
 
-            <div class="col-12 mt-10">
+            <!-- <div class="col-12 mt-10">
                 <div class="row">
 
                     <div class="col-md-3">
@@ -171,7 +162,7 @@
                         <tr v-for="(prod,index) in prodsList" :key="prod.id">
                             <td>{{ prod.id }}</td>
                             <td>
-                                <img class="prod-image gallery-image" :src="prod.image_thumbs.w_300" 
+                                <img class="prod-image gallery-image" :src="prod.image_url" 
                                     alt="prod image" @click="openGallery(index)">
                             </td>
                             <td>{{ prod.name }}</td>
@@ -234,7 +225,7 @@
 
                     </div>
                 </div>
-            </div>
+            </div> -->
             
         </div>
     </div>
@@ -247,15 +238,14 @@
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
     import LightBox from 'vue-image-lightbox';
-    import ProductDetailsModal from './ProductDetailsModal';
-    import EditProductModal from './EditProductModal';
+    //import ProductDetailsModal from './ProductDetailsModal';
+    //import EditProductModal from './EditProductModal';
 
-    const ProductRef = {
+    const PizzaSetRef = {
         name: '',
-        cost: 1.0,
-        weight: 100,
+        baseId: 1,
         description: '',
-        typeId: 1,
+        products: [],
         imageFile: '',
     };
 
@@ -283,11 +273,11 @@
                 selectedSortableHeader: 'Name',
                 sortField: 'name',
                 sortDirection: 'desc',
-                byType: 0,
 
-                product: {},
-                prodTypesList: [],
-                prodsList: [],
+                pizzaset: {},
+                pizzaBasesList: [],
+                pizzaProductsList: [],
+                setsList: [],
                 lbData: [],
             }
         },
@@ -302,15 +292,15 @@
         },
 
         created() {
-            this.initEmptyProd();
-            this.getProdTypesList();
-            this.getProdsList();
+            this.initEmptySet();
+            this.getPizzaProdsList();
+            //this.getSetsList();
         },
 
         methods: {
 
-            initEmptyProd() {
-                this.product = this.clone(ProductRef);
+            initEmptySet() {
+                this.pizzaset = this.clone(PizzaSetRef);
             },
 
             onTableHeaderClick(header) {
@@ -330,33 +320,34 @@
                     }
 
                     this.sortField = this.sortableHeaders[header];
-                    this.getProdsList();
+                    this.getSetsList();
                 }
             },
 
-            getProdTypesList() {
+            getPizzaProdsList() {
 
                 axios.get(
-                    '/products/get-prod-types-list'
+                    '/pizza-sets/get-prods-list'
                 ).then(function(response) {
 
-                    this.prodTypesList = response.data;
+                    let data = response.data;
+                    this.pizzaBasesList = data.bases_list;
+                    this.pizzaProductsList = data.prods_list;
 
                 }.bind(this));
             },
 
-            getProdsList() {
+            getSetsList() {
                 this.updating = true;
 
                 axios.get(
-                    '/products/get-prods-list', 
+                    '/pizza-sets/get-sets-list', 
                     {
                         params: {
                             page: this.page,
                             per_page: this.perPage,
                             sort_field: this.sortField,
                             sort_dir: this.sortDirection,
-                            by_type: this.byType,
                         },
                     }
                 ).then(function(response) { 
@@ -368,7 +359,7 @@
                     let _lbData = [];
                     prods.forEach(function(prod) {
                         _lbData.push({
-                            thumb: prod.image_thumbs.w_300,
+                            thumb: prod.image_url,
                             src: prod.image_url,
                         });
                     });
@@ -382,7 +373,7 @@
                 }.bind(this))
                 .catch(function() {
 
-                    this.notifyError('Load products list error.');
+                    this.notifyError('Load pizza sets list error.');
 
                 }.bind(this));
             },
@@ -391,14 +382,14 @@
                 this.mode = 'add_new';
             },
 
-            addNewProd() {
+            addNewSet() {
                 let formData = new FormData();
 
-                for (let prop in this.product) {
-                    formData.append(prop, this.product[prop]);
+                for (let prop in this.pizzaset) {
+                    formData.append(prop, this.pizzaset[prop]);
                 }
 
-                axios.post('/products/add-new-product',
+                axios.post('/pizza-sets/add-new-set',
                     formData,
                     {
                         headers: {
@@ -407,35 +398,35 @@
                     }
                 ).then(function(response) {
                     
-                    this.notifySuccess('Product ID:' + response.data + ' successfully added.');
+                    this.notifySuccess('Pizza set ID:' + response.data + ' successfully added.');
                     this.closeBox();
-                    this.getProdsList();
+                    this.getSetsList();
 
                 }.bind(this))
                 .catch(function() {
                     
-                    this.notifyError('Add product error.');
+                    this.notifyError('Add pizza set error.');
                     
                 }.bind(this));
             },
 
             closeBox() {
                 this.mode = 'list';
-                this.initEmptyProd();
+                this.initEmptySet();
             },
 
-            getProdById(id) {
-                return this.prodsList.filter((_prod) => _prod.id === id)[0];
+            getPizzaSetById(id) {
+                return this.setsList.filter((_item) => _item.id === id)[0];
             },
 
             editProdModal(id) {
 
-                let prod = this.getProdById(id);
+                let set = this.getPizzaSetById(id);
 
                 this.$modal.show(
                     EditProductModal,
                     {
-                        'prod-data': prod,
+                        'prod-data': set,
                         'prod-types-list': this.prodTypesList,
                     },
                     {
@@ -444,7 +435,7 @@
                     },
                     { 
                         'before-close': event => {
-                            this.getProdsList();
+                            this.getSetsList();
                         } 
                     }
                 );
@@ -452,7 +443,7 @@
 
             prodDetailsModal(id) {
 
-                let prod = this.getProdById(id);
+                let prod = this.getPizzaSetById(id);
 
                 this.$modal.show(
                     ProductDetailsModal,
@@ -504,7 +495,7 @@
 
                     this.$modal.hide('dialog');
                     this.notifySuccess(`Product ID:${id} successfully deleted.`);
-                    this.getProdsList();
+                    this.getSetsList();
 
                 }.bind(this))
                 .catch(function() {
@@ -516,7 +507,7 @@
             },
 
             handleFileUpload() {
-                this.product.imageFile = this.$refs.prodImageFile.files[0];
+                this.pizzaset.imageFile = this.$refs.prodImageFile.files[0];
             },
 
             openGallery(index) {

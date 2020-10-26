@@ -8,7 +8,9 @@ class PizzaSet extends Model
 {
     public function products()
     {
-        return $this->belongsToMany('App\Product', 'pizzaset_product', 'pizzaset_id', 'product_id');
+        return $this->belongsToMany('App\Product', 'pizzaset_product', 'pizzaset_id', 'product_id')
+            ->as('connection')
+            ->withTimestamps();
     }
     
 

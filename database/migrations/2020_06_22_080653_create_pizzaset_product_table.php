@@ -17,6 +17,7 @@ class CreatePizzasetProductTable extends Migration
             $table->id();
             $table->foreignId('pizzaset_id');
             $table->foreignId('product_id');
+            $table->integer('quantity');
             $table->timestamps();
         });
     }

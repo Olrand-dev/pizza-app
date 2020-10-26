@@ -25,6 +25,7 @@ Vue.use(VModal, { dialog: true });
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('products-list', require('./components/ProductsList.vue').default);
+Vue.component('pizzasets-list', require('./components/PizzaSetsList.vue').default);
 Vue.component('paginate', VuejsPaginate);
 
 /**

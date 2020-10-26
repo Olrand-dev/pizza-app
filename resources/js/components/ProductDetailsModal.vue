@@ -22,7 +22,7 @@
                             <div class="col-12">
 
                                 <div class="col-md-6">
-                                    <img class="prod-details-image" :src="prodData.image_url" alt="prod image">
+                                    <img class="prod-details-image" :src="prodData.image_thumbs.w_600" alt="prod image">
                                 </div>
 
                                 <div class="col-md-6">

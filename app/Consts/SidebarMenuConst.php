@@ -26,6 +26,12 @@ class SidebarMenuConst
                 'icon' => 'pe-7s-box2',
                 'url' => url('/products'),
             ],
+            [
+                'name' => 'Pizza Sets',
+                'slug' => 'pizza-sets',
+                'icon' => 'pe-7s-graph',
+                'url' => url('/pizza-sets'),
+            ],
         ];
     }
     

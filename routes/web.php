@@ -23,6 +23,8 @@ Route::get('/products/get-prod-types-list', 'ProductsController@getProdTypesList
 Route::get('/products/get-prods-list', 'ProductsController@getProdsList');
 Route::get('/products/delete-prod', 'ProductsController@deleteProd');
 
+Route::get('/pizza-sets', 'PizzaSetsController@index');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

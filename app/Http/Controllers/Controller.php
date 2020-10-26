@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Consts\SystemConst;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -14,7 +17,7 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
 
-    protected function resizeImage(string $imagePath, int $maxWidth = 1200)
+    protected function resizeImage(string $imagePath, int $maxWidth = 1200) : void
     {
         $image = Image::make($imagePath);
         $width = $image->width();
@@ -25,11 +28,9 @@ class Controller extends BaseController
     }
 
 
-    protected function makeImageThumbs(string $imagePath, string $thumbsDir, array $widthSet = [])
+    protected function makeImageThumbs(string $imagePath, string $thumbsDir, array $widthSet = []) : void
     {
-        $_widthSet = (!empty($widthSet)) ? $widthSet : [
-            600, 300,
-        ];
+        $_widthSet = (!empty($widthSet)) ? $widthSet : SystemConst::IMAGE_THUMB_SIZES;
 
         $image = Image::make($imagePath);
         $width = $image->width();
