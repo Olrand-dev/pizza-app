@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Consts\SystemConst;
-use App\Product;
-use App\ProductType;
+use App\Models\Product;
+use App\Models\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,7 +17,7 @@ class ProductsController extends Controller
     }
 
 
-    public function addNewProd(Request $request)
+    public function addNew(Request $request) : int
     {
         try {
 
@@ -28,10 +29,12 @@ class ProductsController extends Controller
                 $prod->type()->associate($prodType);
             }
 
-            $imagePath = $this->saveProdImage($request, $prod->id);
-            $this->handleProdImage($imagePath);
-            $prod->image = $imagePath;
-
+            $image = $request->file('imageFile');
+            if (!empty($image)) {
+                $imagePath = $this->saveImage($image, 'prod-images', "prod_{$prod->id}");
+                $this->handleImage($imagePath, 'prod-images');
+                $prod->image = $imagePath;
+            }
             $prod->save();
 
         } catch(\Throwable $e) {
@@ -39,11 +42,11 @@ class ProductsController extends Controller
             abort(500, $e->getMessage());
         }
 
-        return $prod->id;
+        return (int) $prod->id;
     }
 
 
-    public function saveProd(Request $request)
+    public function save(Request $request) : void
     {
         try {
 
@@ -60,10 +63,13 @@ class ProductsController extends Controller
             }
 
             if ($prodData['image_changed'] === 'true') {
+                $image = $request->file('imageFile');
 
-                $imagePath = $this->saveProdImage($request, $prodId);
-                $this->handleProdImage($imagePath);
-                $prod->image = $imagePath;
+                if (!empty($image)) {
+                    $imagePath = $this->saveImage($image, 'prod-images', "prod_{$prodId}");
+                    $this->handleImage($imagePath, 'prod-images');
+                    $prod->image = $imagePath;
+                }
             }
 
             $prod->update($prodData);
@@ -76,65 +82,7 @@ class ProductsController extends Controller
     }
 
 
-    private function saveProdImage(Request $request, $prodId) 
-    {
-        $prodImage = $request->file('imageFile');
-        $prodImagePath = '';
-
-        if (!empty($prodImage) and $prodImage->isValid()) {
-
-            $extension = $prodImage->extension();
-            $prodImagePath = $prodImage->storeAs('prod-images', "prod_{$prodId}.{$extension}", 'public');
-        }
-        return $prodImagePath;
-    }
-
-
-    private function handleProdImage($imagePath)
-    {
-        $fullImagePath = storage_path('app/public/' . $imagePath);
-        $this->resizeImage($fullImagePath);
-        $this->makeImageThumbs(
-            $fullImagePath,
-            'public/prod-images/thumbs'
-        );
-    }
-
-
-    private function getProdImagePathesList($prodId)
-    {
-        return array_filter(
-            Storage::allFiles('public/prod-images'), 
-            function($filePath) use ($prodId) {
-                return preg_match("#prod_{$prodId}#u", $filePath);
-            }
-        );
-    }
-
-
-    private function getProdImageThumbs($prodId)
-    {
-        $files = $this->getProdImagePathesList($prodId);
-        $thumbs = [];
-
-        foreach (SystemConst::IMAGE_THUMB_SIZES as $size) {
-            $_thumbs = array_filter(
-                $files, 
-                function($filePath) use ($prodId, $size) {
-                    return preg_match("#thumbs/prod_{$prodId}_w_{$size}#u", $filePath);
-                }
-            );
-
-            $thumbs["w_{$size}"] = (!empty($_thumbs)) ? 
-                asset(str_replace('public', 'storage', array_values($_thumbs)[0])) : 
-                asset('storage/system/no_photo_sm.png');
-        }
-
-        return $thumbs;
-    }
-
-
-    public function getProdsList(Request $request)
+    public function getList(Request $request) : array
     {
         $input = $request->input();
 
@@ -155,8 +103,8 @@ class ProductsController extends Controller
             ->offset($perPage * ($page - 1))
             ->limit($perPage)
             ->get()
-            ->each(function($item, $key) {
-                $item->image_thumbs = $this->getProdImageThumbs($item->id);
+            ->each(function ($item, $key) {
+                $item->image_thumbs = $this->getImageThumbs("prod_{$item->id}", 'prod-images');
             });
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
@@ -168,19 +116,19 @@ class ProductsController extends Controller
     }
 
 
-    public function getProdTypesList()
+    public function getTypesList() : string
     {
         return ProductType::all()->toJson();
     }
 
 
-    public function deleteProd(Request $request)
+    public function delete(Request $request) : void
     {
         try {
 
             $id = (int) $request->input('id');
 
-            $prodImages = $this->getProdImagePathesList($id);
+            $prodImages = $this->getImagePathesList("prod_{$id}", 'prod-images');
             if (!empty($prodImages)) {
                 Storage::delete($prodImages);
             }

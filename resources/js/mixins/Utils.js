@@ -9,18 +9,22 @@ export default {
 
             let found = false;
             let key;
-        
+
             for (key in haystack) {
                 if ((strict && haystack[key] === needle) || (!strict && haystack[key] == needle)) {
                     found = true;
                     break;
                 }
             }
-        
+
             return found;
         },
 
-        isObject (obj) {
+        removeByIndex(arr, index) {
+            arr.splice(index, 1);
+        },
+
+        isObject(obj) {
             return obj !== null && typeof obj === 'object'
         },
 
@@ -35,7 +39,7 @@ export default {
 
         clone(obj, deep = false) {
             if (!this.isObject(obj)) return;
-        
+
             return (deep) ? jQuery.extend(true, {}, obj) : jQuery.extend({}, obj);
         },
 

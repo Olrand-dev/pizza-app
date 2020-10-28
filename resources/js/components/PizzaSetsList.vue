@@ -10,38 +10,38 @@
 
                         <div v-if="mode === 'list'">
                             <button class="btn btn-info btn-fill btn-icon"
-                                @click="openBox"> 
+                                    @click="openBox">
                                 <i class="fa fa-plus"></i> Add New
                             </button>
                         </div>
 
                         <div v-if="mode === 'add_new'">
                             <button class="btn btn-success btn-fill btn-icon"
-                                @click="addNewSet"> 
+                                    @click="addNewSet">
                                 <i class="fa fa-check"></i> Save
                             </button>
                             <button class="btn btn-warning btn-fill btn-icon"
-                                @click="closeBox"> 
+                                    @click="closeBox">
                                 <i class="fa fa-ban"></i> Cancel
                             </button>
                         </div>
 
                     </div>
                 </div>
-                
+
 
                 <transition name="slide-down">
 
                     <div v-show="mode === 'add_new'" class="col-12 mt-10">
                         <div class="row">
 
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="row">
 
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Name</label>
-                                            <input type="text" class="form-control" v-model="pizzaset.name">
+                                            <input type="text" class="form-control" v-model="pizzaSet.name">
                                         </div>
                                     </div>
 
@@ -51,10 +51,10 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="pizzaBaseSelect">Base</label>
-                                                    <select v-model="pizzaset.baseId" class="form-control" 
+                                                    <select v-model="pizzaSet.baseId" class="form-control"
                                                         id="pizzaBaseSelect">
                                                         <option v-for="base in pizzaBasesList" :key="base.id"
-                                                            :value="base.id">
+                                                                :value="base.id">
                                                             {{ base.name }}
                                                         </option>
                                                     </select>
@@ -64,20 +64,10 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Image (.jpg, .jpeg, .png)</label>
-                                                    <input type="file" id="pizzasetImage" ref="pizzasetImageFile"
-                                                        @change="handleFileUpload">
+                                                    <input type="file" id="pizzaSetImage" ref="pizzaSetImageFile"
+                                                           @change="handleFileUpload">
                                                 </div>
                                             </div>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class="row pizzaset-products-box">
-
-                                            <!-- <div class="col-md-12">
-                                                
-                                            </div> -->
 
                                         </div>
                                     </div>
@@ -85,13 +75,72 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea rows="5" class="form-control" v-model="pizzaset.description"></textarea>
+                            <div class="col-md-7">
+
+                                <div class="row pizza-set-ingredients-box">
+
+                                    <div class="col-md-12">
+                                        <label>Ingredients</label>
+                                    </div>
+
+                                    <div v-if="pizzaSet.ingredients.length > 0" class="col-md-12">
+
+                                        <div v-for="(prod, index) in pizzaSet.ingredients" :key="index" class="row">
+                                            <div class="col-md-12 ingredient-box">
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Type</label>
+                                                        <select v-model="prod.typeId" class="form-control">
+                                                            <option v-for="type in pizzaIngTypesList" :key="type.id"
+                                                                    :value="type.id">
+                                                                {{ type.name }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-5">
+                                                    <div class="form-group">
+                                                        <label>Product</label>
+                                                        <select v-model="prod.prodId" class="form-control" :disabled="prod.typeId === 0">
+                                                            <option v-for="prod in pizzaIngredientsList[prod.typeId]" :key="prod.id"
+                                                                    :value="prod.id">
+                                                                {{ prod.name }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <label>Q-ty</label>
+                                                        <input type="number" step="1" min="1"
+                                                               v-model="prod.quantity" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-1 text-right">
+                                                    <button class="btn btn-danger btn-sm ing-del-btn"
+                                                            @click="deleteIngredient(index)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <button class="btn btn-info btn-fill btn-icon"
+                                                @click="addIngredient">
+                                            <i class="fa fa-plus"></i> Add Ingredient
+                                        </button>
+                                    </div>
+
                                 </div>
-                               
+
                             </div>
 
                             <div class="col-md-12">
@@ -149,7 +198,7 @@
                 <table class="table table-hover table-striped sortable">
 
                     <thead>
-                        <th v-for="(header,index) in tableHeaders" :key="index" 
+                        <th v-for="(header,index) in tableHeaders" :key="index"
                             :class="{ 'sortable': hop(sortableHeaders, header) }" @click="onTableHeaderClick(header)">
                             {{ header }}
                             <i v-if="header === selectedSortableHeader && sortDirection === 'desc'" class="fa fa-sort-down"></i>
@@ -162,7 +211,7 @@
                         <tr v-for="(prod,index) in prodsList" :key="prod.id">
                             <td>{{ prod.id }}</td>
                             <td>
-                                <img class="prod-image gallery-image" :src="prod.image_url" 
+                                <img class="prod-image gallery-image" :src="prod.image_url"
                                     alt="prod image" @click="openGallery(index)">
                             </td>
                             <td>{{ prod.name }}</td>
@@ -173,27 +222,27 @@
                             <td class="text-center">
 
                                 <button class="btn btn-info btn-sm"
-                                    @click="editProdModal(prod.id)"> 
+                                    @click="editProdModal(prod.id)">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
                                 <button v-if="prod.description !== ''" class="btn btn-default btn-sm"
-                                    @click="prodDetailsModal(prod.id)"> 
+                                    @click="prodDetailsModal(prod.id)">
                                     <i class="fa fa-info"></i>
                                 </button>
 
                                 <button class="btn btn-danger btn-sm"
-                                    @click="deleteProdModal(prod.id)"> 
+                                    @click="deleteProdModal(prod.id)">
                                     <i class="fa fa-trash"></i>
                                 </button>
 
                             </td>
                         </tr>
                     </tbody>
-                    
+
                 </table>
 
-                <LightBox ref="lightbox" :media="lbData" :show-light-box="false" 
+                <LightBox ref="lightbox" :media="lbData" :show-light-box="false"
                     :show-caption="false" :show-thumbs="false"></LightBox>
 
                 <v-dialog />
@@ -226,27 +275,59 @@
                     </div>
                 </div>
             </div> -->
-            
+
         </div>
     </div>
 
 </template>
 
 
+<style scoped lang="scss">
+
+    @import './../../sass/variables';
+
+    .pizza-set-ingredients-box {
+        padding-left: 55px;
+    }
+
+    .ingredient-box {
+        border: 1px solid $s-light-gray;
+        padding: 0;
+        border-radius: 6px;
+        position: relative;
+        right: 15px;
+        margin-bottom: 6px;
+    }
+
+    .ing-del-btn {
+        position: relative;
+        top: 28px;
+        right: 12px;
+    }
+
+</style>
+
+
 <script>
 
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
+    import Sortable from '../mixins/Sortable';
+    import Pagination from '../mixins/Pagination';
     import LightBox from 'vue-image-lightbox';
-    //import ProductDetailsModal from './ProductDetailsModal';
     //import EditProductModal from './EditProductModal';
 
     const PizzaSetRef = {
         name: '',
         baseId: 1,
-        description: '',
-        products: [],
+        ingredients: [],
         imageFile: '',
+    };
+
+    const ingredientRef = {
+        typeId: 0,
+        prodId: 0,
+        quantity: 1,
     };
 
     export default {
@@ -256,14 +337,6 @@
                 mode: 'list',
                 updating: true,
 
-                page: 1,
-                pagesCount: 1,
-                pageRange: 5,
-                perPage: 10,
-                marginPages: 1,
-                prevText: 'Prev.',
-                nextText: 'Next',
-
                 tableHeaders: [
                     'ID', 'Image', 'Name', 'Type', 'Cost', 'Weight',
                 ],
@@ -272,11 +345,11 @@
                 },
                 selectedSortableHeader: 'Name',
                 sortField: 'name',
-                sortDirection: 'desc',
 
-                pizzaset: {},
+                pizzaSet: {},
                 pizzaBasesList: [],
-                pizzaProductsList: [],
+                pizzaIngTypesList: [],
+                pizzaIngredientsList: [],
                 setsList: [],
                 lbData: [],
             }
@@ -285,6 +358,8 @@
         mixins: [
             Utils,
             Notify,
+            Pagination,
+            Sortable,
         ],
 
         components: {
@@ -293,55 +368,50 @@
 
         created() {
             this.initEmptySet();
-            this.getPizzaProdsList();
+            this.getIngredientsList();
             //this.getSetsList();
         },
 
         methods: {
 
             initEmptySet() {
-                this.pizzaset = this.clone(PizzaSetRef);
+                this.pizzaSet = this.clone(PizzaSetRef);
             },
 
-            onTableHeaderClick(header) {
-
-                if (this.hop(this.sortableHeaders, header)) {
-
-                    if (header !== this.selectedSortableHeader) {
-                        this.selectedSortableHeader = header;
-                        this.sortDirection = 'desc';
-                    } else {
-
-                        if (this.sortDirection === 'desc') {
-                            this.sortDirection = 'asc';
-                        } else {
-                            this.sortDirection = 'desc';
-                        }
-                    }
-
-                    this.sortField = this.sortableHeaders[header];
-                    this.getSetsList();
-                }
+            sortableHeaderClickHandler() {
+                this.getSetsList();
             },
 
-            getPizzaProdsList() {
+            getIngredientsList() {
 
                 axios.get(
                     '/pizza-sets/get-prods-list'
                 ).then(function(response) {
 
-                    let data = response.data;
+                    let data = response.data; console.log(data);
                     this.pizzaBasesList = data.bases_list;
-                    this.pizzaProductsList = data.prods_list;
+                    this.pizzaIngTypesList = data.ing_types_list;
+                    this.pizzaIngredientsList = data.ingredients_list;
 
                 }.bind(this));
+            },
+
+            addIngredient() {
+                let ingredient = this.clone(ingredientRef);
+                this.pizzaSet.ingredients.push(ingredient);
+                //console.log(this.pizzaSet.ingredients);
+            },
+
+            deleteIngredient(index) {
+                this.removeByIndex(this.pizzaSet.ingredients, index);
+                console.log(index);
             },
 
             getSetsList() {
                 this.updating = true;
 
                 axios.get(
-                    '/pizza-sets/get-sets-list', 
+                    '/pizza-sets/get-list',
                     {
                         params: {
                             page: this.page,
@@ -350,9 +420,9 @@
                             sort_dir: this.sortDirection,
                         },
                     }
-                ).then(function(response) { 
-                    
-                    //console.log(response.data);
+                ).then(function(response) {
+
+                    console.log(response.data);
                     let data = response.data;
                     let prods = JSON.parse(data.items);
 
@@ -385,11 +455,11 @@
             addNewSet() {
                 let formData = new FormData();
 
-                for (let prop in this.pizzaset) {
-                    formData.append(prop, this.pizzaset[prop]);
+                for (let prop in this.pizzaSet) {
+                    formData.append(prop, this.pizzaSet[prop]);
                 }
 
-                axios.post('/pizza-sets/add-new-set',
+                axios.post('/pizza-sets/add-new',
                     formData,
                     {
                         headers: {
@@ -397,16 +467,16 @@
                         }
                     }
                 ).then(function(response) {
-                    
+
                     this.notifySuccess('Pizza set ID:' + response.data + ' successfully added.');
                     this.closeBox();
                     this.getSetsList();
 
                 }.bind(this))
                 .catch(function() {
-                    
+
                     this.notifyError('Add pizza set error.');
-                    
+
                 }.bind(this));
             },
 
@@ -419,7 +489,7 @@
                 return this.setsList.filter((_item) => _item.id === id)[0];
             },
 
-            editProdModal(id) {
+            /*editProdModal(id) {
 
                 let set = this.getPizzaSetById(id);
 
@@ -433,15 +503,15 @@
                         adaptive: true,
                         height: 'auto',
                     },
-                    { 
+                    {
                         'before-close': event => {
                             this.getSetsList();
-                        } 
+                        }
                     }
                 );
-            },
+            },*/
 
-            prodDetailsModal(id) {
+            /*prodDetailsModal(id) {
 
                 let prod = this.getPizzaSetById(id);
 
@@ -455,10 +525,10 @@
                         height: 'auto',
                     }
                 );
-            },
+            },*/
 
-            deleteProdModal(id) {
-                
+            /*deleteProdModal(id) {
+
                 this.$modal.show(
                     'dialog',
                     {
@@ -480,12 +550,12 @@
                         ],
                     }
                 );
-            },
+            },*/
 
-            deleteProd(id) {
-                
+            deleteSet(id) {
+
                 axios.get(
-                    '/products/delete-prod',
+                    '/pizza-sets/delete',
                     {
                         params: {
                             id
@@ -494,20 +564,20 @@
                 ).then(function(response) {
 
                     this.$modal.hide('dialog');
-                    this.notifySuccess(`Product ID:${id} successfully deleted.`);
+                    this.notifySuccess(`Pizza set ID:${id} successfully deleted.`);
                     this.getSetsList();
 
                 }.bind(this))
                 .catch(function() {
 
                     this.$modal.hide('dialog');
-                    this.notifyError('Delete product error.');
+                    this.notifyError('Delete pizza set error.');
 
                 }.bind(this));
             },
 
             handleFileUpload() {
-                this.pizzaset.imageFile = this.$refs.prodImageFile.files[0];
+                this.pizzaSet.imageFile = this.$refs.pizzaSetImageFile.files[0];
             },
 
             openGallery(index) {

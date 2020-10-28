@@ -71,47 +71,19 @@ select, input[type="file"] {
 }
 
 
-.pagination {
-
-    a:focus, span:focus {
-        outline: none;
-    }
-
-    li {
-        a, a:focus, a:hover, span, span:focus, span:hover {
-            padding: 9px 16px;
-            color: $s-dark;
-        }
-    }
-
-    .active {
-        a, a:focus, a:hover, span, span:focus, span:hover {
-            background-color: $s-light-blue;
-            border-color: $s-light-gray;
-        }
-    }
+.btn-sm {
+    font-size: 14px;
+    padding: 4px 7px;
 }
 
+//спиннер обновления таблицы элементов
+.list-update {
+    color: $s-gray;
+    font-size: 24px;
+    display: inline-block;
 
-#productsList {
-
-    .prod-image {
-        max-height: 70px;
-    }
-
-    .btn-sm {
-        font-size: 14px;
-        padding: 4px 7px;
-    }
-
-    .list-update {
-        color: $s-gray;
-        font-size: 24px;
-        display: inline-block;
-        
-        &.top {
-            margin-top: 27px;
-        }
+    &.top {
+        margin-top: 27px;
     }
 }
 
@@ -182,7 +154,7 @@ select, input[type="file"] {
 .anim-blink-soft {
     animation: blink-soft 1.6s linear infinite;
 }
-  
+
 @keyframes blink-soft {
     50% {
         opacity: 0;

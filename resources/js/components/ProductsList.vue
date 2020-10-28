@@ -10,25 +10,25 @@
 
                         <div v-if="mode === 'list'">
                             <button class="btn btn-info btn-fill btn-icon"
-                                @click="openBox"> 
+                                    @click="openBox">
                                 <i class="fa fa-plus"></i> Add New
                             </button>
                         </div>
 
                         <div v-if="mode === 'add_new'">
                             <button class="btn btn-success btn-fill btn-icon"
-                                @click="addNewProd"> 
+                                    @click="addNewProd">
                                 <i class="fa fa-check"></i> Save
                             </button>
                             <button class="btn btn-warning btn-fill btn-icon"
-                                @click="closeBox"> 
+                                    @click="closeBox">
                                 <i class="fa fa-ban"></i> Cancel
                             </button>
                         </div>
 
                     </div>
                 </div>
-                
+
 
                 <transition name="slide-down">
 
@@ -50,10 +50,10 @@
                                             <div class="col-md-8">
                                                 <div class="form-group">
                                                     <label for="prodTypesSelect">Type</label>
-                                                    <select v-model="product.typeId" class="form-control" 
-                                                        id="prodTypesSelect">
+                                                    <select v-model="product.typeId" class="form-control"
+                                                            id="prodTypesSelect">
                                                         <option v-for="type in prodTypesList" :key="type.id"
-                                                            :value="type.id">
+                                                                :value="type.id">
                                                             {{ type.name }}
                                                         </option>
                                                     </select>
@@ -68,15 +68,15 @@
                                             <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label>Cost ($)</label>
-                                                    <input type="number" step="0.01" min="0.01" 
-                                                        class="form-control" v-model="product.cost">
+                                                    <input type="number" step="0.01" min="0.01"
+                                                           class="form-control" v-model="product.cost">
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label>Weight (g)</label>
-                                                    <input type="number" step="1" min="1" 
-                                                        class="form-control" v-model="product.weight">
+                                                    <input type="number" step="1" min="1"
+                                                           class="form-control" v-model="product.weight">
                                                 </div>
                                             </div>
 
@@ -84,7 +84,7 @@
                                                 <div class="form-group">
                                                     <label>Image (.jpg, .jpeg, .png)</label>
                                                     <input type="file" id="productImage" ref="prodImageFile"
-                                                        @change="handleFileUpload">
+                                                           @change="handleFileUpload">
                                                 </div>
                                             </div>
 
@@ -95,12 +95,12 @@
                             </div>
 
                             <div class="col-md-6">
-                                
+
                                 <div class="form-group">
                                     <label>Description</label>
                                     <textarea rows="5" class="form-control" v-model="product.description"></textarea>
                                 </div>
-                               
+
                             </div>
 
                             <div class="col-md-12">
@@ -121,10 +121,11 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="prodTypeFilter">Show by type</label>
-                            <select v-model="byType" class="form-control" id="prodTypeFilter" @change="getProdsList">
+                            <select v-model="byType" class="form-control" id="prodTypeFilter"
+                                    @change="getProdsList(true)">
                                 <option value="0">all</option>
                                 <option v-for="type in prodTypesList" :key="type.id"
-                                    :value="type.id">
+                                        :value="type.id">
                                     {{ type.name }}
                                 </option>
                             </select>
@@ -134,7 +135,8 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="perPageSelect">Per page</label>
-                            <select v-model="perPage" class="form-control" id="perPageSelect" @change="getProdsList">
+                            <select v-model="perPage" class="form-control" id="perPageSelect"
+                                    @change="getProdsList(true)">
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                                 <option value="15">15</option>
@@ -158,54 +160,56 @@
                 <table class="table table-hover table-striped sortable">
 
                     <thead>
-                        <th v-for="(header,index) in tableHeaders" :key="index" 
-                            :class="{ 'sortable': hop(sortableHeaders, header) }" @click="onTableHeaderClick(header)">
-                            {{ header }}
-                            <i v-if="header === selectedSortableHeader && sortDirection === 'desc'" class="fa fa-sort-down"></i>
-                            <i v-if="header === selectedSortableHeader && sortDirection === 'asc'" class="fa fa-sort-up"></i>
-                        </th>
-                        <th class="text-center">Actions</th>
+                    <th v-for="(header,index) in tableHeaders" :key="index"
+                        :class="{ 'sortable': hop(sortableHeaders, header) }" @click="onTableHeaderClick(header)">
+                        {{ header }}
+                        <i v-if="header === selectedSortableHeader && sortDirection === 'desc'"
+                           class="fa fa-sort-down"></i>
+                        <i v-if="header === selectedSortableHeader && sortDirection === 'asc'"
+                           class="fa fa-sort-up"></i>
+                    </th>
+                    <th class="text-center">Actions</th>
                     </thead>
 
                     <tbody>
-                        <tr v-for="(prod,index) in prodsList" :key="prod.id">
-                            <td>{{ prod.id }}</td>
-                            <td>
-                                <img class="prod-image gallery-image" :src="prod.image_thumbs.w_300" 
-                                    alt="prod image" @click="openGallery(index)">
-                            </td>
-                            <td>{{ prod.name }}</td>
-                            <td>{{ prod.type.name }}</td>
-                            <td>${{ prod.cost }}</td>
-                            <td>{{ prod.weight }} g.</td>
+                    <tr v-for="(prod,index) in prodsList" :key="prod.id">
+                        <td>{{ prod.id }}</td>
+                        <td>
+                            <img class="prod-image gallery-image" :src="prod.image_thumbs.w_300"
+                                 alt="prod image" @click="openGallery(index)">
+                        </td>
+                        <td>{{ prod.name }}</td>
+                        <td>{{ prod.type.name }}</td>
+                        <td>${{ prod.cost }}</td>
+                        <td>{{ prod.weight }} g.</td>
 
-                            <td class="text-center">
+                        <td class="text-center">
 
-                                <button class="btn btn-info btn-sm"
-                                    @click="editProdModal(prod.id)"> 
-                                    <i class="fa fa-edit"></i>
-                                </button>
+                            <button class="btn btn-info btn-sm"
+                                    @click="editProdModal(prod.id)">
+                                <i class="fa fa-edit"></i>
+                            </button>
 
-                                <button v-if="prod.description !== ''" class="btn btn-default btn-sm"
-                                    @click="prodDetailsModal(prod.id)"> 
-                                    <i class="fa fa-info"></i>
-                                </button>
+                            <button v-if="prod.description !== ''" class="btn btn-default btn-sm"
+                                    @click="prodDetailsModal(prod.id)">
+                                <i class="fa fa-info"></i>
+                            </button>
 
-                                <button class="btn btn-danger btn-sm"
-                                    @click="deleteProdModal(prod.id)"> 
-                                    <i class="fa fa-trash"></i>
-                                </button>
+                            <button class="btn btn-danger btn-sm"
+                                    @click="deleteProdModal(prod.id)">
+                                <i class="fa fa-trash"></i>
+                            </button>
 
-                            </td>
-                        </tr>
+                        </td>
+                    </tr>
                     </tbody>
-                    
+
                 </table>
 
-                <LightBox ref="lightbox" :media="lbData" :show-light-box="false" 
-                    :show-caption="false" :show-thumbs="false"></LightBox>
+                <LightBox ref="lightbox" :media="lbData" :show-light-box="false"
+                          :show-caption="false" :show-thumbs="false"></LightBox>
 
-                <v-dialog />
+                <v-dialog/>
 
             </div>
             <div v-if="prodsList.length === 0" class="col-12 text-center mt-25">
@@ -217,35 +221,34 @@
                 <div class="row">
                     <div class="col-md-12">
 
-                        <paginate
-                            v-model="page"
-                            :page-count="pagesCount"
-                            :page-range="pageRange"
-                            :margin-pages="marginPages"
-                            :click-handler="getProdsList"
-                            :prev-text="prevText"
-                            :next-text="nextText"
-                            container-class="pagination"
-                            page-class="page-item"
-                            prev-class="prev-page-btn"
-                            next-class="next-page-btn"
-                            break-view-class="bv"
-                        ></paginate>
+                        <pagination ref="pagin1" :page="page" :pages-count="pagesCount" @click-handler="paginate"
+                                    range="5"></pagination>
 
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 
 </template>
 
 
+<style scoped lang="scss">
+
+    .prod-image {
+        max-height: 70px;
+    }
+
+</style>
+
+
 <script>
 
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
+    import Pagination from '../mixins/Pagination';
+    import Sortable from '../mixins/Sortable';
     import LightBox from 'vue-image-lightbox';
     import ProductDetailsModal from './ProductDetailsModal';
     import EditProductModal from './EditProductModal';
@@ -266,14 +269,6 @@
                 mode: 'list',
                 updating: true,
 
-                page: 1,
-                pagesCount: 1,
-                pageRange: 5,
-                perPage: 10,
-                marginPages: 1,
-                prevText: 'Prev.',
-                nextText: 'Next',
-
                 tableHeaders: [
                     'ID', 'Image', 'Name', 'Type', 'Cost', 'Weight',
                 ],
@@ -282,7 +277,6 @@
                 },
                 selectedSortableHeader: 'Name',
                 sortField: 'name',
-                sortDirection: 'desc',
                 byType: 0,
 
                 product: {},
@@ -295,6 +289,8 @@
         mixins: [
             Utils,
             Notify,
+            Pagination,
+            Sortable,
         ],
 
         components: {
@@ -313,31 +309,14 @@
                 this.product = this.clone(ProductRef);
             },
 
-            onTableHeaderClick(header) {
-
-                if (this.hop(this.sortableHeaders, header)) {
-
-                    if (header !== this.selectedSortableHeader) {
-                        this.selectedSortableHeader = header;
-                        this.sortDirection = 'desc';
-                    } else {
-
-                        if (this.sortDirection === 'desc') {
-                            this.sortDirection = 'asc';
-                        } else {
-                            this.sortDirection = 'desc';
-                        }
-                    }
-
-                    this.sortField = this.sortableHeaders[header];
-                    this.getProdsList();
-                }
+            sortableHeaderClickHandler() {
+                this.getProdsList();
             },
 
             getProdTypesList() {
 
                 axios.get(
-                    '/products/get-prod-types-list'
+                    '/products/get-types-list'
                 ).then(function(response) {
 
                     this.prodTypesList = response.data;
@@ -345,11 +324,17 @@
                 }.bind(this));
             },
 
-            getProdsList() {
+            paginate(page) {
+                this.page = page;
+                this.getProdsList();
+            },
+
+            getProdsList(resetPage = false) {
                 this.updating = true;
+                if (resetPage) this.page = 1;
 
                 axios.get(
-                    '/products/get-prods-list', 
+                    '/products/get-list',
                     {
                         params: {
                             page: this.page,
@@ -359,8 +344,8 @@
                             by_type: this.byType,
                         },
                     }
-                ).then(function(response) { 
-                    
+                ).then(function(response) {
+
                     //console.log(response.data);
                     let data = response.data;
                     let prods = JSON.parse(data.items);
@@ -398,7 +383,7 @@
                     formData.append(prop, this.product[prop]);
                 }
 
-                axios.post('/products/add-new-product',
+                axios.post('/products/add-new',
                     formData,
                     {
                         headers: {
@@ -406,16 +391,16 @@
                         }
                     }
                 ).then(function(response) {
-                    
+
                     this.notifySuccess('Product ID:' + response.data + ' successfully added.');
                     this.closeBox();
                     this.getProdsList();
 
                 }.bind(this))
                 .catch(function() {
-                    
+
                     this.notifyError('Add product error.');
-                    
+
                 }.bind(this));
             },
 
@@ -442,10 +427,10 @@
                         adaptive: true,
                         height: 'auto',
                     },
-                    { 
+                    {
                         'before-close': event => {
                             this.getProdsList();
-                        } 
+                        }
                     }
                 );
             },
@@ -467,7 +452,7 @@
             },
 
             deleteProdModal(id) {
-                
+
                 this.$modal.show(
                     'dialog',
                     {
@@ -492,9 +477,9 @@
             },
 
             deleteProd(id) {
-                
+
                 axios.get(
-                    '/products/delete-prod',
+                    '/products/delete',
                     {
                         params: {
                             id

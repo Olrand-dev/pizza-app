@@ -29,22 +29,22 @@
                                     <table class="table table-hover">
                                         <tbody>
 
-                                            <tr>
-                                                <th>Name</th>
-                                                <td>{{ prodData.name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Type</th>
-                                                <td>{{ prodData.type.name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Cost</th>
-                                                <td>${{ prodData.cost }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Weight</th>
-                                                <td>{{ prodData.weight }} g.</td>
-                                            </tr>
+                                        <tr>
+                                            <th>Name</th>
+                                            <td>{{ prodData.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type</th>
+                                            <td>{{ prodData.type.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Cost</th>
+                                            <td>${{ prodData.cost }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Weight</th>
+                                            <td>{{ prodData.weight }} g.</td>
+                                        </tr>
 
                                         </tbody>
                                     </table>

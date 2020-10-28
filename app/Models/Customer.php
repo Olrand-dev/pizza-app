@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,12 +8,12 @@ class Customer extends Model
 {
     public function orders()
     {
-        return $this->hasMany('App\Order');
+        return $this->hasMany('App\Models\Order');
     }
 
 
     public function user()
     {
-        return $this->hasOne('App\User');
+        return $this->hasOne('App\Models\User');
     }
 }

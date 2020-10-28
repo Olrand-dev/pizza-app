@@ -8,6 +8,7 @@ use App\Consts\SystemConst;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
@@ -15,6 +16,19 @@ use Intervention\Image\Facades\Image;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+
+    protected function saveImage(UploadedFile $image, string $path, string $name) : string
+    {
+        $imagePath = '';
+
+        if (!empty($image) and $image->isValid()) {
+
+            $extension = $image->extension();
+            $imagePath = $image->storeAs($path, "{$name}.{$extension}", 'public');
+        }
+        return $imagePath;
+    }
 
 
     protected function resizeImage(string $imagePath, int $maxWidth = 1200) : void
@@ -25,6 +39,17 @@ class Controller extends BaseController
         if ($width > $maxWidth) {
             $image->widen($maxWidth)->save($imagePath);
         }
+    }
+
+
+    protected function handleImage(string $imagePath, string $dir) : void
+    {
+        $fullImagePath = storage_path("app/public/{$imagePath}");
+        $this->resizeImage($fullImagePath);
+        $this->makeImageThumbs(
+            $fullImagePath,
+            "public/{$dir}/thumbs"
+        );
     }
 
 
@@ -54,5 +79,44 @@ class Controller extends BaseController
                 $_image->save("{$targetPath}/{$resizedImageName}.{$extension}");
             }
         }
+    }
+
+
+    /*
+     * Получить все пути изображений, полные и превью, для обработки через код
+     */
+    protected function getImagePathesList(string $prefix, string $dir) : array
+    {
+        return array_filter(
+            Storage::allFiles("public/{$dir}"),
+            function ($filePath) use ($prefix) {
+                return preg_match("#{$prefix}#u", $filePath);
+            }
+        );
+    }
+
+
+    /*
+     * Получить список превью изображений, для отображения на странице
+     */
+    protected function getImageThumbs(string $prefix, string $dir) : array
+    {
+        $files = $this->getImagePathesList($prefix, $dir);
+        $thumbs = [];
+
+        foreach (SystemConst::IMAGE_THUMB_SIZES as $size) {
+            $_thumbs = array_filter(
+                $files,
+                function ($filePath) use ($prefix, $size) {
+                    return preg_match("#thumbs/{$prefix}_w_{$size}#u", $filePath);
+                }
+            );
+
+            $thumbs["w_{$size}"] = (!empty($_thumbs)) ?
+                asset(str_replace('public', 'storage', array_values($_thumbs)[0])) :
+                asset('storage/system/no_photo_sm.png');
+        }
+
+        return $thumbs;
     }
 }

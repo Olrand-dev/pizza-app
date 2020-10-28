@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+use \App\Http\Controllers\DashboardController;
+use \App\Http\Controllers\ProductsController;
+use \App\Http\Controllers\PizzaSetsController;
+use \App\Http\Controllers\HomeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,17 +19,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'DashboardController@index');
+Route::get('/', [DashboardController::class, 'index']);
 
-Route::get('/products', 'ProductsController@index');
-Route::post('/products/add-new-product', 'ProductsController@addNewProd');
-Route::post('/products/save-product', 'ProductsController@saveProd');
-Route::get('/products/get-prod-types-list', 'ProductsController@getProdTypesList');
-Route::get('/products/get-prods-list', 'ProductsController@getProdsList');
-Route::get('/products/delete-prod', 'ProductsController@deleteProd');
 
-Route::get('/pizza-sets', 'PizzaSetsController@index');
+Route::prefix('products')->group(function() {
+    Route::get('', [ProductsController::class, 'index']);
+    Route::post('add-new', [ProductsController::class, 'addNew']);
+    Route::post('save', [ProductsController::class, 'save']);
+    Route::get('get-types-list', [ProductsController::class, 'getTypesList']);
+    Route::get('get-list', [ProductsController::class, 'getList']);
+    Route::get('delete', [ProductsController::class, 'delete']);
+});
+
+
+Route::prefix('pizza-sets')->group(function() {
+    Route::get('', [PizzaSetsController::class, 'index']);
+    Route::post('add-new', [PizzaSetsController::class, 'addNew']);
+    Route::post('save', [PizzaSetsController::class, 'save']);
+    Route::get('get-prods-list', [PizzaSetsController::class, 'getProdsList']);
+    Route::get('get-list', [PizzaSetsController::class, 'getList']);
+    Route::get('delete', [PizzaSetsController::class, 'delete']);
+});
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');

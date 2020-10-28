@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,26 +24,26 @@ class Product extends Model
 
     public function type()
     {
-        return $this->belongsTo('App\ProductType');
+        return $this->belongsTo('App\Models\ProductType');
     }
 
 
     public function stocks()
     {
-        return $this->belongsToMany('App\Stock');
+        return $this->belongsToMany('App\Models\Stock');
     }
 
 
     public function sets()
     {
-        return $this->belongsToMany('App\PizzaSet', 'pizzaset_product', 'product_id', 'pizzaset_id');
+        return $this->belongsToMany('App\Models\PizzaSet', 'pizzaset_product', 'product_id', 'pizzaset_id');
     }
 
 
     public function getImageUrlAttribute()
     {
-        return (!empty($this->image)) ? 
-            asset('storage/' . $this->image) : 
+        return (!empty($this->image)) ?
+            asset('storage/' . $this->image) :
             asset('storage/system/no_photo.png');
     }
 }
