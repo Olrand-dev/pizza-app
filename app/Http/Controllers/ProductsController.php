@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
+    private $imagesDir = 'prod-images';
+
+
     public function index()
     {
         return view('app.products');
@@ -31,8 +34,8 @@ class ProductsController extends Controller
 
             $image = $request->file('imageFile');
             if (!empty($image)) {
-                $imagePath = $this->saveImage($image, 'prod-images', "prod_{$prod->id}");
-                $this->handleImage($imagePath, 'prod-images');
+                $imagePath = $this->saveImage($image, $this->imagesDir, "prod_{$prod->id}");
+                $this->handleImage($imagePath, $this->imagesDir);
                 $prod->image = $imagePath;
             }
             $prod->save();
@@ -66,8 +69,8 @@ class ProductsController extends Controller
                 $image = $request->file('imageFile');
 
                 if (!empty($image)) {
-                    $imagePath = $this->saveImage($image, 'prod-images', "prod_{$prodId}");
-                    $this->handleImage($imagePath, 'prod-images');
+                    $imagePath = $this->saveImage($image, $this->imagesDir, "prod_{$prodId}");
+                    $this->handleImage($imagePath, $this->imagesDir);
                     $prod->image = $imagePath;
                 }
             }
@@ -104,7 +107,7 @@ class ProductsController extends Controller
             ->limit($perPage)
             ->get()
             ->each(function ($item, $key) {
-                $item->image_thumbs = $this->getImageThumbs("prod_{$item->id}", 'prod-images');
+                $item->image_thumbs = $this->getImageThumbs("prod_{$item->id}", $this->imagesDir);
             });
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
@@ -128,7 +131,7 @@ class ProductsController extends Controller
 
             $id = (int) $request->input('id');
 
-            $prodImages = $this->getImagePathesList("prod_{$id}", 'prod-images');
+            $prodImages = $this->getImagePathesList("prod_{$id}", $this->imagesDir);
             if (!empty($prodImages)) {
                 Storage::delete($prodImages);
             }

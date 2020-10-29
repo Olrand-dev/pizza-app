@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class PizzaSet extends Model
 {
+    protected $fillable = [
+        'name',
+    ];
+
+
     public function products()
     {
         return $this->belongsToMany(

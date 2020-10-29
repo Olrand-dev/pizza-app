@@ -319,7 +319,7 @@
 
     const PizzaSetRef = {
         name: '',
-        baseId: 1,
+        baseId: 0,
         ingredients: [],
         imageFile: '',
     };
@@ -375,7 +375,7 @@
         methods: {
 
             initEmptySet() {
-                this.pizzaSet = this.clone(PizzaSetRef);
+                this.pizzaSet = this.clone(PizzaSetRef, true);
             },
 
             sortableHeaderClickHandler() {
@@ -399,7 +399,6 @@
             addIngredient() {
                 let ingredient = this.clone(ingredientRef);
                 this.pizzaSet.ingredients.push(ingredient);
-                //console.log(this.pizzaSet.ingredients);
             },
 
             deleteIngredient(index) {
@@ -454,9 +453,15 @@
 
             addNewSet() {
                 let formData = new FormData();
+                console.log(this.pizzaSet);
 
                 for (let prop in this.pizzaSet) {
-                    formData.append(prop, this.pizzaSet[prop]);
+                    let propData = this.pizzaSet[prop];
+
+                    if (prop !== 'imageFile' && this.isObject(propData)) {
+                        propData = JSON.stringify(propData);
+                    }
+                    formData.append(prop, propData);
                 }
 
                 axios.post('/pizza-sets/add-new',

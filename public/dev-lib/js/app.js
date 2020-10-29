@@ -2541,7 +2541,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var PizzaSetRef = {
   name: '',
-  baseId: 1,
+  baseId: 0,
   ingredients: [],
   imageFile: ''
 };
@@ -2582,7 +2582,7 @@ var ingredientRef = {
   },
   methods: {
     initEmptySet: function initEmptySet() {
-      this.pizzaSet = this.clone(PizzaSetRef);
+      this.pizzaSet = this.clone(PizzaSetRef, true);
     },
     sortableHeaderClickHandler: function sortableHeaderClickHandler() {
       this.getSetsList();
@@ -2598,7 +2598,7 @@ var ingredientRef = {
     },
     addIngredient: function addIngredient() {
       var ingredient = this.clone(ingredientRef);
-      this.pizzaSet.ingredients.push(ingredient); //console.log(this.pizzaSet.ingredients);
+      this.pizzaSet.ingredients.push(ingredient);
     },
     deleteIngredient: function deleteIngredient(index) {
       this.removeByIndex(this.pizzaSet.ingredients, index);
@@ -2637,9 +2637,16 @@ var ingredientRef = {
     },
     addNewSet: function addNewSet() {
       var formData = new FormData();
+      console.log(this.pizzaSet);
 
       for (var prop in this.pizzaSet) {
-        formData.append(prop, this.pizzaSet[prop]);
+        var propData = this.pizzaSet[prop];
+
+        if (prop !== 'imageFile' && this.isObject(propData)) {
+          propData = JSON.stringify(propData);
+        }
+
+        formData.append(prop, propData);
       }
 
       axios.post('/pizza-sets/add-new', formData, {

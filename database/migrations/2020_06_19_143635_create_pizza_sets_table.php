@@ -16,6 +16,7 @@ class CreatePizzaSetsTable extends Migration
         Schema::create('pizza_sets', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
+            $table->string('image', 100)->nullable();
             $table->timestamps();
         });
     }

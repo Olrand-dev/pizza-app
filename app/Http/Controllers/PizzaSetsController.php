@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Models\PizzaSet;
 use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
@@ -12,35 +13,48 @@ use Illuminate\Support\Facades\Storage;
 
 class PizzaSetsController extends Controller
 {
+    private $imagesDir = 'pizza-set-images';
+
+
     public function index()
     {
         return view('app.pizza-sets');
     }
 
+
     public function addNew(Request $request) : int
     {
         try {
 
-            $prodData = $request->input();
-            $prod = Product::create($prodData);
+            $setData = $request->input(); //dd($setData);
+            $ingredients = json_decode($setData['ingredients'], true);
+            $ingredients[] = [
+                'typeId' => SystemConst::PRODUCT_TYPE_PIZZA_BASE,
+                'prodId' => $setData['baseId'],
+                'quantity' => 1,
+            ];
+            $set = PizzaSet::create(['name' => $setData['name']]);
 
-            $prodType = ProductType::find((int) $prodData['typeId']);
-            if (!empty($prodType)) {
-                $prod->type()->associate($prodType);
+            foreach ($ingredients as $ingredient) {
+                $prodId = (int) $ingredient['prodId'];
+                $set->products()->attach($prodId, ['quantity' => $ingredient['quantity']]);
             }
 
-            $imagePath = $this->saveImage($request, 'prod-images', "prod_{$prod->id}");
-            $this->handleImage($imagePath, 'prod-images');
-            $prod->image = $imagePath;
+            $image = $request->file('imageFile');
+            if (!empty($image)) {
+                $imagePath = $this->saveImage($image, $this->imagesDir, "pizza_set_{$set->id}");
+                $this->handleImage($imagePath, $this->imagesDir);
+                $set->image = $imagePath;
+            }
 
-            $prod->save();
+            $set->save();
 
         } catch(\Throwable $e) {
 
             abort(500, $e->getMessage());
         }
 
-        return (int) $prod->id;
+        return (int) $set->id;
     }
 
 
@@ -61,10 +75,13 @@ class PizzaSetsController extends Controller
             }
 
             if ($prodData['image_changed'] === 'true') {
+                $image = $request->file('imageFile');
 
-                $imagePath = $this->saveImage($request, 'prod-images', "prod_{$prodId}");
-                $this->handleImage($imagePath, 'prod-images');
-                $prod->image = $imagePath;
+                if (!empty($image)) {
+                    $imagePath = $this->saveImage($image, $this->imagesDir, "pizza_set_{$prodId}");
+                    $this->handleImage($imagePath, $this->imagesDir);
+                    $prod->image = $imagePath;
+                }
             }
 
             $prod->update($prodData);
@@ -99,7 +116,7 @@ class PizzaSetsController extends Controller
             ->limit($perPage)
             ->get()
             ->each(function ($item, $key) {
-                $item->image_thumbs = $this->getImageThumbs("prod_{$item->id}", 'prod-images');
+                $item->image_thumbs = $this->getImageThumbs("pizza_set_{$item->id}", $this->imagesDir);
             });
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
@@ -153,7 +170,7 @@ class PizzaSetsController extends Controller
 
             $id = (int) $request->input('id');
 
-            $prodImages = $this->getImagePathesList("prod_{$id}", 'prod-images');
+            $prodImages = $this->getImagePathesList("pizza_set_{$id}", $this->imagesDir);
             if (!empty($prodImages)) {
                 Storage::delete($prodImages);
             }
