@@ -60,7 +60,7 @@
         },
 
         props: [
-            'page', 'pages-count', 'click-handler', 'range', 'prev', 'next'
+            'page', 'pages-count', 'click-handler', 'range', 'prev', 'next',
         ],
 
         computed: {

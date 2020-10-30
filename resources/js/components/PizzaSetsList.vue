@@ -77,69 +77,8 @@
 
                             <div class="col-md-7">
 
-                                <div class="row pizza-set-ingredients-box">
-
-                                    <div class="col-md-12">
-                                        <label>Ingredients</label>
-                                    </div>
-
-                                    <div v-if="pizzaSet.ingredients.length > 0" class="col-md-12">
-
-                                        <div v-for="(prod, index) in pizzaSet.ingredients" :key="index" class="row">
-                                            <div class="col-md-12 ingredient-box">
-
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label>Type</label>
-                                                        <select v-model="prod.typeId" class="form-control">
-                                                            <option v-for="type in pizzaIngTypesList" :key="type.id"
-                                                                    :value="type.id">
-                                                                {{ type.name }}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-5">
-                                                    <div class="form-group">
-                                                        <label>Product</label>
-                                                        <select v-model="prod.prodId" class="form-control" :disabled="prod.typeId === 0">
-                                                            <option v-for="prod in pizzaIngredientsList[prod.typeId]" :key="prod.id"
-                                                                    :value="prod.id">
-                                                                {{ prod.name }}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label>Q-ty</label>
-                                                        <input type="number" step="1" min="1"
-                                                               v-model="prod.quantity" class="form-control">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-1 text-right">
-                                                    <button class="btn btn-danger btn-sm ing-del-btn"
-                                                            @click="deleteIngredient(index)">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <button class="btn btn-info btn-fill btn-icon"
-                                                @click="addIngredient">
-                                            <i class="fa fa-plus"></i> Add Ingredient
-                                        </button>
-                                    </div>
-
-                                </div>
+                                <ingredients-list ref="ingList" :items-list="pizzaSet.ingredients"
+                                                  :types="pizzaIngTypesList" :ing-list="pizzaIngredientsList"></ingredients-list>
 
                             </div>
 
@@ -155,26 +94,13 @@
             </div>
 
 
-            <!-- <div class="col-12 mt-10">
+            <div class="col-12 mt-10">
                 <div class="row">
 
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="prodTypeFilter">Show by type</label>
-                            <select v-model="byType" class="form-control" id="prodTypeFilter" @change="getProdsList">
-                                <option value="0">all</option>
-                                <option v-for="type in prodTypesList" :key="type.id"
-                                    :value="type.id">
-                                    {{ type.name }}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="perPageSelect">Per page</label>
-                            <select v-model="perPage" class="form-control" id="perPageSelect" @change="getProdsList">
+                            <select v-model="perPage" class="form-control" id="perPageSelect" @change="getSetsList">
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                                 <option value="15">15</option>
@@ -194,7 +120,7 @@
             </div>
 
 
-            <div v-if="prodsList.length > 0" class="col-12 mt-15 table-responsive table-full-width">
+            <div v-if="setsList.length > 0" class="col-12 mt-15 table-responsive table-full-width">
                 <table class="table table-hover table-striped sortable">
 
                     <thead>
@@ -208,31 +134,25 @@
                     </thead>
 
                     <tbody>
-                        <tr v-for="(prod,index) in prodsList" :key="prod.id">
-                            <td>{{ prod.id }}</td>
+                        <tr v-for="(item,index) in setsList" :key="item.id">
+                            <td>{{ item.id }}</td>
                             <td>
-                                <img class="prod-image gallery-image" :src="prod.image_url"
-                                    alt="prod image" @click="openGallery(index)">
+                                <img class="pizza-set-image gallery-image" :src="item.image_url"
+                                    alt="pizza set image" @click="openGallery(index)">
                             </td>
-                            <td>{{ prod.name }}</td>
-                            <td>{{ prod.type.name }}</td>
-                            <td>${{ prod.cost }}</td>
-                            <td>{{ prod.weight }} g.</td>
+                            <td>{{ item.name }}</td>
+                            <td>${{ item.cost }}</td>
+                            <td>{{ item.weight }} g.</td>
 
                             <td class="text-center">
 
                                 <button class="btn btn-info btn-sm"
-                                    @click="editProdModal(prod.id)">
+                                    @click="editSetModal(item.id)">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                                <button v-if="prod.description !== ''" class="btn btn-default btn-sm"
-                                    @click="prodDetailsModal(prod.id)">
-                                    <i class="fa fa-info"></i>
-                                </button>
-
                                 <button class="btn btn-danger btn-sm"
-                                    @click="deleteProdModal(prod.id)">
+                                    @click="deleteSetModal(item.id)">
                                     <i class="fa fa-trash"></i>
                                 </button>
 
@@ -248,7 +168,7 @@
                 <v-dialog />
 
             </div>
-            <div v-if="prodsList.length === 0" class="col-12 text-center mt-25">
+            <div v-if="setsList.length === 0" class="col-12 text-center mt-25">
                 <span class="no-items">No items to show.</span>
             </div>
 
@@ -257,24 +177,12 @@
                 <div class="row">
                     <div class="col-md-12">
 
-                        <paginate
-                            v-model="page"
-                            :page-count="pagesCount"
-                            :page-range="pageRange"
-                            :margin-pages="marginPages"
-                            :click-handler="getProdsList"
-                            :prev-text="prevText"
-                            :next-text="nextText"
-                            container-class="pagination"
-                            page-class="page-item"
-                            prev-class="prev-page-btn"
-                            next-class="next-page-btn"
-                            break-view-class="bv"
-                        ></paginate>
+                        <pagination ref="pagin1" :page="page" :pages-count="pagesCount" @click-handler="paginate"
+                                    range="5"></pagination>
 
                     </div>
                 </div>
-            </div> -->
+            </div>
 
         </div>
     </div>
@@ -284,25 +192,8 @@
 
 <style scoped lang="scss">
 
-    @import './../../sass/variables';
-
-    .pizza-set-ingredients-box {
-        padding-left: 55px;
-    }
-
-    .ingredient-box {
-        border: 1px solid $s-light-gray;
-        padding: 0;
-        border-radius: 6px;
-        position: relative;
-        right: 15px;
-        margin-bottom: 6px;
-    }
-
-    .ing-del-btn {
-        position: relative;
-        top: 28px;
-        right: 12px;
+    .pizza-set-image {
+        max-height: 70px;
     }
 
 </style>
@@ -315,19 +206,13 @@
     import Sortable from '../mixins/Sortable';
     import Pagination from '../mixins/Pagination';
     import LightBox from 'vue-image-lightbox';
-    //import EditProductModal from './EditProductModal';
+    import EditSetModal from './EditPizzaSetModal';
 
     const PizzaSetRef = {
         name: '',
         baseId: 0,
         ingredients: [],
         imageFile: '',
-    };
-
-    const ingredientRef = {
-        typeId: 0,
-        prodId: 0,
-        quantity: 1,
     };
 
     export default {
@@ -338,7 +223,7 @@
                 updating: true,
 
                 tableHeaders: [
-                    'ID', 'Image', 'Name', 'Type', 'Cost', 'Weight',
+                    'ID', 'Image', 'Name', 'Cost', 'Weight',
                 ],
                 sortableHeaders: {
                     'ID': 'id', 'Name': 'name', 'Cost': 'cost', 'Weight': 'weight',
@@ -369,7 +254,7 @@
         created() {
             this.initEmptySet();
             this.getIngredientsList();
-            //this.getSetsList();
+            this.getSetsList();
         },
 
         methods: {
@@ -382,28 +267,24 @@
                 this.getSetsList();
             },
 
+            paginate(page) {
+                this.page = page;
+                this.getSetsList();
+            },
+
             getIngredientsList() {
 
                 axios.get(
                     '/pizza-sets/get-prods-list'
                 ).then(function(response) {
 
-                    let data = response.data; console.log(data);
+                    let data = response.data;
+                    console.log(data);
                     this.pizzaBasesList = data.bases_list;
                     this.pizzaIngTypesList = data.ing_types_list;
                     this.pizzaIngredientsList = data.ingredients_list;
 
                 }.bind(this));
-            },
-
-            addIngredient() {
-                let ingredient = this.clone(ingredientRef);
-                this.pizzaSet.ingredients.push(ingredient);
-            },
-
-            deleteIngredient(index) {
-                this.removeByIndex(this.pizzaSet.ingredients, index);
-                console.log(index);
             },
 
             getSetsList() {
@@ -421,7 +302,7 @@
                     }
                 ).then(function(response) {
 
-                    console.log(response.data);
+                    //console.log(response.data);return;
                     let data = response.data;
                     let prods = JSON.parse(data.items);
 
@@ -434,7 +315,7 @@
                     });
                     this.lbData = _lbData;
 
-                    this.prodsList = prods;
+                    this.setsList = prods;
                     this.pagesCount = data.pages_count;
 
                     this.updating = false;
@@ -453,7 +334,6 @@
 
             addNewSet() {
                 let formData = new FormData();
-                console.log(this.pizzaSet);
 
                 for (let prop in this.pizzaSet) {
                     let propData = this.pizzaSet[prop];
@@ -488,18 +368,19 @@
             closeBox() {
                 this.mode = 'list';
                 this.initEmptySet();
+                this.$refs.ingList.items = [];
             },
 
             getPizzaSetById(id) {
                 return this.setsList.filter((_item) => _item.id === id)[0];
             },
 
-            /*editProdModal(id) {
+            editSetModal(id) {
 
                 let set = this.getPizzaSetById(id);
 
                 this.$modal.show(
-                    EditProductModal,
+                    EditSetModal,
                     {
                         'prod-data': set,
                         'prod-types-list': this.prodTypesList,
@@ -514,36 +395,20 @@
                         }
                     }
                 );
-            },*/
+            },
 
-            /*prodDetailsModal(id) {
-
-                let prod = this.getPizzaSetById(id);
-
-                this.$modal.show(
-                    ProductDetailsModal,
-                    {
-                        'prod-data': prod
-                    },
-                    {
-                        adaptive: true,
-                        height: 'auto',
-                    }
-                );
-            },*/
-
-            /*deleteProdModal(id) {
+            deleteSetModal(id) {
 
                 this.$modal.show(
                     'dialog',
                     {
-                        title: 'Delete product',
-                        text: `Product with ID:${id} will be deleted.`,
+                        title: 'Delete pizza set',
+                        text: `Pizza set with ID:${id} will be deleted.`,
                         buttons: [
                             {
                                 title: 'Ok',
                                 handler: () => {
-                                    this.deleteProd(id);
+                                    this.deleteSet(id);
                                 },
                             },
                             {
@@ -555,7 +420,7 @@
                         ],
                     }
                 );
-            },*/
+            },
 
             deleteSet(id) {
 

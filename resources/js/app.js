@@ -27,6 +27,7 @@ Vue.use(VModal, { dialog: true });
 Vue.component('products-list', require('./components/ProductsList.vue').default);
 Vue.component('pizzasets-list', require('./components/PizzaSetsList.vue').default);
 Vue.component('pagination', require('./components/Pagination.vue').default);
+Vue.component('ingredients-list', require('./components/PizzaSetIngredientsList.vue').default);
 Vue.component('paginate', VuejsPaginate);
 
 /**

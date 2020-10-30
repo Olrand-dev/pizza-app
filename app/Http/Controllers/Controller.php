@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Models\PizzaSet;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -118,5 +119,24 @@ class Controller extends BaseController
         }
 
         return $thumbs;
+    }
+
+
+    protected function calculatePizzaSet(int $id) : void
+    {
+        $instance = PizzaSet::find($id);
+        $cost = 0;
+        $weight = 0;
+
+        foreach ($instance->products as $product) {
+            $quantity = $product->connection->quantity;
+
+            $cost += $product->cost * $quantity;
+            $weight += $product->weight * $quantity;
+            //dd($product->connection->quantity);
+        }
+        $instance->cost = $cost;
+        $instance->weight = $weight;
+        $instance->save();
     }
 }

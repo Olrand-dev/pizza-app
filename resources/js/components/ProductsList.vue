@@ -132,7 +132,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="perPageSelect">Per page</label>
                             <select v-model="perPage" class="form-control" id="perPageSelect"
@@ -172,31 +172,31 @@
                     </thead>
 
                     <tbody>
-                    <tr v-for="(prod,index) in prodsList" :key="prod.id">
-                        <td>{{ prod.id }}</td>
+                    <tr v-for="(item,index) in prodsList" :key="item.id">
+                        <td>{{ item.id }}</td>
                         <td>
-                            <img class="prod-image gallery-image" :src="prod.image_thumbs.w_300"
+                            <img class="prod-image gallery-image" :src="item.image_thumbs.w_300"
                                  alt="prod image" @click="openGallery(index)">
                         </td>
-                        <td>{{ prod.name }}</td>
-                        <td>{{ prod.type.name }}</td>
-                        <td>${{ prod.cost }}</td>
-                        <td>{{ prod.weight }} g.</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.type.name }}</td>
+                        <td>${{ item.cost }}</td>
+                        <td>{{ item.weight }} g.</td>
 
                         <td class="text-center">
 
                             <button class="btn btn-info btn-sm"
-                                    @click="editProdModal(prod.id)">
+                                    @click="editProdModal(item.id)">
                                 <i class="fa fa-edit"></i>
                             </button>
 
-                            <button v-if="prod.description !== ''" class="btn btn-default btn-sm"
-                                    @click="prodDetailsModal(prod.id)">
+                            <button v-if="item.description !== ''" class="btn btn-default btn-sm"
+                                    @click="prodDetailsModal(item.id)">
                                 <i class="fa fa-info"></i>
                             </button>
 
                             <button class="btn btn-danger btn-sm"
-                                    @click="deleteProdModal(prod.id)">
+                                    @click="deleteProdModal(item.id)">
                                 <i class="fa fa-trash"></i>
                             </button>
 

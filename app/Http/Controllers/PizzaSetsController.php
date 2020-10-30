@@ -26,7 +26,7 @@ class PizzaSetsController extends Controller
     {
         try {
 
-            $setData = $request->input(); //dd($setData);
+            $setData = $request->input();
             $ingredients = json_decode($setData['ingredients'], true);
             $ingredients[] = [
                 'typeId' => SystemConst::PRODUCT_TYPE_PIZZA_BASE,
@@ -37,7 +37,9 @@ class PizzaSetsController extends Controller
 
             foreach ($ingredients as $ingredient) {
                 $prodId = (int) $ingredient['prodId'];
-                $set->products()->attach($prodId, ['quantity' => $ingredient['quantity']]);
+                $quantity = (int) $ingredient['quantity'];
+
+                $set->products()->attach($prodId, ['quantity' => $quantity]);
             }
 
             $image = $request->file('imageFile');
@@ -48,6 +50,7 @@ class PizzaSetsController extends Controller
             }
 
             $set->save();
+            $this->calculatePizzaSet($set->id);
 
         } catch(\Throwable $e) {
 
@@ -85,7 +88,8 @@ class PizzaSetsController extends Controller
             }
 
             $prod->update($prodData);
-            $prod->save();
+
+            //todo: добавить пересчет веса заказов
 
         } catch(\Throwable $e) {
 
@@ -100,14 +104,10 @@ class PizzaSetsController extends Controller
 
         $page = (int) $input['page'];
         $perPage = (int) $input['per_page'];
-        $byType = (int) $input['by_type'];
         $sortField = $input['sort_field'];
         $sortDirection = $input['sort_dir'];
 
-        $query = Product::with('type');
-        if ($byType > 0) {
-            $query = $query->where('type_id', $byType);
-        }
+        $query = PizzaSet::with('products');
         $query = $query->orderBy($sortField, $sortDirection);
 
         $allResultsCount = $query->get()->count();
@@ -170,12 +170,17 @@ class PizzaSetsController extends Controller
 
             $id = (int) $request->input('id');
 
+            $instance = PizzaSet::with('products')->find($id);
+            foreach ($instance->products as $product) {
+                $instance->products()->detach($product->id);
+            }
+
             $prodImages = $this->getImagePathesList("pizza_set_{$id}", $this->imagesDir);
             if (!empty($prodImages)) {
                 Storage::delete($prodImages);
             }
 
-            Product::destroy($id);
+            PizzaSet::destroy($id);
 
         } catch(\Throwable $e) {
 

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class Order extends Model
 {
     public function pizzas()
@@ -27,5 +25,27 @@ class Order extends Model
     public function comments()
     {
         return $this->morphToMany('App\Models\Comment', 'commentable');
+    }
+
+
+    public function products()
+    {
+        return $this->belongsToMany(
+            'App\Models\Product',
+            'order_product',
+            'order_id',
+            'product_id'
+        )->as('connection')->withTimestamps();
+    }
+
+
+    public function pizzasets()
+    {
+        return $this->belongsToMany(
+            'App\Models\PizzaSet',
+            'order_pizzaset',
+            'order_id',
+            'pizzaset_id'
+        )->as('connection')->withTimestamps();
     }
 }

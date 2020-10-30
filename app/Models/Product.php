@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class Product extends Model
 {
     protected $fillable = [
@@ -36,14 +34,11 @@ class Product extends Model
 
     public function sets()
     {
-        return $this->belongsToMany('App\Models\PizzaSet', 'pizzaset_product', 'product_id', 'pizzaset_id');
-    }
-
-
-    public function getImageUrlAttribute()
-    {
-        return (!empty($this->image)) ?
-            asset('storage/' . $this->image) :
-            asset('storage/system/no_photo.png');
+        return $this->belongsToMany(
+            'App\Models\PizzaSet',
+            'pizzaset_product',
+            'product_id',
+            'pizzaset_id'
+        );
     }
 }

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class PizzaSet extends Model
 {
     protected $fillable = [
         'name',
+    ];
+
+    protected $appends = [
+        'image_url',
     ];
 
 
@@ -18,12 +20,23 @@ class PizzaSet extends Model
             'pizzaset_product',
             'pizzaset_id',
             'product_id'
-        )->as('connection')->withTimestamps();
+        )
+            ->as('connection')
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 
 
     public function pizzas()
     {
         return $this->hasMany('App\Models\Pizza');
+    }
+
+
+    public function getImageUrlAttribute()
+    {
+        return (!empty($this->image)) ?
+            asset('storage/' . $this->image) :
+            asset('storage/system/no_photo.png');
     }
 }

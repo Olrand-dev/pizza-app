@@ -57,6 +57,9 @@ class ProductsController extends Controller
             $prodId = (int) $prodData['id'];
             $prod = Product::find($prodId);
 
+            $costChanged = (float) $prodData['cost'] !== $prod->cost;
+            $weightChanged = (int) $prodData['weight'] !== $prod->weight;
+
             if ($prod->type_id != $prodData['type_id']) {
                 $prodType = ProductType::find((int) $prodData['type_id']);
 
@@ -76,7 +79,13 @@ class ProductsController extends Controller
             }
 
             $prod->update($prodData);
-            $prod->save();
+
+            //todo: добавить пересчет веса заказов
+            if ($costChanged or $weightChanged) {
+                foreach ($prod->sets as $set) {
+                    $this->calculatePizzaSet($set->id);
+                }
+            }
 
         } catch(\Throwable $e) {
 
