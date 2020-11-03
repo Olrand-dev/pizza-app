@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
-    private $imagesDir = 'prod-images';
+    protected $imagesDir = 'prod-images';
 
 
     public function index()
@@ -27,17 +27,16 @@ class ProductsController extends Controller
             $prodData = $request->input();
             $prod = Product::create($prodData);
 
-            $prodType = ProductType::find((int) $prodData['typeId']);
+            $prodType = ProductType::find((int) $prodData['type_id']);
             if (!empty($prodType)) {
                 $prod->type()->associate($prodType);
             }
 
-            $image = $request->file('imageFile');
+            $image = $request->file('image_file');
             if (!empty($image)) {
-                $imagePath = $this->saveImage($image, $this->imagesDir, "prod_{$prod->id}");
-                $this->handleImage($imagePath, $this->imagesDir);
-                $prod->image = $imagePath;
+                $this->handleRequestImageFile($prod, $image, "prod_{$prod->id}");
             }
+
             $prod->save();
 
         } catch(\Throwable $e) {
@@ -69,12 +68,10 @@ class ProductsController extends Controller
             }
 
             if ($prodData['image_changed'] === 'true') {
-                $image = $request->file('imageFile');
+                $image = $request->file('image_file');
 
                 if (!empty($image)) {
-                    $imagePath = $this->saveImage($image, $this->imagesDir, "prod_{$prodId}");
-                    $this->handleImage($imagePath, $this->imagesDir);
-                    $prod->image = $imagePath;
+                    $this->handleRequestImageFile($prod, $image, "prod_{$prodId}");
                 }
             }
 

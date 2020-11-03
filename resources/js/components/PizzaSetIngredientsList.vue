@@ -1,6 +1,6 @@
 <template>
 
-    <div class="row pizza-set-ingredients-list">
+    <div class="row">
 
         <div class="col-md-12">
             <label>Ingredients</label>
@@ -14,7 +14,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Type</label>
-                            <select v-model="prod.typeId" class="form-control">
+                            <select v-model="prod.type_id" class="form-control">
                                 <option v-for="type in types" :key="type.id"
                                         :value="type.id">
                                     {{ type.name }}
@@ -26,8 +26,8 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label>Product</label>
-                            <select v-model="prod.prodId" class="form-control" :disabled="prod.typeId === 0">
-                                <option v-for="prod in ingList[prod.typeId]" :key="prod.id"
+                            <select v-model="prod.prod_id" class="form-control" :disabled="prod.type_id === 0">
+                                <option v-for="prod in ingList[prod.type_id]" :key="prod.id"
                                         :value="prod.id">
                                     {{ prod.name }}
                                 </option>
@@ -71,10 +71,6 @@
 
     @import './../../sass/variables';
 
-    .pizza-set-ingredients-list {
-        padding-left: 55px;
-    }
-
     .ingredient-box {
         border: 1px solid $s-light-gray;
         padding: 0;
@@ -87,7 +83,7 @@
     .ing-del-btn {
         position: relative;
         top: 28px;
-        right: 12px;
+        right: 20px;
     }
 
 </style>
@@ -98,8 +94,8 @@
     import Utils from "../mixins/Utils";
 
     const ingredientRef = {
-        typeId: 0,
-        prodId: 0,
+        type_id: 0,
+        prod_id: 0,
         quantity: 1,
     };
 

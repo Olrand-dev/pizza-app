@@ -51,7 +51,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="pizzaBaseSelect">Base</label>
-                                                    <select v-model="pizzaSet.baseId" class="form-control"
+                                                    <select v-model="pizzaSet.base_id" class="form-control"
                                                         id="pizzaBaseSelect">
                                                         <option v-for="base in pizzaBasesList" :key="base.id"
                                                                 :value="base.id">
@@ -75,7 +75,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-7">
+                            <div class="col-md-7 pizza-set-ingredients-list">
 
                                 <ingredients-list ref="ingList" :items-list="pizzaSet.ingredients"
                                                   :types="pizzaIngTypesList" :ing-list="pizzaIngredientsList"></ingredients-list>
@@ -192,6 +192,10 @@
 
 <style scoped lang="scss">
 
+    .pizza-set-ingredients-list {
+        padding-left: 55px;
+    }
+
     .pizza-set-image {
         max-height: 70px;
     }
@@ -210,9 +214,9 @@
 
     const PizzaSetRef = {
         name: '',
-        baseId: 0,
+        base_id: 0,
         ingredients: [],
-        imageFile: '',
+        image_file: '',
     };
 
     export default {
@@ -279,7 +283,7 @@
                 ).then(function(response) {
 
                     let data = response.data;
-                    console.log(data);
+                    //console.log(data);
                     this.pizzaBasesList = data.bases_list;
                     this.pizzaIngTypesList = data.ing_types_list;
                     this.pizzaIngredientsList = data.ingredients_list;
@@ -304,18 +308,18 @@
 
                     //console.log(response.data);return;
                     let data = response.data;
-                    let prods = JSON.parse(data.items);
+                    let sets = JSON.parse(data.items);
 
                     let _lbData = [];
-                    prods.forEach(function(prod) {
+                    sets.forEach(function(item) {
                         _lbData.push({
-                            thumb: prod.image_url,
-                            src: prod.image_url,
+                            thumb: item.image_url,
+                            src: item.image_url,
                         });
                     });
                     this.lbData = _lbData;
 
-                    this.setsList = prods;
+                    this.setsList = sets;
                     this.pagesCount = data.pages_count;
 
                     this.updating = false;
@@ -338,7 +342,7 @@
                 for (let prop in this.pizzaSet) {
                     let propData = this.pizzaSet[prop];
 
-                    if (prop !== 'imageFile' && this.isObject(propData)) {
+                    if (prop !== 'image_file' && this.isObject(propData)) {
                         propData = JSON.stringify(propData);
                     }
                     formData.append(prop, propData);
@@ -382,8 +386,10 @@
                 this.$modal.show(
                     EditSetModal,
                     {
-                        'prod-data': set,
-                        'prod-types-list': this.prodTypesList,
+                        'set-data': set,
+                        'bases-list': this.pizzaBasesList,
+                        'ing-types-list': this.pizzaIngTypesList,
+                        'ing-list': this.pizzaIngredientsList,
                     },
                     {
                         adaptive: true,
@@ -447,7 +453,7 @@
             },
 
             handleFileUpload() {
-                this.pizzaSet.imageFile = this.$refs.pizzaSetImageFile.files[0];
+                this.pizzaSet.image_file = this.$refs.pizzaSetImageFile.files[0];
             },
 
             openGallery(index) {

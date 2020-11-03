@@ -2043,71 +2043,62 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      prodImageChanged: false,
-      prodEdit: {}
+      setImageChanged: false,
+      setEdit: {},
+      saving: false
     };
   },
-  props: ['prod-data', 'prod-types-list'],
+  props: ['set-data', 'bases-list', 'ing-types-list', 'ing-list'],
   mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"]],
   created: function created() {
-    this.prodEdit = this.clone(this.prodData);
-    this.prodEdit.image_changed = false;
+    /*console.log('set data:', this.setData);
+    console.log('bases list:', this.basesList);
+    console.log('ing types list:', this.ingTypesList);
+    console.log('ing list:', this.ingList);*/
+    this.setEdit = this.clone(this.setData);
+    this.setEdit.image_changed = false;
   },
   methods: {
     changeImage: function changeImage() {
-      this.prodImageChanged = true;
-      this.prodEdit.image_changed = true;
+      this.setImageChanged = true;
+      this.setEdit.image_changed = true;
     },
     handleFileUpload: function handleFileUpload() {
-      this.prodEdit.imageFile = this.$refs.prodImageFile.files[0];
+      this.setEdit.image_file = this.$refs.setImageFile.files[0];
     },
-    saveProd: function saveProd() {
+    saveSet: function saveSet() {
       var formData = new FormData();
 
-      for (var prop in this.prodEdit) {
-        formData.append(prop, this.prodEdit[prop]);
+      for (var prop in this.setEdit) {
+        var propData = this.setEdit[prop];
+
+        if (prop !== 'image_file' && this.isObject(propData)) {
+          propData = JSON.stringify(propData);
+        }
+
+        formData.append(prop, propData);
       }
 
-      axios.post('/products/save', formData, {
+      this.saving = true;
+      axios.post('/pizza-sets/save', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       }).then(function (response) {
-        this.notifySuccess('Product ID:' + this.prodEdit.id + ' successfully updated.');
+        this.notifySuccess('Pizza set ID:' + this.setEdit.id + ' successfully updated.');
         this.closeModal();
       }.bind(this))["catch"](function () {
-        this.notifyError('Product update error.');
+        this.notifyError('Pizza set update error.');
         this.closeModal();
       }.bind(this));
     },
     closeModal: function closeModal() {
-      this.prodEdit = {};
+      this.setEdit = {};
       this.$emit('close');
     },
     cancelEdit: function cancelEdit() {
@@ -2283,13 +2274,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       prodImageChanged: false,
-      prodEdit: {}
+      prodEdit: {},
+      saving: false
     };
   },
   props: ['prod-data', 'prod-types-list'],
@@ -2304,7 +2299,7 @@ __webpack_require__.r(__webpack_exports__);
       this.prodEdit.image_changed = true;
     },
     handleFileUpload: function handleFileUpload() {
-      this.prodEdit.imageFile = this.$refs.prodImageFile.files[0];
+      this.prodEdit.image_file = this.$refs.prodImageFile.files[0];
     },
     saveProd: function saveProd() {
       var formData = new FormData();
@@ -2313,6 +2308,7 @@ __webpack_require__.r(__webpack_exports__);
         formData.append(prop, this.prodEdit[prop]);
       }
 
+      this.saving = true;
       axios.post('/products/save', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -2528,14 +2524,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 
 var ingredientRef = {
-  typeId: 0,
-  prodId: 0,
+  type_id: 0,
+  prod_id: 0,
   quantity: 1
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2776,6 +2768,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -2784,9 +2780,9 @@ __webpack_require__.r(__webpack_exports__);
 
 var PizzaSetRef = {
   name: '',
-  baseId: 0,
+  base_id: 0,
   ingredients: [],
-  imageFile: ''
+  image_file: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -2832,8 +2828,8 @@ var PizzaSetRef = {
     },
     getIngredientsList: function getIngredientsList() {
       axios.get('/pizza-sets/get-prods-list').then(function (response) {
-        var data = response.data;
-        console.log(data);
+        var data = response.data; //console.log(data);
+
         this.pizzaBasesList = data.bases_list;
         this.pizzaIngTypesList = data.ing_types_list;
         this.pizzaIngredientsList = data.ingredients_list;
@@ -2851,16 +2847,16 @@ var PizzaSetRef = {
       }).then(function (response) {
         //console.log(response.data);return;
         var data = response.data;
-        var prods = JSON.parse(data.items);
+        var sets = JSON.parse(data.items);
         var _lbData = [];
-        prods.forEach(function (prod) {
+        sets.forEach(function (item) {
           _lbData.push({
-            thumb: prod.image_url,
-            src: prod.image_url
+            thumb: item.image_url,
+            src: item.image_url
           });
         });
         this.lbData = _lbData;
-        this.setsList = prods;
+        this.setsList = sets;
         this.pagesCount = data.pages_count;
         this.updating = false;
       }.bind(this))["catch"](function () {
@@ -2876,7 +2872,7 @@ var PizzaSetRef = {
       for (var prop in this.pizzaSet) {
         var propData = this.pizzaSet[prop];
 
-        if (prop !== 'imageFile' && this.isObject(propData)) {
+        if (prop !== 'image_file' && this.isObject(propData)) {
           propData = JSON.stringify(propData);
         }
 
@@ -2910,8 +2906,10 @@ var PizzaSetRef = {
 
       var set = this.getPizzaSetById(id);
       this.$modal.show(_EditPizzaSetModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        'prod-data': set,
-        'prod-types-list': this.prodTypesList
+        'set-data': set,
+        'bases-list': this.pizzaBasesList,
+        'ing-types-list': this.pizzaIngTypesList,
+        'ing-list': this.pizzaIngredientsList
       }, {
         adaptive: true,
         height: 'auto'
@@ -2955,7 +2953,7 @@ var PizzaSetRef = {
       }.bind(this));
     },
     handleFileUpload: function handleFileUpload() {
-      this.pizzaSet.imageFile = this.$refs.pizzaSetImageFile.files[0];
+      this.pizzaSet.image_file = this.$refs.pizzaSetImageFile.files[0];
     },
     openGallery: function openGallery(index) {
       this.$refs.lightbox.showImage(index);
@@ -3336,8 +3334,8 @@ var ProductRef = {
   cost: 1.0,
   weight: 100,
   description: '',
-  typeId: 1,
-  imageFile: ''
+  type_id: 1,
+  image_file: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -3506,7 +3504,7 @@ var ProductRef = {
       }.bind(this));
     },
     handleFileUpload: function handleFileUpload() {
-      this.product.imageFile = this.$refs.prodImageFile.files[0];
+      this.product.image_file = this.$refs.prodImageFile.files[0];
     },
     openGallery: function openGallery(index) {
       this.$refs.lightbox.showImage(index);
@@ -3547,7 +3545,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".pizza-set-ingredients-list {\n  padding-left: 55px;\n}\n.ingredient-box {\n  border: 1px solid #ddd;\n  padding: 0;\n  border-radius: 6px;\n  position: relative;\n  right: 15px;\n  margin-bottom: 6px;\n}\n.ing-del-btn {\n  position: relative;\n  top: 28px;\n  right: 12px;\n}", ""]);
+exports.push([module.i, ".ingredient-box {\n  border: 1px solid #ddd;\n  padding: 0;\n  border-radius: 6px;\n  position: relative;\n  right: 15px;\n  margin-bottom: 6px;\n}\n.ing-del-btn {\n  position: relative;\n  top: 28px;\n  right: 20px;\n}", ""]);
 
 // exports
 
@@ -3566,7 +3564,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".pizza-set-image[data-v-729f455c] {\n  max-height: 70px;\n}", ""]);
+exports.push([module.i, ".pizza-set-ingredients-list[data-v-729f455c] {\n  padding-left: 55px;\n}\n.pizza-set-image[data-v-729f455c] {\n  max-height: 70px;\n}", ""]);
 
 // exports
 
@@ -3604,7 +3602,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.prod-details-image[data-v-3ac4e6ce] {\n    max-width: 100%;\n    max-height: 250px;\n}\n.container-modal[data-v-3ac4e6ce] {\n    max-height: 90vh;\n    overflow: auto;\n}\n\n", ""]);
+exports.push([module.i, "\n.set-details-image[data-v-3ac4e6ce] {\n    max-width: 100%;\n    max-height: 250px;\n}\n.pizza-set-ingredients-list[data-v-3ac4e6ce] {\n    padding-left: 30px;\n    margin-bottom: 20px;\n}\n.container-modal[data-v-3ac4e6ce] {\n    max-height: 90vh;\n    overflow: auto;\n}\n\n", ""]);
 
 // exports
 
@@ -23954,7 +23952,7 @@ var render = function() {
             _c("div", { staticClass: "row" }, [
               _c("div", { staticClass: "col-12" }, [
                 _c("h4", { staticClass: "title pull-left" }, [
-                  _vm._v("Edit product ID:" + _vm._s(_vm.prodData.id) + ".")
+                  _vm._v("Edit pizza set ID:" + _vm._s(_vm.setData.id))
                 ]),
                 _vm._v(" "),
                 _c(
@@ -23978,28 +23976,28 @@ var render = function() {
               _c("div", { staticClass: "col-12" }, [
                 _c("div", { staticClass: "col-md-12" }, [
                   _c("div", { staticClass: "row" }, [
-                    _c("div", { staticClass: "col-md-12" }, [
-                      !_vm.prodImageChanged
+                    _c("div", { staticClass: "col-12" }, [
+                      !_vm.setImageChanged
                         ? _c("img", {
-                            staticClass: "prod-details-image",
+                            staticClass: "set-details-image",
                             attrs: {
-                              src: _vm.prodData.image_thumbs.w_600,
-                              alt: "prod image"
+                              src: _vm.setData.image_thumbs.w_600,
+                              alt: "set image"
                             }
                           })
                         : _vm._e(),
                       _vm._v(" "),
-                      _vm.prodImageChanged
+                      _vm.setImageChanged
                         ? _c("input", {
-                            ref: "prodImageFile",
-                            attrs: { type: "file", id: "productImage" },
+                            ref: "setImageFile",
+                            attrs: { type: "file", id: "setImage" },
                             on: { change: _vm.handleFileUpload }
                           })
                         : _vm._e()
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-md-12 mt-5" }, [
-                      !_vm.prodImageChanged
+                    _c("div", { staticClass: "col-12 mt-5" }, [
+                      !_vm.setImageChanged
                         ? _c(
                             "button",
                             {
@@ -24007,10 +24005,15 @@ var render = function() {
                               on: { click: _vm.changeImage }
                             },
                             [
-                              _c("i", { staticClass: "fa fa-edit" }),
-                              _vm._v(
-                                " Change\n                                        "
-                              )
+                              !_vm.setData.image
+                                ? _c("span", [
+                                    _c("i", { staticClass: "fa fa-plus" }),
+                                    _vm._v(" Add Image")
+                                  ])
+                                : _c("span", [
+                                    _c("i", { staticClass: "fa fa-edit" }),
+                                    _vm._v(" Change Image")
+                                  ])
                             ]
                           )
                         : _vm._e()
@@ -24028,19 +24031,19 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.prodEdit.name,
-                            expression: "prodEdit.name"
+                            value: _vm.setEdit.name,
+                            expression: "setEdit.name"
                           }
                         ],
                         staticClass: "form-control",
                         attrs: { type: "text" },
-                        domProps: { value: _vm.prodEdit.name },
+                        domProps: { value: _vm.setEdit.name },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
-                            _vm.$set(_vm.prodEdit, "name", $event.target.value)
+                            _vm.$set(_vm.setEdit, "name", $event.target.value)
                           }
                         }
                       })
@@ -24049,10 +24052,10 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12" }, [
                     _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-md-8" }, [
+                      _c("div", { staticClass: "col-md-6" }, [
                         _c("div", { staticClass: "form-group" }, [
-                          _c("label", { attrs: { for: "prodTypesSelect" } }, [
-                            _vm._v("Type")
+                          _c("label", { attrs: { for: "pizzaBaseSelect" } }, [
+                            _vm._v("Base")
                           ]),
                           _vm._v(" "),
                           _c(
@@ -24062,12 +24065,12 @@ var render = function() {
                                 {
                                   name: "model",
                                   rawName: "v-model",
-                                  value: _vm.prodEdit.type_id,
-                                  expression: "prodEdit.type_id"
+                                  value: _vm.setEdit.base_id,
+                                  expression: "setEdit.base_id"
                                 }
                               ],
                               staticClass: "form-control",
-                              attrs: { id: "prodTypesSelect" },
+                              attrs: { id: "pizzaBaseSelect" },
                               on: {
                                 change: function($event) {
                                   var $$selectedVal = Array.prototype.filter
@@ -24080,8 +24083,8 @@ var render = function() {
                                       return val
                                     })
                                   _vm.$set(
-                                    _vm.prodEdit,
-                                    "type_id",
+                                    _vm.setEdit,
+                                    "base_id",
                                     $event.target.multiple
                                       ? $$selectedVal
                                       : $$selectedVal[0]
@@ -24089,14 +24092,14 @@ var render = function() {
                                 }
                               }
                             },
-                            _vm._l(_vm.prodTypesList, function(type) {
+                            _vm._l(_vm.basesList, function(base) {
                               return _c(
                                 "option",
-                                { key: type.id, domProps: { value: type.id } },
+                                { key: base.id, domProps: { value: base.id } },
                                 [
                                   _vm._v(
                                     "\n                                                        " +
-                                      _vm._s(type.name) +
+                                      _vm._s(base.name) +
                                       "\n                                                    "
                                   )
                                 ]
@@ -24109,109 +24112,21 @@ var render = function() {
                     ])
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "col-12" }, [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-md-3" }, [
-                        _c("div", { staticClass: "form-group" }, [
-                          _c("label", [_vm._v("Cost ($)")]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.prodEdit.cost,
-                                expression: "prodEdit.cost"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: {
-                              type: "number",
-                              step: "0.01",
-                              min: "0.01"
-                            },
-                            domProps: { value: _vm.prodEdit.cost },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.prodEdit,
-                                  "cost",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-md-3" }, [
-                        _c("div", { staticClass: "form-group" }, [
-                          _c("label", [_vm._v("Weight (g)")]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.prodEdit.weight,
-                                expression: "prodEdit.weight"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "number", step: "1", min: "1" },
-                            domProps: { value: _vm.prodEdit.weight },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.prodEdit,
-                                  "weight",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ])
-                      ])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-12" }, [
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", [_vm._v("Description")]),
-                      _vm._v(" "),
-                      _c("textarea", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.prodEdit.description,
-                            expression: "prodEdit.description"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { rows: "5" },
-                        domProps: { value: _vm.prodEdit.description },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.prodEdit,
-                              "description",
-                              $event.target.value
-                            )
-                          }
+                  _c(
+                    "div",
+                    { staticClass: "col-12 pizza-set-ingredients-list" },
+                    [
+                      _c("ingredients-list", {
+                        ref: "ingList",
+                        attrs: {
+                          "items-list": _vm.setEdit.ingredients,
+                          types: _vm.ingTypesList,
+                          "ing-list": _vm.ingList
                         }
                       })
-                    ])
-                  ])
+                    ],
+                    1
+                  )
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
@@ -24220,11 +24135,17 @@ var render = function() {
                       "button",
                       {
                         staticClass: "btn btn-success btn-fill btn-icon",
-                        on: { click: _vm.saveProd }
+                        on: { click: _vm.saveSet }
                       },
                       [
-                        _c("i", { staticClass: "fa fa-check" }),
-                        _vm._v(" Save\n                                    ")
+                        _vm.saving
+                          ? _c("i", {
+                              staticClass: "fa fa-spinner anim-rotate"
+                            })
+                          : _c("i", { staticClass: "fa fa-check" }),
+                        _vm._v(
+                          "\n                                        Save\n                                    "
+                        )
                       ]
                     ),
                     _vm._v(" "),
@@ -24279,7 +24200,7 @@ var render = function() {
             _c("div", { staticClass: "row" }, [
               _c("div", { staticClass: "col-12" }, [
                 _c("h4", { staticClass: "title pull-left" }, [
-                  _vm._v("Edit product ID:" + _vm._s(_vm.prodData.id) + ".")
+                  _vm._v("Edit product ID:" + _vm._s(_vm.prodData.id))
                 ]),
                 _vm._v(" "),
                 _c(
@@ -24332,10 +24253,15 @@ var render = function() {
                               on: { click: _vm.changeImage }
                             },
                             [
-                              _c("i", { staticClass: "fa fa-edit" }),
-                              _vm._v(
-                                " Change\n                                        "
-                              )
+                              !_vm.prodData.image
+                                ? _c("span", [
+                                    _c("i", { staticClass: "fa fa-plus" }),
+                                    _vm._v(" Add Image")
+                                  ])
+                                : _c("span", [
+                                    _c("i", { staticClass: "fa fa-edit" }),
+                                    _vm._v(" Change Image")
+                                  ])
                             ]
                           )
                         : _vm._e()
@@ -24548,8 +24474,14 @@ var render = function() {
                         on: { click: _vm.saveProd }
                       },
                       [
-                        _c("i", { staticClass: "fa fa-check" }),
-                        _vm._v(" Save\n                                    ")
+                        _vm.saving
+                          ? _c("i", {
+                              staticClass: "fa fa-spinner anim-rotate"
+                            })
+                          : _c("i", { staticClass: "fa fa-check" }),
+                        _vm._v(
+                          "\n                                        Save\n                                    "
+                        )
                       ]
                     ),
                     _vm._v(" "),
@@ -24641,7 +24573,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row pizza-set-ingredients-list" }, [
+  return _c("div", { staticClass: "row" }, [
     _vm._m(0),
     _vm._v(" "),
     _vm.items.length > 0
@@ -24662,8 +24594,8 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: prod.typeId,
-                            expression: "prod.typeId"
+                            value: prod.type_id,
+                            expression: "prod.type_id"
                           }
                         ],
                         staticClass: "form-control",
@@ -24679,7 +24611,7 @@ var render = function() {
                               })
                             _vm.$set(
                               prod,
-                              "typeId",
+                              "type_id",
                               $event.target.multiple
                                 ? $$selectedVal
                                 : $$selectedVal[0]
@@ -24716,12 +24648,12 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: prod.prodId,
-                            expression: "prod.prodId"
+                            value: prod.prod_id,
+                            expression: "prod.prod_id"
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: { disabled: prod.typeId === 0 },
+                        attrs: { disabled: prod.type_id === 0 },
                         on: {
                           change: function($event) {
                             var $$selectedVal = Array.prototype.filter
@@ -24734,7 +24666,7 @@ var render = function() {
                               })
                             _vm.$set(
                               prod,
-                              "prodId",
+                              "prod_id",
                               $event.target.multiple
                                 ? $$selectedVal
                                 : $$selectedVal[0]
@@ -24742,7 +24674,7 @@ var render = function() {
                           }
                         }
                       },
-                      _vm._l(_vm.ingList[prod.typeId], function(prod) {
+                      _vm._l(_vm.ingList[prod.type_id], function(prod) {
                         return _c(
                           "option",
                           { key: prod.id, domProps: { value: prod.id } },
@@ -24979,8 +24911,8 @@ var render = function() {
                                       {
                                         name: "model",
                                         rawName: "v-model",
-                                        value: _vm.pizzaSet.baseId,
-                                        expression: "pizzaSet.baseId"
+                                        value: _vm.pizzaSet.base_id,
+                                        expression: "pizzaSet.base_id"
                                       }
                                     ],
                                     staticClass: "form-control",
@@ -25000,7 +24932,7 @@ var render = function() {
                                           })
                                         _vm.$set(
                                           _vm.pizzaSet,
-                                          "baseId",
+                                          "base_id",
                                           $event.target.multiple
                                             ? $$selectedVal
                                             : $$selectedVal[0]
@@ -25049,7 +24981,7 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "div",
-                      { staticClass: "col-md-7" },
+                      { staticClass: "col-md-7 pizza-set-ingredients-list" },
                       [
                         _c("ingredients-list", {
                           ref: "ingList",
@@ -25558,8 +25490,8 @@ var render = function() {
                                       {
                                         name: "model",
                                         rawName: "v-model",
-                                        value: _vm.product.typeId,
-                                        expression: "product.typeId"
+                                        value: _vm.product.type_id,
+                                        expression: "product.type_id"
                                       }
                                     ],
                                     staticClass: "form-control",
@@ -25579,7 +25511,7 @@ var render = function() {
                                           })
                                         _vm.$set(
                                           _vm.product,
-                                          "typeId",
+                                          "type_id",
                                           $event.target.multiple
                                             ? $$selectedVal
                                             : $$selectedVal[0]

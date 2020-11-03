@@ -10,7 +10,7 @@
                         <div class="row">
                             <div class="col-12">
 
-                                <h4 class="title pull-left">Edit product ID:{{ prodData.id }}.</h4>
+                                <h4 class="title pull-left">Edit pizza set ID:{{ setData.id }}</h4>
                                 <button class="btn btn-default pull-right" @click="$emit('close')">Close</button>
 
                             </div>
@@ -24,18 +24,19 @@
                                 <div class="col-md-12">
                                     <div class="row">
 
-                                        <div class="col-md-12">
-                                            <img v-if="!prodImageChanged" class="prod-details-image"
-                                                 :src="prodData.image_thumbs.w_600" alt="prod image">
-                                            <input v-if="prodImageChanged" type="file" id="productImage"
-                                                   ref="prodImageFile"
+                                        <div class="col-12">
+                                            <img v-if="!setImageChanged" class="set-details-image"
+                                                 :src="setData.image_thumbs.w_600" alt="set image">
+                                            <input v-if="setImageChanged" type="file" id="setImage"
+                                                   ref="setImageFile"
                                                    @change="handleFileUpload">
                                         </div>
 
-                                        <div class="col-md-12 mt-5">
-                                            <button v-if="!prodImageChanged" class="btn btn-default"
+                                        <div class="col-12 mt-5">
+                                            <button v-if="!setImageChanged" class="btn btn-default"
                                                     @click="changeImage">
-                                                <i class="fa fa-edit"></i> Change
+                                                <span v-if="!setData.image"><i class="fa fa-plus"></i> Add Image</span>
+                                                <span v-else><i class="fa fa-edit"></i> Change Image</span>
                                             </button>
                                         </div>
 
@@ -47,63 +48,34 @@
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label>Name</label>
-                                            <input type="text" class="form-control" v-model="prodEdit.name">
+                                            <input type="text" class="form-control" v-model="setEdit.name">
                                         </div>
                                     </div>
 
                                     <div class="col-12">
                                         <div class="row">
 
-                                            <div class="col-md-8">
-
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="prodTypesSelect">Type</label>
-                                                    <select v-model="prodEdit.type_id" class="form-control"
-                                                            id="prodTypesSelect">
-                                                        <option v-for="type in prodTypesList" :key="type.id"
-                                                                :value="type.id">
-                                                            {{ type.name }}
+                                                    <label for="pizzaBaseSelect">Base</label>
+                                                    <select v-model="setEdit.base_id" class="form-control"
+                                                            id="pizzaBaseSelect">
+                                                        <option v-for="base in basesList" :key="base.id"
+                                                                :value="base.id">
+                                                            {{ base.name }}
                                                         </option>
                                                     </select>
                                                 </div>
-
                                             </div>
 
                                         </div>
                                     </div>
 
-                                    <div class="col-12">
-                                        <div class="row">
 
-                                            <div class="col-md-3">
+                                    <div class="col-12 pizza-set-ingredients-list">
 
-                                                <div class="form-group">
-                                                    <label>Cost ($)</label>
-                                                    <input type="number" step="0.01" min="0.01"
-                                                           class="form-control" v-model="prodEdit.cost">
-                                                </div>
-
-                                            </div>
-                                            <div class="col-md-3">
-
-                                                <div class="form-group">
-                                                    <label>Weight (g)</label>
-                                                    <input type="number" step="1" min="1"
-                                                           class="form-control" v-model="prodEdit.weight">
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12">
-
-                                        <div class="form-group">
-                                            <label>Description</label>
-                                            <textarea rows="5" class="form-control"
-                                                      v-model="prodEdit.description"></textarea>
-                                        </div>
+                                        <ingredients-list ref="ingList" :items-list="setEdit.ingredients"
+                                                          :types="ingTypesList" :ing-list="ingList"></ingredients-list>
 
                                     </div>
 
@@ -113,8 +85,10 @@
                                     <div class="col-md-12 text-right">
 
                                         <button class="btn btn-success btn-fill btn-icon"
-                                                @click="saveProd">
-                                            <i class="fa fa-check"></i> Save
+                                                @click="saveSet">
+                                            <i v-if="saving" class="fa fa-spinner anim-rotate"></i>
+                                            <i v-else class="fa fa-check"></i>
+                                            Save
                                         </button>
                                         <button class="btn btn-warning btn-fill btn-icon"
                                                 @click="cancelEdit">
@@ -139,9 +113,14 @@
 
 <style scoped>
 
-    .prod-details-image {
+    .set-details-image {
         max-width: 100%;
         max-height: 250px;
+    }
+
+    .pizza-set-ingredients-list {
+        padding-left: 30px;
+        margin-bottom: 20px;
     }
 
     .container-modal {
@@ -161,14 +140,17 @@
 
         data() {
             return {
-                prodImageChanged: false,
-                prodEdit: {},
+                setImageChanged: false,
+                setEdit: {},
+                saving: false,
             }
         },
 
         props: [
-            'prod-data',
-            'prod-types-list',
+            'set-data',
+            'bases-list',
+            'ing-types-list',
+            'ing-list',
         ],
 
         mixins: [
@@ -177,29 +159,41 @@
         ],
 
         created() {
-            this.prodEdit = this.clone(this.prodData);
-            this.prodEdit.image_changed = false;
+            /*console.log('set data:', this.setData);
+            console.log('bases list:', this.basesList);
+            console.log('ing types list:', this.ingTypesList);
+            console.log('ing list:', this.ingList);*/
+
+            this.setEdit = this.clone(this.setData);
+            this.setEdit.image_changed = false;
         },
 
         methods: {
 
             changeImage() {
-                this.prodImageChanged = true;
-                this.prodEdit.image_changed = true;
+                this.setImageChanged = true;
+                this.setEdit.image_changed = true;
             },
 
             handleFileUpload() {
-                this.prodEdit.imageFile = this.$refs.prodImageFile.files[0];
+                this.setEdit.image_file = this.$refs.setImageFile.files[0];
             },
 
-            saveProd() {
+            saveSet() {
                 let formData = new FormData();
 
-                for (let prop in this.prodEdit) {
-                    formData.append(prop, this.prodEdit[prop]);
+                for (let prop in this.setEdit) {
+                    let propData = this.setEdit[prop];
+
+                    if (prop !== 'image_file' && this.isObject(propData)) {
+                        propData = JSON.stringify(propData);
+                    }
+                    formData.append(prop, propData);
                 }
 
-                axios.post('/products/save',
+                this.saving = true;
+
+                axios.post('/pizza-sets/save',
                     formData,
                     {
                         headers: {
@@ -208,20 +202,20 @@
                     }
                 ).then(function(response) {
 
-                    this.notifySuccess('Product ID:' + this.prodEdit.id + ' successfully updated.');
+                    this.notifySuccess('Pizza set ID:' + this.setEdit.id + ' successfully updated.');
                     this.closeModal();
 
                 }.bind(this))
                 .catch(function() {
 
-                    this.notifyError('Product update error.');
+                    this.notifyError('Pizza set update error.');
                     this.closeModal();
 
                 }.bind(this));
             },
 
             closeModal() {
-                this.prodEdit = {};
+                this.setEdit = {};
                 this.$emit('close');
             },
 

@@ -10,7 +10,7 @@
                         <div class="row">
                             <div class="col-12">
 
-                                <h4 class="title pull-left">Edit product ID:{{ prodData.id }}.</h4>
+                                <h4 class="title pull-left">Edit product ID:{{ prodData.id }}</h4>
                                 <button class="btn btn-default pull-right" @click="$emit('close')">Close</button>
 
                             </div>
@@ -35,7 +35,8 @@
                                         <div class="col-md-12 mt-5">
                                             <button v-if="!prodImageChanged" class="btn btn-default"
                                                     @click="changeImage">
-                                                <i class="fa fa-edit"></i> Change
+                                                <span v-if="!prodData.image"><i class="fa fa-plus"></i> Add Image</span>
+                                                <span v-else><i class="fa fa-edit"></i> Change Image</span>
                                             </button>
                                         </div>
 
@@ -114,7 +115,9 @@
 
                                         <button class="btn btn-success btn-fill btn-icon"
                                                 @click="saveProd">
-                                            <i class="fa fa-check"></i> Save
+                                            <i v-if="saving" class="fa fa-spinner anim-rotate"></i>
+                                            <i v-else class="fa fa-check"></i>
+                                            Save
                                         </button>
                                         <button class="btn btn-warning btn-fill btn-icon"
                                                 @click="cancelEdit">
@@ -163,6 +166,7 @@
             return {
                 prodImageChanged: false,
                 prodEdit: {},
+                saving: false,
             }
         },
 
@@ -189,7 +193,7 @@
             },
 
             handleFileUpload() {
-                this.prodEdit.imageFile = this.$refs.prodImageFile.files[0];
+                this.prodEdit.image_file = this.$refs.prodImageFile.files[0];
             },
 
             saveProd() {
@@ -198,6 +202,8 @@
                 for (let prop in this.prodEdit) {
                     formData.append(prop, this.prodEdit[prop]);
                 }
+
+                this.saving = true;
 
                 axios.post('/products/save',
                     formData,

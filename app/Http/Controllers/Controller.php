@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Models\Model;
 use App\Models\PizzaSet;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -119,6 +120,18 @@ class Controller extends BaseController
         }
 
         return $thumbs;
+    }
+
+
+    protected function handleRequestImageFile(Model &$item, UploadedFile $image, string $namePattern) : void
+    {
+        $images = $this->getImagePathesList($namePattern, $this->imagesDir);
+        if (!empty($images)) {
+            Storage::delete($images);
+        }
+        $imagePath = $this->saveImage($image, $this->imagesDir, $namePattern);
+        $this->handleImage($imagePath, $this->imagesDir);
+        $item->image = $imagePath;
     }
 
 

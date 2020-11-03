@@ -50,7 +50,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group">
                                                     <label for="prodTypesSelect">Type</label>
-                                                    <select v-model="product.typeId" class="form-control"
+                                                    <select v-model="product.type_id" class="form-control"
                                                             id="prodTypesSelect">
                                                         <option v-for="type in prodTypesList" :key="type.id"
                                                                 :value="type.id">
@@ -258,8 +258,8 @@
         cost: 1.0,
         weight: 100,
         description: '',
-        typeId: 1,
-        imageFile: '',
+        type_id: 1,
+        image_file: '',
     };
 
     export default {
@@ -501,7 +501,7 @@
             },
 
             handleFileUpload() {
-                this.product.imageFile = this.$refs.prodImageFile.files[0];
+                this.product.image_file = this.$refs.prodImageFile.files[0];
             },
 
             openGallery(index) {

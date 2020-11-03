@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PizzaSetsController extends Controller
 {
-    private $imagesDir = 'pizza-set-images';
+    protected $imagesDir = 'pizza-set-images';
 
 
     public function index()
@@ -28,25 +28,14 @@ class PizzaSetsController extends Controller
 
             $setData = $request->input();
             $ingredients = json_decode($setData['ingredients'], true);
-            $ingredients[] = [
-                'typeId' => SystemConst::PRODUCT_TYPE_PIZZA_BASE,
-                'prodId' => $setData['baseId'],
-                'quantity' => 1,
-            ];
+            $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
             $set = PizzaSet::create(['name' => $setData['name']]);
 
-            foreach ($ingredients as $ingredient) {
-                $prodId = (int) $ingredient['prodId'];
-                $quantity = (int) $ingredient['quantity'];
+            $this->attachProdsToSet($set, $ingredients);
 
-                $set->products()->attach($prodId, ['quantity' => $quantity]);
-            }
-
-            $image = $request->file('imageFile');
+            $image = $request->file('image_file');
             if (!empty($image)) {
-                $imagePath = $this->saveImage($image, $this->imagesDir, "pizza_set_{$set->id}");
-                $this->handleImage($imagePath, $this->imagesDir);
-                $set->image = $imagePath;
+                $this->handleRequestImageFile($set, $image, "pizza_set_{$set->id}");
             }
 
             $set->save();
@@ -65,35 +54,52 @@ class PizzaSetsController extends Controller
     {
         try {
 
-            $prodData = $request->input();
-            $prodId = (int) $prodData['id'];
-            $prod = Product::find($prodId);
+            $setData = $request->input();
+            $setId = (int) $setData['id'];
+            $ingredients = json_decode($setData['ingredients'], true);
+            $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
+            $set = PizzaSet::find($setId);
 
-            if ($prod->type_id != $prodData['type_id']) {
-                $prodType = ProductType::find((int) $prodData['type_id']);
+            $set->products()->detach();
+            $this->attachProdsToSet($set, $ingredients);
 
-                if (!empty($prodType)) {
-                    $prod->type()->associate($prodType);
-                }
-            }
-
-            if ($prodData['image_changed'] === 'true') {
-                $image = $request->file('imageFile');
+            if ($setData['image_changed'] === 'true') {
+                $image = $request->file('image_file');
 
                 if (!empty($image)) {
-                    $imagePath = $this->saveImage($image, $this->imagesDir, "pizza_set_{$prodId}");
-                    $this->handleImage($imagePath, $this->imagesDir);
-                    $prod->image = $imagePath;
+                    $this->handleRequestImageFile($set, $image, "pizza_set_{$setId}");
                 }
             }
 
-            $prod->update($prodData);
+            $set->update($setData);
+            $this->calculatePizzaSet($set->id);
 
             //todo: добавить пересчет веса заказов
 
         } catch(\Throwable $e) {
 
             abort(500, $e->getMessage());
+        }
+    }
+
+
+    private function addBaseToIngredients(int $baseId, array &$ingredients) : void
+    {
+        $ingredients[] = [
+            'type_id' => SystemConst::PRODUCT_TYPE_PIZZA_BASE,
+            'prod_id' => $baseId,
+            'quantity' => 1,
+        ];
+    }
+
+
+    private function attachProdsToSet(PizzaSet &$set, array $prods) : void
+    {
+        foreach ($prods as $prod) {
+            $prodId = (int) $prod['prod_id'];
+            $quantity = (int) $prod['quantity'];
+
+            $set->products()->attach($prodId, ['quantity' => $quantity]);
         }
     }
 
@@ -116,6 +122,20 @@ class PizzaSetsController extends Controller
             ->limit($perPage)
             ->get()
             ->each(function ($item, $key) {
+                $ingredients = [];
+
+                foreach ($item->products as $index => $product) {
+                    if ($product->type_id === SystemConst::PRODUCT_TYPE_PIZZA_BASE) {
+                        $item->base_id = $product->id;
+                    } else {
+                        $ingredients[] = [
+                            'type_id' => $product->type_id,
+                            'prod_id' => $product->id,
+                            'quantity' => $product->connection->quantity,
+                        ];
+                    }
+                }
+                $item->ingredients = $ingredients;
                 $item->image_thumbs = $this->getImageThumbs("pizza_set_{$item->id}", $this->imagesDir);
             });
 
