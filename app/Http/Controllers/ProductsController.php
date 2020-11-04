@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
@@ -77,11 +78,13 @@ class ProductsController extends Controller
 
             $prod->update($prodData);
 
-            //todo: добавить пересчет веса заказов
             if ($costChanged or $weightChanged) {
                 foreach ($prod->sets as $set) {
                     $this->calculatePizzaSet($set->id);
                 }
+            }
+            if ($weightChanged) {
+                //todo: добавить пересчет веса заказов
             }
 
         } catch(\Throwable $e) {
@@ -131,11 +134,14 @@ class ProductsController extends Controller
     }
 
 
-    public function delete(Request $request) : void
+    public function delete(Request $request)
     {
-        try {
+        $id = (int) $request->input('id');
+        if (!$this->checkProductCanBeDeleted($id)) {
+            return $this->ajaxError('Products that are part of pizza sets cannot be removed.');
+        }
 
-            $id = (int) $request->input('id');
+        try {
 
             $prodImages = $this->getImagePathesList("prod_{$id}", $this->imagesDir);
             if (!empty($prodImages)) {
@@ -148,5 +154,19 @@ class ProductsController extends Controller
 
             abort(500, $e->getMessage());
         }
+    }
+
+
+    private function checkProductCanBeDeleted(int $id) : bool
+    {
+        $check = true;
+
+        $setProds = DB::table('pizzaset_product')->pluck('product_id');
+        foreach ($setProds as $prodId) {
+            if ($prodId === $id) {
+                $check = false;
+            }
+        }
+        return $check;
     }
 }

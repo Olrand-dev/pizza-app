@@ -152,4 +152,13 @@ class Controller extends BaseController
         $instance->weight = $weight;
         $instance->save();
     }
+
+
+    protected function ajaxError(string $message) : string
+    {
+        return json_encode([
+            'status' => 'error',
+            'message' => $message,
+        ]);
+    }
 }

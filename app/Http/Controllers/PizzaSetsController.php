@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Consts\SystemConst;
 use App\Models\PizzaSet;
 use App\Models\Product;
-use App\Models\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -74,7 +73,10 @@ class PizzaSetsController extends Controller
             $set->update($setData);
             $this->calculatePizzaSet($set->id);
 
-            //todo: добавить пересчет веса заказов
+            $updatedSet = PizzaSet::find($setId);
+            if ($updatedSet->weight !== $set->weight) {
+                //todo: добавить пересчет веса заказов
+            }
 
         } catch(\Throwable $e) {
 
@@ -190,10 +192,8 @@ class PizzaSetsController extends Controller
 
             $id = (int) $request->input('id');
 
-            $instance = PizzaSet::with('products')->find($id);
-            foreach ($instance->products as $product) {
-                $instance->products()->detach($product->id);
-            }
+            $instance = PizzaSet::find($id);
+            $instance->products()->detach();
 
             $prodImages = $this->getImagePathesList("pizza_set_{$id}", $this->imagesDir);
             if (!empty($prodImages)) {

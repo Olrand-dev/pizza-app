@@ -2772,6 +2772,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -2788,7 +2790,8 @@ var PizzaSetRef = {
   data: function data() {
     return {
       mode: 'list',
-      updating: true,
+      listUpdating: true,
+      saving: false,
       tableHeaders: ['ID', 'Image', 'Name', 'Cost', 'Weight'],
       sortableHeaders: {
         'ID': 'id',
@@ -2836,7 +2839,7 @@ var PizzaSetRef = {
       }.bind(this));
     },
     getSetsList: function getSetsList() {
-      this.updating = true;
+      this.listUpdating = true;
       axios.get('/pizza-sets/get-list', {
         params: {
           page: this.page,
@@ -2858,7 +2861,7 @@ var PizzaSetRef = {
         this.lbData = _lbData;
         this.setsList = sets;
         this.pagesCount = data.pages_count;
-        this.updating = false;
+        this.listUpdating = false;
       }.bind(this))["catch"](function () {
         this.notifyError('Load pizza sets list error.');
       }.bind(this));
@@ -2879,6 +2882,7 @@ var PizzaSetRef = {
         formData.append(prop, propData);
       }
 
+      this.saving = true;
       axios.post('/pizza-sets/add-new', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -3322,6 +3326,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -3341,7 +3347,8 @@ var ProductRef = {
   data: function data() {
     return {
       mode: 'list',
-      updating: true,
+      listUpdating: true,
+      saving: false,
       tableHeaders: ['ID', 'Image', 'Name', 'Type', 'Cost', 'Weight'],
       sortableHeaders: {
         'ID': 'id',
@@ -3385,7 +3392,7 @@ var ProductRef = {
     },
     getProdsList: function getProdsList() {
       var resetPage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      this.updating = true;
+      this.listUpdating = true;
       if (resetPage) this.page = 1;
       axios.get('/products/get-list', {
         params: {
@@ -3409,7 +3416,7 @@ var ProductRef = {
         this.lbData = _lbData;
         this.prodsList = prods;
         this.pagesCount = data.pages_count;
-        this.updating = false;
+        this.listUpdating = false;
       }.bind(this))["catch"](function () {
         this.notifyError('Load products list error.');
       }.bind(this));
@@ -3424,6 +3431,7 @@ var ProductRef = {
         formData.append(prop, this.product[prop]);
       }
 
+      this.saving = true;
       axios.post('/products/add-new', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -3496,6 +3504,13 @@ var ProductRef = {
         }
       }).then(function (response) {
         this.$modal.hide('dialog');
+        var data = response.data;
+
+        if (data.status && data.status === 'error') {
+          this.notifyError(data.message);
+          return;
+        }
+
         this.notifySuccess("Product ID:".concat(id, " successfully deleted."));
         this.getProdsList();
       }.bind(this))["catch"](function () {
@@ -24823,8 +24838,14 @@ var render = function() {
                           on: { click: _vm.addNewSet }
                         },
                         [
-                          _c("i", { staticClass: "fa fa-check" }),
-                          _vm._v(" Save\n                        ")
+                          _vm.saving
+                            ? _c("i", {
+                                staticClass: "fa fa-spinner anim-rotate"
+                              })
+                            : _c("i", { staticClass: "fa fa-check" }),
+                          _vm._v(
+                            "\n                            Save\n                        "
+                          )
                         ]
                       ),
                       _vm._v(" "),
@@ -25059,7 +25080,7 @@ var render = function() {
               ])
             ]),
             _vm._v(" "),
-            _vm.updating
+            _vm.listUpdating
               ? _c("div", { staticClass: "col-md-1" }, [_vm._m(0)])
               : _vm._e()
           ])
@@ -25402,8 +25423,14 @@ var render = function() {
                           on: { click: _vm.addNewProd }
                         },
                         [
-                          _c("i", { staticClass: "fa fa-check" }),
-                          _vm._v(" Save\n                        ")
+                          _vm.saving
+                            ? _c("i", {
+                                staticClass: "fa fa-spinner anim-rotate"
+                              })
+                            : _c("i", { staticClass: "fa fa-check" }),
+                          _vm._v(
+                            "\n                            Save\n                        "
+                          )
                         ]
                       ),
                       _vm._v(" "),
@@ -25794,7 +25821,7 @@ var render = function() {
               ])
             ]),
             _vm._v(" "),
-            _vm.updating
+            _vm.listUpdating
               ? _c("div", { staticClass: "col-md-1" }, [_vm._m(0)])
               : _vm._e()
           ])

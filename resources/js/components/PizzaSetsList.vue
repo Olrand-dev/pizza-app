@@ -18,7 +18,9 @@
                         <div v-if="mode === 'add_new'">
                             <button class="btn btn-success btn-fill btn-icon"
                                     @click="addNewSet">
-                                <i class="fa fa-check"></i> Save
+                                <i v-if="saving" class="fa fa-spinner anim-rotate"></i>
+                                <i v-else class="fa fa-check"></i>
+                                Save
                             </button>
                             <button class="btn btn-warning btn-fill btn-icon"
                                     @click="closeBox">
@@ -110,7 +112,7 @@
                         </div>
                     </div>
 
-                    <div v-if="updating" class="col-md-1">
+                    <div v-if="listUpdating" class="col-md-1">
                         <span class="list-update top">
                             <i class="fa fa-spinner anim-rotate"></i>
                         </span>
@@ -224,7 +226,8 @@
         data() {
             return {
                 mode: 'list',
-                updating: true,
+                listUpdating: true,
+                saving: false,
 
                 tableHeaders: [
                     'ID', 'Image', 'Name', 'Cost', 'Weight',
@@ -292,7 +295,7 @@
             },
 
             getSetsList() {
-                this.updating = true;
+                this.listUpdating = true;
 
                 axios.get(
                     '/pizza-sets/get-list',
@@ -322,7 +325,7 @@
                     this.setsList = sets;
                     this.pagesCount = data.pages_count;
 
-                    this.updating = false;
+                    this.listUpdating = false;
 
                 }.bind(this))
                 .catch(function() {
@@ -347,6 +350,8 @@
                     }
                     formData.append(prop, propData);
                 }
+
+                this.saving = true;
 
                 axios.post('/pizza-sets/add-new',
                     formData,

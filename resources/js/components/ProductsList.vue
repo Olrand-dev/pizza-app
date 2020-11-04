@@ -18,7 +18,9 @@
                         <div v-if="mode === 'add_new'">
                             <button class="btn btn-success btn-fill btn-icon"
                                     @click="addNewProd">
-                                <i class="fa fa-check"></i> Save
+                                <i v-if="saving" class="fa fa-spinner anim-rotate"></i>
+                                <i v-else class="fa fa-check"></i>
+                                Save
                             </button>
                             <button class="btn btn-warning btn-fill btn-icon"
                                     @click="closeBox">
@@ -146,7 +148,7 @@
                         </div>
                     </div>
 
-                    <div v-if="updating" class="col-md-1">
+                    <div v-if="listUpdating" class="col-md-1">
                         <span class="list-update top">
                             <i class="fa fa-spinner anim-rotate"></i>
                         </span>
@@ -267,7 +269,8 @@
         data() {
             return {
                 mode: 'list',
-                updating: true,
+                listUpdating: true,
+                saving: false,
 
                 tableHeaders: [
                     'ID', 'Image', 'Name', 'Type', 'Cost', 'Weight',
@@ -330,7 +333,7 @@
             },
 
             getProdsList(resetPage = false) {
-                this.updating = true;
+                this.listUpdating = true;
                 if (resetPage) this.page = 1;
 
                 axios.get(
@@ -362,7 +365,7 @@
                     this.prodsList = prods;
                     this.pagesCount = data.pages_count;
 
-                    this.updating = false;
+                    this.listUpdating = false;
 
                 }.bind(this))
                 .catch(function() {
@@ -382,6 +385,8 @@
                 for (let prop in this.product) {
                     formData.append(prop, this.product[prop]);
                 }
+
+                this.saving = true;
 
                 axios.post('/products/add-new',
                     formData,
@@ -488,6 +493,13 @@
                 ).then(function(response) {
 
                     this.$modal.hide('dialog');
+
+                    let data = response.data;
+                    if (data.status && data.status === 'error') {
+                        this.notifyError(data.message);
+                        return;
+                    }
+
                     this.notifySuccess(`Product ID:${id} successfully deleted.`);
                     this.getProdsList();
 
