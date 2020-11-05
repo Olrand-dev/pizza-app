@@ -23,6 +23,7 @@ class ProductsController extends Controller
 
     public function addNew(Request $request) : int
     {
+        DB::beginTransaction();
         try {
 
             $prodData = $request->input();
@@ -41,16 +42,18 @@ class ProductsController extends Controller
             $prod->save();
 
         } catch(\Throwable $e) {
-
+            DB::rollBack();
             abort(500, $e->getMessage());
         }
 
+        DB::commit();
         return (int) $prod->id;
     }
 
 
     public function save(Request $request) : void
     {
+        DB::beginTransaction();
         try {
 
             $prodData = $request->input();
@@ -88,9 +91,10 @@ class ProductsController extends Controller
             }
 
         } catch(\Throwable $e) {
-
+            DB::rollBack();
             abort(500, $e->getMessage());
         }
+        DB::commit();
     }
 
 

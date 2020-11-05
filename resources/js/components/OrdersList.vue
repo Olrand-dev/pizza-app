@@ -1,6 +1,6 @@
 <template>
 
-    <div id="pizzaSetsList" class="container">
+    <div id="ordersList" class="container">
         <div class="row">
 
             <div class="col-12">
@@ -37,7 +37,7 @@
                     <div v-show="mode === 'add_new'" class="col-12 mt-10">
                         <div class="row">
 
-                            <div class="col-md-5">
+                            <!--<div class="col-md-5">
                                 <div class="row">
 
                                     <div class="col-md-12">
@@ -77,16 +77,9 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-7 pizza-set-ingredients-list">
-
-                                <ingredients-list ref="ingList" :items-list="pizzaSet.ingredients"
-                                                  :types="pizzaIngTypesList" :ing-list="pizzaIngredientsList"></ingredients-list>
-
-                            </div>
-
                             <div class="col-md-12">
                                 <hr>
-                            </div>
+                            </div>-->
 
                         </div>
                     </div>
@@ -96,7 +89,7 @@
             </div>
 
 
-            <div class="col-12 mt-10">
+            <!--<div class="col-12 mt-10">
                 <div class="row">
 
                     <div class="col-md-2">
@@ -150,12 +143,12 @@
                             <td class="text-center">
 
                                 <button class="btn btn-info btn-sm"
-                                    @click="modalEdit(item.id)">
+                                    @click="editSetModal(item.id)">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
                                 <button class="btn btn-danger btn-sm"
-                                    @click="modalDelete(item.id)">
+                                    @click="deleteSetModal(item.id)">
                                     <i class="fa fa-trash"></i>
                                 </button>
 
@@ -185,7 +178,7 @@
 
                     </div>
                 </div>
-            </div>
+            </div>-->
 
         </div>
     </div>
@@ -195,13 +188,7 @@
 
 <style scoped lang="scss">
 
-    .pizza-set-ingredients-list {
-        padding-left: 55px;
-    }
 
-    .pizza-set-image {
-        max-height: 70px;
-    }
 
 </style>
 
@@ -212,14 +199,10 @@
     import Notify from '../mixins/Notify';
     import Sortable from '../mixins/Sortable';
     import Pagination from '../mixins/Pagination';
-    import LightBox from 'vue-image-lightbox';
-    import EditSetModal from './EditPizzaSetModal';
+    //import EditSetModal from './EditPizzaSetModal';
 
-    const PizzaSetRef = {
-        name: '',
-        base_id: 0,
-        ingredients: [],
-        image_file: '',
+    const OrderRef = {
+
     };
 
     export default {
@@ -239,12 +222,8 @@
                 selectedSortableHeader: 'Name',
                 sortField: 'name',
 
-                pizzaSet: {},
-                pizzaBasesList: [],
-                pizzaIngTypesList: [],
-                pizzaIngredientsList: [],
-                setsList: [],
-                lbData: [],
+                order: {},
+                ordersList: [],
             }
         },
 
@@ -255,20 +234,15 @@
             Sortable,
         ],
 
-        components: {
-            LightBox,
-        },
-
         created() {
-            this.initEmptySet();
-            this.getIngredientsList();
+            this.initEmptyOrder();
             this.getList();
         },
 
         methods: {
 
-            initEmptySet() {
-                this.pizzaSet = this.clone(PizzaSetRef, true);
+            initEmptyOrder() {
+                this.order = this.clone(OrderRef, true);
             },
 
             sortableHeaderClickHandler() {
@@ -280,27 +254,12 @@
                 this.getList();
             },
 
-            getIngredientsList() {
-
-                axios.get(
-                    '/pizza-sets/get-prods-list'
-                ).then(function(response) {
-
-                    let data = response.data;
-                    //console.log(data);
-                    this.pizzaBasesList = data.bases_list;
-                    this.pizzaIngTypesList = data.ing_types_list;
-                    this.pizzaIngredientsList = data.ingredients_list;
-
-                }.bind(this));
-            },
-
             getList(resetPage = false) {
                 this.listUpdating = true;
                 if (resetPage) this.page = 1;
 
                 axios.get(
-                    '/pizza-sets/get-list',
+                    '/orders/get-list',
                     {
                         params: {
                             page: this.page,
@@ -313,18 +272,8 @@
 
                     //console.log(response.data);return;
                     let data = response.data;
-                    let sets = JSON.parse(data.items);
 
-                    let _lbData = [];
-                    sets.forEach(function(item) {
-                        _lbData.push({
-                            thumb: item.image_url,
-                            src: item.image_url,
-                        });
-                    });
-                    this.lbData = _lbData;
-
-                    this.setsList = sets;
+                    this.setsList = JSON.parse(data.items);
                     this.pagesCount = data.pages_count;
 
                     this.listUpdating = false;
@@ -332,7 +281,7 @@
                 }.bind(this))
                 .catch(function() {
 
-                    this.notifyError('Load pizza sets list error.');
+                    this.notifyError('Load orders list error.');
 
                 }.bind(this));
             },
@@ -341,7 +290,7 @@
                 this.mode = 'add_new';
             },
 
-            addNew() {
+            /*addNewSet() {
                 let formData = new FormData();
 
                 for (let prop in this.pizzaSet) {
@@ -355,7 +304,7 @@
 
                 this.saving = true;
 
-                axios.post('/pizza-sets/add-new',
+                axios.post('/orders/add-new',
                     formData,
                     {
                         headers: {
@@ -374,17 +323,16 @@
                     this.notifyError('Add pizza set error.');
 
                 }.bind(this));
-            },
+            },*/
 
             closeBox() {
                 this.mode = 'list';
-                this.initEmptySet();
-                this.$refs.ingList.items = [];
+                this.initEmptyOrder();
             },
 
-            modalEdit(id) {
+            /*editSetModal(id) {
 
-                let set = this.getItemById(this.setsList, id);
+                let order = this.getItemById(this.ordersList, id);
 
                 this.$modal.show(
                     EditSetModal,
@@ -406,7 +354,7 @@
                 );
             },
 
-            modalDelete(id) {
+            deleteSetModal(id) {
 
                 this.$modal.show(
                     'dialog',
@@ -417,7 +365,7 @@
                             {
                                 title: 'Ok',
                                 handler: () => {
-                                    this.deleteItem(id);
+                                    this.deleteSet(id);
                                 },
                             },
                             {
@@ -429,12 +377,12 @@
                         ],
                     }
                 );
-            },
+            },*/
 
             deleteItem(id) {
 
                 axios.get(
-                    '/pizza-sets/delete',
+                    '/orders/delete',
                     {
                         params: {
                             id
@@ -443,24 +391,16 @@
                 ).then(function(response) {
 
                     this.$modal.hide('dialog');
-                    this.notifySuccess(`Pizza set ID:${id} successfully deleted.`);
+                    this.notifySuccess(`Order ID:${id} successfully deleted.`);
                     this.getList();
 
                 }.bind(this))
                 .catch(function() {
 
                     this.$modal.hide('dialog');
-                    this.notifyError('Delete pizza set error.');
+                    this.notifyError('Delete order error.');
 
                 }.bind(this));
-            },
-
-            handleFileUpload() {
-                this.pizzaSet.image_file = this.$refs.pizzaSetImageFile.files[0];
-            },
-
-            openGallery(index) {
-                this.$refs.lightbox.showImage(index);
             }
         }
     }

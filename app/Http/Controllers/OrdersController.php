@@ -5,26 +5,19 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
-use App\Models\PizzaSet;
-use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class PizzaSetsController extends Controller
+class OrdersController extends Controller
 {
-    protected $imagesDir = 'pizza-set-images';
-
-
     public function index()
     {
-        return view('app.pizza-sets');
+        return view('app.orders');
     }
 
 
-    public function addNew(Request $request) : int
+    /*public function addNew(Request $request) : int
     {
-        DB::beginTransaction();
         try {
 
             $setData = $request->input();
@@ -43,18 +36,16 @@ class PizzaSetsController extends Controller
             $this->calculatePizzaSet($set->id);
 
         } catch(\Throwable $e) {
-            DB::rollBack();
+
             abort(500, $e->getMessage());
         }
 
-        DB::commit();
         return (int) $set->id;
     }
 
 
     public function save(Request $request) : void
     {
-        DB::beginTransaction();
         try {
 
             $setData = $request->input();
@@ -83,30 +74,8 @@ class PizzaSetsController extends Controller
             }
 
         } catch(\Throwable $e) {
-            DB::rollBack();
+
             abort(500, $e->getMessage());
-        }
-        DB::commit();
-    }
-
-
-    private function addBaseToIngredients(int $baseId, array &$ingredients) : void
-    {
-        $ingredients[] = [
-            'type_id' => SystemConst::PRODUCT_TYPE_PIZZA_BASE,
-            'prod_id' => $baseId,
-            'quantity' => 1,
-        ];
-    }
-
-
-    private function attachProdsToSet(PizzaSet &$set, array $prods) : void
-    {
-        foreach ($prods as $prod) {
-            $prodId = (int) $prod['prod_id'];
-            $quantity = (int) $prod['quantity'];
-
-            $set->products()->attach($prodId, ['quantity' => $quantity]);
         }
     }
 
@@ -155,45 +124,8 @@ class PizzaSetsController extends Controller
     }
 
 
-    public function getProdsList() : array
-    {
-        $list = [
-            'ing_types_list' => [],
-            'bases_list' => [],
-            'ingredients_list' => [],
-        ];
-
-        Product::with('type')->get()->map(function ($product) use (&$list) {
-            $typeId = $product->type_id;
-            $ingredientsList = &$list['ingredients_list'];
-            $ingTypesList = &$list['ing_types_list'];
-
-            if ($typeId === SystemConst::PRODUCT_TYPE_ADD_PRODUCTS) return;
-            $prodArr = json_decode((string) $product, true);
-
-            switch ($typeId) {
-                case SystemConst::PRODUCT_TYPE_PIZZA_BASE: {
-                    $list['bases_list'][] = $prodArr;
-                    break;
-                }
-                default: {
-                    if (empty($ingredientsList[$typeId])) $ingredientsList[$typeId] = [];
-                    if (empty($ingTypesList[$typeId])) $ingTypesList[$typeId] = [
-                        'id' => $typeId,
-                        'name' => $product->type->name,
-                    ];
-                    $ingredientsList[$typeId][] = $prodArr;
-                }
-            }
-        });
-
-        return $list;
-    }
-
-
     public function delete(Request $request) : void
     {
-        DB::beginTransaction();
         try {
 
             $id = (int) $request->input('id');
@@ -209,9 +141,8 @@ class PizzaSetsController extends Controller
             PizzaSet::destroy($id);
 
         } catch(\Throwable $e) {
-            DB::rollBack();
+
             abort(500, $e->getMessage());
         }
-        DB::commit();
-    }
+    }*/
 }

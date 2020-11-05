@@ -29,7 +29,7 @@
 
 
     <!--     Fonts and icons     -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    {{--<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">--}}
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
     <link href="{{ asset('dev-lib/css/pe-icon-7-stroke.css') }}" rel="stylesheet" />
 
@@ -41,7 +41,7 @@
     <div id="app" class="wrapper">
 
         <div class="sidebar" data-color="orange" data-image="">
-        
+
             <div class="sidebar-wrapper">
 
                 <div class="logo">
@@ -49,29 +49,29 @@
                         Pizza App
                     </a>
                 </div>
-    
+
                 <x-sidebar-menu></x-sidebar-menu>
 
             </div>
         </div>
 
-    
+
         <div class="main-panel">
 
             <nav class="navbar navbar-default navbar-fixed">
-                
+
                 <x-top-menu></x-top-menu>
 
             </nav>
-    
-    
+
+
             <div class="content">
 
                 @yield('content')
- 
+
             </div>
-    
-    
+
+
             <footer class="footer">
                 <div class="container-fluid">
 
@@ -82,29 +82,32 @@
                                     Home
                                 </a>
                             </li>
-    
+
                         </ul>
                     </nav> --}}
 
                     <p class="copyright pull-right">
-                        &copy; @{{ year }} 
-                        <a href="https://www.webworkshop.dev">Web Workshop</a> | 
+                        &copy; @{{ year }}
+                        <a href="https://www.webworkshop.dev">Web Workshop</a> |
                         template by <a href="http://www.creative-tim.com">Creative Tim</a>
                     </p>
 
                 </div>
             </footer>
-    
+
         </div>
 
     </div>
-    
+
 </body>
 
 
 <!--   Core JS Files   -->
 <script src="{{ asset('dev-lib/js/jquery.3.2.1.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('dev-lib/js/bootstrap.min.js') }}" type="text/javascript"></script>
+
+<!--   FontAwesome   -->
+<script src="https://kit.fontawesome.com/35133f2e0e.js" crossorigin="anonymous"></script>
 
 <!--  Charts Plugin -->
 {{-- <script src="{{ asset('dev-lib/js/chartist.min.js') }}"></script> --}}

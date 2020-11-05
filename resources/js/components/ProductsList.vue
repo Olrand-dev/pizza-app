@@ -17,7 +17,7 @@
 
                         <div v-if="mode === 'add_new'">
                             <button class="btn btn-success btn-fill btn-icon"
-                                    @click="addNewProd">
+                                    @click="addNew">
                                 <i v-if="saving" class="fa fa-spinner anim-rotate"></i>
                                 <i v-else class="fa fa-check"></i>
                                 Save
@@ -124,7 +124,7 @@
                         <div class="form-group">
                             <label for="prodTypeFilter">Show by type</label>
                             <select v-model="byType" class="form-control" id="prodTypeFilter"
-                                    @change="getProdsList(true)">
+                                    @change="getList(true)">
                                 <option value="0">all</option>
                                 <option v-for="type in prodTypesList" :key="type.id"
                                         :value="type.id">
@@ -138,7 +138,7 @@
                         <div class="form-group">
                             <label for="perPageSelect">Per page</label>
                             <select v-model="perPage" class="form-control" id="perPageSelect"
-                                    @change="getProdsList(true)">
+                                    @change="getList(true)">
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                                 <option value="15">15</option>
@@ -188,17 +188,17 @@
                         <td class="text-center">
 
                             <button class="btn btn-info btn-sm"
-                                    @click="editProdModal(item.id)">
+                                    @click="modalEdit(item.id)">
                                 <i class="fa fa-edit"></i>
                             </button>
 
                             <button v-if="item.description !== ''" class="btn btn-default btn-sm"
-                                    @click="prodDetailsModal(item.id)">
+                                    @click="modalDetails(item.id)">
                                 <i class="fa fa-info"></i>
                             </button>
 
                             <button class="btn btn-danger btn-sm"
-                                    @click="deleteProdModal(item.id)">
+                                    @click="modalDelete(item.id)">
                                 <i class="fa fa-trash"></i>
                             </button>
 
@@ -301,19 +301,19 @@
         },
 
         created() {
-            this.initEmptyProd();
+            this.initProdData();
             this.getProdTypesList();
-            this.getProdsList();
+            this.getList();
         },
 
         methods: {
 
-            initEmptyProd() {
+            initProdData() {
                 this.product = this.clone(ProductRef);
             },
 
             sortableHeaderClickHandler() {
-                this.getProdsList();
+                this.getList();
             },
 
             getProdTypesList() {
@@ -329,10 +329,10 @@
 
             paginate(page) {
                 this.page = page;
-                this.getProdsList();
+                this.getList();
             },
 
-            getProdsList(resetPage = false) {
+            getList(resetPage = false) {
                 this.listUpdating = true;
                 if (resetPage) this.page = 1;
 
@@ -379,7 +379,7 @@
                 this.mode = 'add_new';
             },
 
-            addNewProd() {
+            addNew() {
                 let formData = new FormData();
 
                 for (let prop in this.product) {
@@ -399,7 +399,7 @@
 
                     this.notifySuccess('Product ID:' + response.data + ' successfully added.');
                     this.closeBox();
-                    this.getProdsList();
+                    this.getList();
 
                 }.bind(this))
                 .catch(function() {
@@ -411,16 +411,12 @@
 
             closeBox() {
                 this.mode = 'list';
-                this.initEmptyProd();
+                this.initProdData();
             },
 
-            getProdById(id) {
-                return this.prodsList.filter((_prod) => _prod.id === id)[0];
-            },
+            modalEdit(id) {
 
-            editProdModal(id) {
-
-                let prod = this.getProdById(id);
+                let prod = this.getItemById(this.prodsList, id);
 
                 this.$modal.show(
                     EditProductModal,
@@ -434,15 +430,15 @@
                     },
                     {
                         'before-close': event => {
-                            this.getProdsList();
+                            this.getList();
                         }
                     }
                 );
             },
 
-            prodDetailsModal(id) {
+            modalDetails(id) {
 
-                let prod = this.getProdById(id);
+                let prod = this.getItemById(this.prodsList, id);
 
                 this.$modal.show(
                     ProductDetailsModal,
@@ -456,7 +452,7 @@
                 );
             },
 
-            deleteProdModal(id) {
+            modalDelete(id) {
 
                 this.$modal.show(
                     'dialog',
@@ -467,7 +463,7 @@
                             {
                                 title: 'Ok',
                                 handler: () => {
-                                    this.deleteProd(id);
+                                    this.deleteItem(id);
                                 },
                             },
                             {
@@ -481,7 +477,7 @@
                 );
             },
 
-            deleteProd(id) {
+            deleteItem(id) {
 
                 axios.get(
                     '/products/delete',
@@ -501,7 +497,7 @@
                     }
 
                     this.notifySuccess(`Product ID:${id} successfully deleted.`);
-                    this.getProdsList();
+                    this.getList();
 
                 }.bind(this))
                 .catch(function() {

@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\DashboardController;
 use \App\Http\Controllers\ProductsController;
 use \App\Http\Controllers\PizzaSetsController;
+use \App\Http\Controllers\OrdersController;
+use \App\Http\Controllers\CustomersController;
 use \App\Http\Controllers\HomeController;
 
 /*
@@ -39,6 +41,24 @@ Route::prefix('pizza-sets')->group(function() {
     Route::get('get-prods-list', [PizzaSetsController::class, 'getProdsList']);
     Route::get('get-list', [PizzaSetsController::class, 'getList']);
     Route::get('delete', [PizzaSetsController::class, 'delete']);
+});
+
+
+Route::prefix('orders')->group(function() {
+    Route::get('', [OrdersController::class, 'index']);
+    Route::post('add-new', [OrdersController::class, 'addNew']);
+    Route::post('save', [OrdersController::class, 'save']);
+    Route::get('get-list', [OrdersController::class, 'getList']);
+    Route::get('delete', [OrdersController::class, 'delete']);
+});
+
+
+Route::prefix('customers')->group(function() {
+    Route::get('', [CustomersController::class, 'index']);
+    Route::post('add-new', [CustomersController::class, 'addNew']);
+    Route::post('save', [CustomersController::class, 'save']);
+    Route::get('get-list', [CustomersController::class, 'getList']);
+    Route::get('delete', [CustomersController::class, 'delete']);
 });
 
 Auth::routes();

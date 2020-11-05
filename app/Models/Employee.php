@@ -12,7 +12,7 @@ class Employee extends Model
 
     public function user()
     {
-        return $this->hasOne('App\Models\User');
+        return $this->morphOne('App\Models\User', 'userable');
     }
 
 

@@ -20,6 +20,10 @@ export default {
             return found;
         },
 
+        getItemById(list, id) {
+            return list.filter((_item) => _item.id === id)[0];
+        },
+
         removeByIndex(arr, index) {
             arr.splice(index, 1);
         },
