@@ -2079,6 +2079,119 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2096,19 +2209,19 @@ var CustomerRef = {
       saving: false,
       findBy: 'name',
       findQuery: '',
-      sort: 'name_desc',
-      customer: {},
+      sort: 'name@desc',
       customerEdit: {},
       customersList: []
     };
   },
   mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__["default"]],
   created: function created() {
-    this.initCustomerData(); //this.getList();
+    this.initCustomerData();
+    this.getList();
   },
   methods: {
     initCustomerData: function initCustomerData() {
-      this.customer = this.clone(CustomerRef, true);
+      this.customerEdit = this.clone(CustomerRef, true);
     },
     paginate: function paginate(page) {
       this.page = page;
@@ -2118,26 +2231,27 @@ var CustomerRef = {
       var resetPage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       this.listUpdating = true;
       if (resetPage) this.page = 1;
-      /*axios.get(
-          '/customers/get-list',
-          {
-              params: {
-                  page: this.page,
-                  per_page: this.perPage,
-                  sort_field: this.sortField,
-                  sort_dir: this.sortDirection,
-              },
-          }
-      ).then(function(response) {
-           //console.log(response.data);return;
-          let data = response.data;
-           this.setsList = JSON.parse(data.items);
-          this.pagesCount = data.pages_count;
-           this.listUpdating = false;
-       }.bind(this))
-      .catch(function() {
-           this.notifyError('Load orders list error.');
-       }.bind(this));*/
+      var sortData = this.sort.split('@');
+      var sortField = sortData[0];
+      var sortDir = sortData[1];
+      axios.get('/customers/get-list', {
+        params: {
+          page: this.page,
+          per_page: this.perPage,
+          find_by: this.findBy,
+          find_query: this.findQuery,
+          sort_field: sortField,
+          sort_dir: sortDir
+        }
+      }).then(function (response) {
+        var data = response.data;
+        this.customersList = JSON.parse(data.items);
+        console.log(this.customersList);
+        this.pagesCount = data.pages_count;
+        this.listUpdating = false;
+      }.bind(this))["catch"](function () {
+        this.notifyError('Load customers list error.');
+      }.bind(this));
     },
     openBox: function openBox() {
       this.mode = 'add_new';
@@ -2148,58 +2262,62 @@ var CustomerRef = {
     },
     addNew: function addNew() {
       this.saving = true;
-      axios.post('/customers/add-new', this.customer).then(function (response) {
+      axios.post('/customers/add-new', this.customerEdit).then(function (response) {
         this.notifySuccess('Cutomer ID:' + response.data + ' successfully added.');
         this.closeBox();
-        this.saving = false; //this.getList();
+        this.initCustomerData();
+        this.saving = false;
+        this.getList();
       }.bind(this))["catch"](function () {
         this.saving = false;
         this.notifyError('Add customer error.');
       }.bind(this));
+    },
+    editUser: function editUser(index) {
+      var customerData = this.customersList[index];
+      this.customerEdit = {
+        id: customerData.id,
+        name: customerData.name,
+        email: customerData.user.email,
+        phone: customerData.phone,
+        address: customerData.address
+      };
+      this.mode = 'update';
+    },
+    modalDelete: function modalDelete(id) {
+      var _this = this;
+
+      //console.log(this.$modal);
+      this.$modal.show('dialog', {
+        title: 'Delete customer',
+        text: "Customer with ID:".concat(id, " will be deleted."),
+        buttons: [{
+          title: 'Ok',
+          handler: function handler() {
+            _this.deleteItem(id);
+          }
+        }, {
+          title: 'Cancel',
+          handler: function handler() {
+            _this.$modal.hide('dialog');
+          }
+        }]
+      });
+    },
+    deleteItem: function deleteItem(id) {
+      axios.get('/customers/delete', {
+        params: {
+          id: id
+        }
+      }).then(function (response) {
+        this.$modal.hide('dialog');
+        this.notifySuccess("Customer ID:".concat(id, " successfully deleted."));
+        this.getList();
+      }.bind(this))["catch"](function () {
+        this.$modal.hide('dialog');
+        this.notifyError('Delete customer error.');
+      }.bind(this));
     }
-    /*modalDelete(id) {
-         this.$modal.show(
-            'dialog',
-            {
-                title: 'Delete pizza set',
-                text: `Pizza set with ID:${id} will be deleted.`,
-                buttons: [
-                    {
-                        title: 'Ok',
-                        handler: () => {
-                            this.deleteSet(id);
-                        },
-                    },
-                    {
-                        title: 'Cancel',
-                        handler: () => {
-                            this.$modal.hide('dialog');
-                        },
-                    },
-                ],
-            }
-        );
-    },*/
-
-    /*deleteItem(id) {
-         axios.get(
-            '/customers/delete',
-            {
-                params: {
-                    id
-                },
-            }
-        ).then(function(response) {
-             this.$modal.hide('dialog');
-            this.notifySuccess(`Order ID:${id} successfully deleted.`);
-            this.getList();
-         }.bind(this))
-        .catch(function() {
-             this.$modal.hide('dialog');
-            this.notifyError('Delete order error.');
-         }.bind(this));
-    }*/
-
   }
 });
 
@@ -3107,9 +3225,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/Utils */ "./resources/js/mixins/Utils.js");
-//
-//
-//
 //
 //
 //
@@ -4208,7 +4323,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".top-panel-btn[data-v-174508b8] {\n  position: relative;\n  top: 28px;\n}\n.new-user-btn[data-v-174508b8] {\n  right: 14px;\n}\n.update-list-btn[data-v-174508b8] {\n  min-width: 35px;\n}", ""]);
+exports.push([module.i, ".top-panel-btn[data-v-174508b8] {\n  position: relative;\n  top: 28px;\n}\n.new-user-btn[data-v-174508b8] {\n  right: 14px;\n}\n.update-list-btn[data-v-174508b8] {\n  min-width: 35px;\n}\n.user-box-list[data-v-174508b8] {\n  padding-left: 15px;\n  padding-right: 15px;\n  margin: 20px 0;\n}\n.user-box-list .user-box[data-v-174508b8] {\n  padding: 10px;\n}\n.user-box-list .user-box .user-data-top[data-v-174508b8] {\n  padding: 0;\n  margin-bottom: 6px;\n}\n.user-box-list .user-box .user-data-line[data-v-174508b8] {\n  display: block;\n  color: #9A9A9A;\n}\n.user-box-list .user-box .user-data-line.user-name[data-v-174508b8] {\n  font-size: 18px;\n}\n.user-box-list .user-box .user-data-line.user-address[data-v-174508b8] {\n  font-size: 16px;\n}\n.user-box-list .user-box .user-data-line i[data-v-174508b8] {\n  color: #666;\n  margin-right: 5px;\n}", ""]);
 
 // exports
 
@@ -4246,7 +4361,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".ingredient-box {\n  border: 1px solid #ddd;\n  padding: 0;\n  border-radius: 6px;\n  position: relative;\n  right: 15px;\n  margin-bottom: 6px;\n}\n.ing-del-btn {\n  position: relative;\n  top: 28px;\n  right: 20px;\n}", ""]);
+exports.push([module.i, ".ingredient-box {\n  position: relative;\n  right: 15px;\n  margin-bottom: 6px;\n}\n.ing-del-btn {\n  position: relative;\n  top: 28px;\n  right: 20px;\n}", ""]);
 
 // exports
 
@@ -24799,19 +24914,19 @@ var render = function() {
                       }
                     },
                     [
-                      _c("option", { attrs: { value: "name_desc" } }, [
+                      _c("option", { attrs: { value: "name@desc" } }, [
                         _vm._v("Name A-Z")
                       ]),
                       _vm._v(" "),
-                      _c("option", { attrs: { value: "name_asc" } }, [
+                      _c("option", { attrs: { value: "name@asc" } }, [
                         _vm._v("Name Z-A")
                       ]),
                       _vm._v(" "),
-                      _c("option", { attrs: { value: "date_desc" } }, [
+                      _c("option", { attrs: { value: "created_at@desc" } }, [
                         _vm._v("Register date - newest")
                       ]),
                       _vm._v(" "),
-                      _c("option", { attrs: { value: "date_asc" } }, [
+                      _c("option", { attrs: { value: "created_at@asc" } }, [
                         _vm._v("Register date - oldest")
                       ])
                     ]
@@ -24851,7 +24966,96 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col-md-12" }),
+            _c("div", { staticClass: "col-12" }, [
+              _c(
+                "div",
+                { staticClass: "row user-box-list" },
+                _vm._l(_vm.customersList, function(item, index) {
+                  return _c(
+                    "div",
+                    { key: item.id, staticClass: "col-md-12 box user-box" },
+                    [
+                      _c("div", { staticClass: "col-md-12 user-data-top" }, [
+                        _c("div", { staticClass: "col-md-6" }, [
+                          _c(
+                            "span",
+                            { staticClass: "user-data-line user-name" },
+                            [
+                              _c("i", { staticClass: "fas fa-user" }),
+                              _vm._v(
+                                "\n                                                " +
+                                  _vm._s(item.name) +
+                                  "\n                                            "
+                              )
+                            ]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-md-5" }, [
+                          _c("span", { staticClass: "user-data-line" }, [
+                            _c("i", { staticClass: "fas fa-phone-alt" }),
+                            _vm._v(
+                              "\n                                                " +
+                                _vm._s(item.phone) +
+                                "\n                                            "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "user-data-line" }, [
+                            _c("i", { staticClass: "fas fa-at" }),
+                            _vm._v(
+                              "\n                                                " +
+                                _vm._s(item.user.email) +
+                                "\n                                            "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "user-data-line" }, [
+                            _c("i", { staticClass: "fas fa-table" }),
+                            _vm._v(
+                              "\n                                                " +
+                                _vm._s(item.registered_at) +
+                                "\n                                            "
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-md-1 text-right" }, [
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-info btn-sm",
+                              on: {
+                                click: function($event) {
+                                  return _vm.editUser(index)
+                                }
+                              }
+                            },
+                            [_c("i", { staticClass: "fa fa-edit" })]
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-12" }, [
+                        _c(
+                          "span",
+                          { staticClass: "user-data-line user-address" },
+                          [
+                            _c("i", { staticClass: "fas fa-map-marker-alt" }),
+                            _vm._v(
+                              "\n                                            " +
+                                _vm._s(item.address) +
+                                "\n                                        "
+                            )
+                          ]
+                        )
+                      ])
+                    ]
+                  )
+                }),
+                0
+              )
+            ]),
             _vm._v(" "),
             _vm.customersList.length === 0
               ? _c("div", { staticClass: "col-12 text-center" }, [
@@ -24859,7 +25063,80 @@ var render = function() {
                     _vm._v("No items to show.")
                   ])
                 ])
-              : _vm._e()
+              : _vm._e(),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-12" }, [
+              _c(
+                "div",
+                { staticClass: "col-md-10" },
+                [
+                  _c("pagination", {
+                    attrs: {
+                      page: _vm.page,
+                      "pages-count": _vm.pagesCount,
+                      range: "5"
+                    },
+                    on: { "click-handler": _vm.paginate }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-md-2" }, [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "perPageSelect" } }, [
+                    _vm._v("Per page")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.perPage,
+                          expression: "perPage"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { id: "perPageSelect" },
+                      on: {
+                        change: [
+                          function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.perPage = $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          },
+                          function($event) {
+                            return _vm.getList(true)
+                          }
+                        ]
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "5" } }, [_vm._v("5")]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "10" } }, [_vm._v("10")]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "15" } }, [_vm._v("15")]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "25" } }, [_vm._v("25")]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "50" } }, [_vm._v("50")])
+                    ]
+                  )
+                ])
+              ])
+            ])
           ])
         ])
       ])
@@ -24895,19 +25172,23 @@ var render = function() {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.customer.name,
-                          expression: "customer.name"
+                          value: _vm.customerEdit.name,
+                          expression: "customerEdit.name"
                         }
                       ],
                       staticClass: "form-control",
                       attrs: { type: "text" },
-                      domProps: { value: _vm.customer.name },
+                      domProps: { value: _vm.customerEdit.name },
                       on: {
                         input: function($event) {
                           if ($event.target.composing) {
                             return
                           }
-                          _vm.$set(_vm.customer, "name", $event.target.value)
+                          _vm.$set(
+                            _vm.customerEdit,
+                            "name",
+                            $event.target.value
+                          )
                         }
                       }
                     })
@@ -24925,20 +25206,20 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.customer.phone,
-                              expression: "customer.phone"
+                              value: _vm.customerEdit.phone,
+                              expression: "customerEdit.phone"
                             }
                           ],
                           staticClass: "form-control",
                           attrs: { type: "text" },
-                          domProps: { value: _vm.customer.phone },
+                          domProps: { value: _vm.customerEdit.phone },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
                               _vm.$set(
-                                _vm.customer,
+                                _vm.customerEdit,
                                 "phone",
                                 $event.target.value
                               )
@@ -24957,20 +25238,20 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.customer.email,
-                              expression: "customer.email"
+                              value: _vm.customerEdit.email,
+                              expression: "customerEdit.email"
                             }
                           ],
                           staticClass: "form-control",
                           attrs: { type: "text" },
-                          domProps: { value: _vm.customer.email },
+                          domProps: { value: _vm.customerEdit.email },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
                               _vm.$set(
-                                _vm.customer,
+                                _vm.customerEdit,
                                 "email",
                                 $event.target.value
                               )
@@ -24991,19 +25272,23 @@ var render = function() {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.customer.address,
-                          expression: "customer.address"
+                          value: _vm.customerEdit.address,
+                          expression: "customerEdit.address"
                         }
                       ],
                       staticClass: "form-control",
                       attrs: { rows: "5" },
-                      domProps: { value: _vm.customer.address },
+                      domProps: { value: _vm.customerEdit.address },
                       on: {
                         input: function($event) {
                           if ($event.target.composing) {
                             return
                           }
-                          _vm.$set(_vm.customer, "address", $event.target.value)
+                          _vm.$set(
+                            _vm.customerEdit,
+                            "address",
+                            $event.target.value
+                          )
                         }
                       }
                     })
@@ -25037,7 +25322,25 @@ var render = function() {
                       _c("i", { staticClass: "fa fa-ban" }),
                       _vm._v(" Cancel\n                        ")
                     ]
-                  )
+                  ),
+                  _vm._v(" "),
+                  _vm.mode === "update"
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-danger btn-fill btn-icon",
+                          on: {
+                            click: function($event) {
+                              return _vm.modalDelete(_vm.customerEdit.id)
+                            }
+                          }
+                        },
+                        [
+                          _c("i", { staticClass: "fa fa-trash" }),
+                          _vm._v(" Delete user\n                        ")
+                        ]
+                      )
+                    : _vm._e()
                 ])
               ])
             ])
@@ -25811,7 +26114,7 @@ var render = function() {
           { staticClass: "col-md-12" },
           _vm._l(_vm.items, function(prod, index) {
             return _c("div", { key: index, staticClass: "row" }, [
-              _c("div", { staticClass: "col-md-12 ingredient-box" }, [
+              _c("div", { staticClass: "col-md-12 box ingredient-box" }, [
                 _c("div", { staticClass: "col-md-4" }, [
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", [_vm._v("Type")]),
@@ -26446,7 +26749,6 @@ var render = function() {
               { staticClass: "col-md-12" },
               [
                 _c("pagination", {
-                  ref: "pagin1",
                   attrs: {
                     page: _vm.page,
                     "pages-count": _vm.pagesCount,

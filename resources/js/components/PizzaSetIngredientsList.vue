@@ -9,7 +9,7 @@
         <div v-if="items.length > 0" class="col-md-12">
 
             <div v-for="(prod, index) in items" :key="index" class="row">
-                <div class="col-md-12 ingredient-box">
+                <div class="col-md-12 box ingredient-box">
 
                     <div class="col-md-4">
                         <div class="form-group">
@@ -72,9 +72,6 @@
     @import './../../sass/variables';
 
     .ingredient-box {
-        border: 1px solid $s-light-gray;
-        padding: 0;
-        border-radius: 6px;
         position: relative;
         right: 15px;
         margin-bottom: 6px;

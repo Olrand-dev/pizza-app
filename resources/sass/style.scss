@@ -23,6 +23,12 @@
     }
 }
 
+.box {
+    border: 1px solid $s-light-gray;
+    padding: 0;
+    border-radius: 6px;
+}
+
 .btn {
     &.btn-icon {
         padding-left: 10px;

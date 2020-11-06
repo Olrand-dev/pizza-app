@@ -34,10 +34,10 @@
                                     <div class="form-group">
                                         <label for="sortSelect">Sort</label>
                                         <select v-model="sort" class="form-control" id="sortSelect">
-                                            <option value="name_desc">Name A-Z</option>
-                                            <option value="name_asc">Name Z-A</option>
-                                            <option value="date_desc">Register date - newest</option>
-                                            <option value="date_asc">Register date - oldest</option>
+                                            <option value="name@desc">Name A-Z</option>
+                                            <option value="name@asc">Name Z-A</option>
+                                            <option value="created_at@desc">Register date - newest</option>
+                                            <option value="created_at@asc">Register date - oldest</option>
                                         </select>
                                     </div>
                                 </div>
@@ -62,12 +62,84 @@
 
                         <div class="row">
 
-                            <div class="col-md-12">
+                            <div class="col-12">
+                                <div class="row user-box-list">
 
+                                    <div v-for="(item, index) in customersList" :key="item.id" class="col-md-12 box user-box">
+
+                                        <div class="col-md-12 user-data-top">
+
+                                            <div class="col-md-6">
+                                                <span class="user-data-line user-name">
+                                                    <i class="fas fa-user"></i>
+                                                    {{ item.name }}
+                                                </span>
+                                            </div>
+
+                                            <div class="col-md-5">
+
+                                                <span class="user-data-line">
+                                                    <i class="fas fa-phone-alt"></i>
+                                                    {{ item.phone }}
+                                                </span>
+                                                <span class="user-data-line">
+                                                    <i class="fas fa-at"></i>
+                                                    {{ item.user.email }}
+                                                </span>
+                                                <span class="user-data-line">
+                                                    <i class="fas fa-table"></i>
+                                                    {{ item.registered_at }}
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col-md-1 text-right">
+                                                <button class="btn btn-info btn-sm" @click="editUser(index)">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <span class="user-data-line user-address">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                {{ item.address }}
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
                             </div>
 
                             <div v-if="customersList.length === 0" class="col-12 text-center">
                                 <span class="no-items">No items to show.</span>
+                            </div>
+
+                            <div class="col-12">
+
+                                <div class="col-md-10">
+
+                                    <pagination :page="page" :pages-count="pagesCount" @click-handler="paginate"
+                                                range="5"></pagination>
+
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="perPageSelect">Per page</label>
+                                        <select v-model="perPage" class="form-control" id="perPageSelect"
+                                                @change="getList(true)">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="15">15</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                             </div>
 
                         </div>
@@ -94,7 +166,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" class="form-control" v-model="customer.name">
+                                <input type="text" class="form-control" v-model="customerEdit.name">
                             </div>
                         </div>
 
@@ -104,14 +176,14 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Phone</label>
-                                        <input type="text" class="form-control" v-model="customer.phone">
+                                        <input type="text" class="form-control" v-model="customerEdit.phone">
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Email</label>
-                                        <input type="text" class="form-control" v-model="customer.email">
+                                        <input type="text" class="form-control" v-model="customerEdit.email">
                                     </div>
                                 </div>
 
@@ -121,7 +193,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Address</label>
-                                <textarea rows="5" class="form-control" v-model="customer.address"></textarea>
+                                <textarea rows="5" class="form-control" v-model="customerEdit.address"></textarea>
                             </div>
                         </div>
 
@@ -135,6 +207,11 @@
                             <button class="btn btn-warning btn-fill btn-icon"
                                     @click="closeBox">
                                 <i class="fa fa-ban"></i> Cancel
+                            </button>
+
+                            <button v-if="mode === 'update'" class="btn btn-danger btn-fill btn-icon"
+                                    @click="modalDelete(customerEdit.id)">
+                                <i class="fa fa-trash"></i> Delete user
                             </button>
                         </div>
 
@@ -150,6 +227,8 @@
 
 <style scoped lang="scss">
 
+    @import './../../sass/variables';
+
     .top-panel-btn {
         position: relative;
         top: 28px;
@@ -161,6 +240,40 @@
 
     .update-list-btn {
         min-width: 35px;
+    }
+
+    .user-box-list {
+
+        padding-left: 15px;
+        padding-right: 15px;
+        margin: 20px 0;
+
+        .user-box {
+
+            padding: 10px;
+
+            .user-data-top {
+                padding: 0;
+                margin-bottom: 6px;
+            }
+
+            .user-data-line {
+                display: block;
+                color: $s-soft-gray;
+
+                &.user-name {
+                    font-size: 18px;
+                }
+                &.user-address {
+                    font-size: 16px;
+                }
+
+                i {
+                    color: $s-dark-gray;
+                    margin-right: 5px;
+                }
+            }
+        }
     }
 
 </style>
@@ -189,9 +302,8 @@
 
                 findBy: 'name',
                 findQuery: '',
-                sort: 'name_desc',
+                sort: 'name@desc',
 
-                customer: {},
                 customerEdit: {},
                 customersList: [],
             }
@@ -205,13 +317,13 @@
 
         created() {
             this.initCustomerData();
-            //this.getList();
+            this.getList();
         },
 
         methods: {
 
             initCustomerData() {
-                this.customer = this.clone(CustomerRef, true);
+                this.customerEdit = this.clone(CustomerRef, true);
             },
 
             paginate(page) {
@@ -223,22 +335,28 @@
                 this.listUpdating = true;
                 if (resetPage) this.page = 1;
 
-                /*axios.get(
+                let sortData = this.sort.split('@');
+                let sortField = sortData[0];
+                let sortDir = sortData[1];
+
+                axios.get(
                     '/customers/get-list',
                     {
                         params: {
                             page: this.page,
                             per_page: this.perPage,
-                            sort_field: this.sortField,
-                            sort_dir: this.sortDirection,
+                            find_by: this.findBy,
+                            find_query: this.findQuery,
+                            sort_field: sortField,
+                            sort_dir: sortDir,
                         },
                     }
                 ).then(function(response) {
 
-                    //console.log(response.data);return;
                     let data = response.data;
 
-                    this.setsList = JSON.parse(data.items);
+                    this.customersList = JSON.parse(data.items);
+                    console.log(this.customersList);
                     this.pagesCount = data.pages_count;
 
                     this.listUpdating = false;
@@ -246,9 +364,9 @@
                 }.bind(this))
                 .catch(function() {
 
-                    this.notifyError('Load orders list error.');
+                    this.notifyError('Load customers list error.');
 
-                }.bind(this));*/
+                }.bind(this));
             },
 
             openBox() {
@@ -264,13 +382,15 @@
                 this.saving = true;
 
                 axios.post('/customers/add-new',
-                    this.customer
+                    this.customerEdit
                 ).then(function(response) {
 
                     this.notifySuccess('Cutomer ID:' + response.data + ' successfully added.');
                     this.closeBox();
+
+                    this.initCustomerData();
                     this.saving = false;
-                    //this.getList();
+                    this.getList();
 
                 }.bind(this))
                 .catch(function() {
@@ -281,18 +401,32 @@
                 }.bind(this));
             },
 
-            /*modalDelete(id) {
+            editUser(index) {
+                let customerData = this.customersList[index];
+
+                this.customerEdit = {
+                    id: customerData.id,
+                    name: customerData.name,
+                    email: customerData.user.email,
+                    phone: customerData.phone,
+                    address: customerData.address,
+                };
+                this.mode = 'update';
+            },
+
+            modalDelete(id) {
+                //console.log(this.$modal);
 
                 this.$modal.show(
                     'dialog',
                     {
-                        title: 'Delete pizza set',
-                        text: `Pizza set with ID:${id} will be deleted.`,
+                        title: 'Delete customer',
+                        text: `Customer with ID:${id} will be deleted.`,
                         buttons: [
                             {
                                 title: 'Ok',
                                 handler: () => {
-                                    this.deleteSet(id);
+                                    this.deleteItem(id);
                                 },
                             },
                             {
@@ -304,9 +438,9 @@
                         ],
                     }
                 );
-            },*/
+            },
 
-            /*deleteItem(id) {
+            deleteItem(id) {
 
                 axios.get(
                     '/customers/delete',
@@ -318,17 +452,17 @@
                 ).then(function(response) {
 
                     this.$modal.hide('dialog');
-                    this.notifySuccess(`Order ID:${id} successfully deleted.`);
+                    this.notifySuccess(`Customer ID:${id} successfully deleted.`);
                     this.getList();
 
                 }.bind(this))
                 .catch(function() {
 
                     this.$modal.hide('dialog');
-                    this.notifyError('Delete order error.');
+                    this.notifyError('Delete customer error.');
 
                 }.bind(this));
-            }*/
+            }
         }
     }
 </script>

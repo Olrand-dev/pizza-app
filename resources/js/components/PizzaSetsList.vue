@@ -180,7 +180,7 @@
                 <div class="row">
                     <div class="col-md-12">
 
-                        <pagination ref="pagin1" :page="page" :pages-count="pagesCount" @click-handler="paginate"
+                        <pagination :page="page" :pages-count="pagesCount" @click-handler="paginate"
                                     range="5"></pagination>
 
                     </div>

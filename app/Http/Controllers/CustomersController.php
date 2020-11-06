@@ -32,6 +32,7 @@ class CustomersController extends Controller
             $user->save();
 
             $customer = new Customer();
+            $customer->name = $data['name'];
             $customer->phone = $data['phone'];
             $customer->address = $data['address'];
             $customer->save();
@@ -84,40 +85,29 @@ class CustomersController extends Controller
     }*/
 
 
-    /*public function getList(Request $request) : array
+    public function getList(Request $request) : array
     {
         $input = $request->input();
 
         $page = (int) $input['page'];
         $perPage = (int) $input['per_page'];
+        $findBy = $input['find_by'];
+        $findQuery = $input['find_query'];
         $sortField = $input['sort_field'];
         $sortDirection = $input['sort_dir'];
 
-        $query = PizzaSet::with('products');
+        $query = Customer::with('user');
+
+        if ($findQuery !== '') {
+            $query = $query->where($findBy, 'like', "%{$findQuery}%");
+        }
         $query = $query->orderBy($sortField, $sortDirection);
 
         $allResultsCount = $query->get()->count();
         $results = $query
             ->offset($perPage * ($page - 1))
             ->limit($perPage)
-            ->get()
-            ->each(function ($item, $key) {
-                $ingredients = [];
-
-                foreach ($item->products as $index => $product) {
-                    if ($product->type_id === SystemConst::PRODUCT_TYPE_PIZZA_BASE) {
-                        $item->base_id = $product->id;
-                    } else {
-                        $ingredients[] = [
-                            'type_id' => $product->type_id,
-                            'prod_id' => $product->id,
-                            'quantity' => $product->connection->quantity,
-                        ];
-                    }
-                }
-                $item->ingredients = $ingredients;
-                $item->image_thumbs = $this->getImageThumbs("pizza_set_{$item->id}", $this->imagesDir);
-            });
+            ->get();
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
 
@@ -125,7 +115,7 @@ class CustomersController extends Controller
             'items' => $results->toJson(),
             'pages_count' => $pagesCount,
         ];
-    }*/
+    }
 
 
     /*public function delete(Request $request) : void

@@ -153,6 +153,12 @@
   border-bottom: 1px solid #333;
 }
 
+.box {
+  border: 1px solid #ddd;
+  padding: 0;
+  border-radius: 6px;
+}
+
 .btn.btn-icon {
   padding-left: 10px;
   padding-right: 15px;
