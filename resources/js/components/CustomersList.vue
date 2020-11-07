@@ -199,7 +199,7 @@
 
                         <div class="col-md-12">
                             <button class="btn btn-success btn-fill btn-icon"
-                                    @click="addNew">
+                                    @click="saveUser">
                                 <i v-if="saving" class="fa fa-spinner anim-rotate"></i>
                                 <i v-else class="fa fa-check"></i>
                                 Save
@@ -209,7 +209,7 @@
                                 <i class="fa fa-ban"></i> Cancel
                             </button>
 
-                            <button v-if="mode === 'update'" class="btn btn-danger btn-fill btn-icon"
+                            <button v-if="mode === 'update'" class="btn btn-danger btn-fill btn-icon pull-right"
                                     @click="modalDelete(customerEdit.id)">
                                 <i class="fa fa-trash"></i> Delete user
                             </button>
@@ -251,6 +251,7 @@
         .user-box {
 
             padding: 10px;
+            margin-bottom: 10px;
 
             .user-data-top {
                 padding: 0;
@@ -284,6 +285,7 @@
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
     import Pagination from '../mixins/Pagination';
+    import DialogModal from "./DialogModal";
 
     const CustomerRef = {
         name: '',
@@ -356,7 +358,7 @@
                     let data = response.data;
 
                     this.customersList = JSON.parse(data.items);
-                    console.log(this.customersList);
+                    //console.log(this.customersList);
                     this.pagesCount = data.pages_count;
 
                     this.listUpdating = false;
@@ -371,6 +373,7 @@
 
             openBox() {
                 this.mode = 'add_new';
+                this.initCustomerData();
             },
 
             closeBox() {
@@ -378,14 +381,21 @@
                 this.initCustomerData();
             },
 
-            addNew() {
+            saveUser() {
                 this.saving = true;
+                let update = this.mode === 'update';
 
-                axios.post('/customers/add-new',
+                let apiUrl = (update) ? '/customers/save' : '/customers/add-new';
+
+                axios.post(apiUrl,
                     this.customerEdit
                 ).then(function(response) {
 
-                    this.notifySuccess('Cutomer ID:' + response.data + ' successfully added.');
+                    let id = (update) ? this.customerEdit.id : response.data;
+                    let successMsg = 'Cutomer ID:' + id + ' successfully ' +
+                        ((update) ? 'updated.' : 'added.');
+
+                    this.notifySuccess(successMsg);
                     this.closeBox();
 
                     this.initCustomerData();
@@ -395,8 +405,10 @@
                 }.bind(this))
                 .catch(function() {
 
+                    let errorMsg = ((update) ? 'Update' : 'Add') + ' customer error.';
+
                     this.saving = false;
-                    this.notifyError('Add customer error.');
+                    this.notifyError(errorMsg);
 
                 }.bind(this));
             },
@@ -415,27 +427,24 @@
             },
 
             modalDelete(id) {
-                //console.log(this.$modal);
 
                 this.$modal.show(
-                    'dialog',
+                    DialogModal,
                     {
-                        title: 'Delete customer',
-                        text: `Customer with ID:${id} will be deleted.`,
-                        buttons: [
-                            {
-                                title: 'Ok',
-                                handler: () => {
-                                    this.deleteItem(id);
-                                },
-                            },
-                            {
-                                title: 'Cancel',
-                                handler: () => {
-                                    this.$modal.hide('dialog');
-                                },
-                            },
-                        ],
+                        'data': {
+                            header: `Delete customer ID:${id}`,
+                            text: 'Customer will be deleted.',
+                            onConfirm: function () {
+                                this.deleteItem(id);
+                            }.bind(this),
+                        },
+                    },
+                    {
+                        adaptive: true,
+                        height: 'auto',
+                    },
+                    {
+                        'before-close': event => {}
                     }
                 );
             },
@@ -451,8 +460,8 @@
                     }
                 ).then(function(response) {
 
-                    this.$modal.hide('dialog');
                     this.notifySuccess(`Customer ID:${id} successfully deleted.`);
+                    this.closeBox();
                     this.getList();
 
                 }.bind(this))

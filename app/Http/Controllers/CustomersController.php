@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Consts\SystemConst;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class CustomersController extends Controller
 {
@@ -49,40 +47,29 @@ class CustomersController extends Controller
     }
 
 
-    /*public function save(Request $request) : void
+    public function save(Request $request) : void
     {
+        DB::beginTransaction();
         try {
 
-            $setData = $request->input();
-            $setId = (int) $setData['id'];
-            $ingredients = json_decode($setData['ingredients'], true);
-            $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
-            $set = PizzaSet::find($setId);
+            $data = $request->input();
+            $customer = Customer::find((int) $data['id']);
+            $user = User::find($customer->user->id);
 
-            $set->products()->detach();
-            $this->attachProdsToSet($set, $ingredients);
-
-            if ($setData['image_changed'] === 'true') {
-                $image = $request->file('image_file');
-
-                if (!empty($image)) {
-                    $this->handleRequestImageFile($set, $image, "pizza_set_{$setId}");
-                }
-            }
-
-            $set->update($setData);
-            $this->calculatePizzaSet($set->id);
-
-            $updatedSet = PizzaSet::find($setId);
-            if ($updatedSet->weight !== $set->weight) {
-                //todo: добавить пересчет веса заказов
-            }
+            $customer->name = $data['name'];
+            $customer->phone = $data['phone'];
+            $customer->address = $data['address'];
+            $customer->save();
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+            $user->save();
 
         } catch(\Throwable $e) {
-
+            DB::rollBack();
             abort(500, $e->getMessage());
         }
-    }*/
+        DB::commit();
+    }
 
 
     public function getList(Request $request) : array
@@ -118,25 +105,21 @@ class CustomersController extends Controller
     }
 
 
-    /*public function delete(Request $request) : void
+    public function delete(Request $request) : void
     {
+        DB::beginTransaction();
         try {
 
             $id = (int) $request->input('id');
 
-            $instance = PizzaSet::find($id);
-            $instance->products()->detach();
-
-            $prodImages = $this->getImagePathesList("pizza_set_{$id}", $this->imagesDir);
-            if (!empty($prodImages)) {
-                Storage::delete($prodImages);
-            }
-
-            PizzaSet::destroy($id);
+            $customer = Customer::find($id);
+            User::destroy($customer->user->id);
+            Customer::destroy($id);
 
         } catch(\Throwable $e) {
-
+            DB::rollBack();
             abort(500, $e->getMessage());
         }
-    }*/
+        DB::commit();
+    }
 }
