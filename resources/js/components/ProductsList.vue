@@ -379,6 +379,11 @@
                 this.mode = 'add_new';
             },
 
+            closeBox() {
+                this.mode = 'list';
+                this.initProdData();
+            },
+
             addNew() {
                 let formData = new FormData();
 
@@ -399,19 +404,16 @@
 
                     this.notifySuccess('Product ID:' + response.data + ' successfully added.');
                     this.closeBox();
+                    this.saving = false;
                     this.getList();
 
                 }.bind(this))
                 .catch(function() {
 
+                    this.saving = false;
                     this.notifyError('Add product error.');
 
                 }.bind(this));
-            },
-
-            closeBox() {
-                this.mode = 'list';
-                this.initProdData();
             },
 
             modalEdit(id) {

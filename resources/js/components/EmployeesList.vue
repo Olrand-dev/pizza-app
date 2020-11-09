@@ -11,22 +11,16 @@
 
                             <div class="col-md-11">
 
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="findBySelect">Find by</label>
-                                        <select v-model="findBy" class="form-control" id="findBySelect">
-                                            <option value="name">Name</option>
-                                            <option value="phone">Phone</option>
-                                            <option value="address">Address</option>
-                                        </select>
-                                    </div>
-                                </div>
-
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="findQueryField">Search</label>
-                                        <input type="text" class="form-control" id="findQueryField"
-                                               v-model="findQuery">
+                                        <label for="roleFilter">Show by role</label>
+                                        <select v-model="byRole" class="form-control" id="roleFilter">
+                                            <option value="0">all</option>
+                                            <option v-for="role in rolesList" :key="role.id"
+                                                    :value="role.id">
+                                                {{ role.name }}
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -65,19 +59,23 @@
                             <div class="col-12">
                                 <div class="row user-box-list">
 
-                                    <div v-for="(item, index) in customersList" :key="item.id" class="col-md-12 box user-box">
+                                    <div v-for="(item, index) in employeesList" :key="item.id" class="col-md-12 box user-box">
 
                                         <div class="col-md-12 user-data-top">
 
                                             <div class="col-md-6">
                                                 <span class="user-data-line user-name">
-                                                    <i class="fas fa-user"></i>
+                                                    <i class="fas fa-user-tie"></i>
                                                     {{ item.name }}
                                                 </span>
                                             </div>
 
                                             <div class="col-md-5">
 
+                                                <span class="user-data-line">
+                                                    <i class="fas fa-user-cog"></i>
+                                                    {{ item.role.name }}
+                                                </span>
                                                 <span class="user-data-line">
                                                     <i class="fas fa-phone-alt"></i>
                                                     {{ item.phone }}
@@ -113,7 +111,7 @@
                                 </div>
                             </div>
 
-                            <div v-if="customersList.length === 0" class="col-12 text-center">
+                            <div v-if="employeesList.length === 0" class="col-12 text-center">
                                 <span class="no-items">No items to show.</span>
                             </div>
 
@@ -155,8 +153,8 @@
 
                 <div class="header">
                     <h5 class="title">
-                        <span v-if="mode === 'add_new'">Add New Customer</span>
-                        <span v-if="mode === 'update'">Update Customer ID:{{ customerEdit.id }}</span>
+                        <span v-if="mode === 'add_new'">Add New Employee</span>
+                        <span v-if="mode === 'update'">Update Employee ID:{{ employeeEdit.id }}</span>
                     </h5>
                 </div>
 
@@ -164,9 +162,27 @@
                     <div class="row">
 
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" class="form-control" v-model="customerEdit.name">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control" v-model="employeeEdit.name">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="roleSelect">Role</label>
+                                        <select v-model="employeeEdit.role_id" class="form-control" id="roleSelect">
+                                            <option v-for="role in rolesList" :key="role.id"
+                                                    :value="role.id">
+                                                {{ role.name }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
@@ -176,14 +192,14 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Phone</label>
-                                        <input type="text" class="form-control" v-model="customerEdit.phone">
+                                        <input type="text" class="form-control" v-model="employeeEdit.phone">
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Email</label>
-                                        <input type="text" class="form-control" v-model="customerEdit.email">
+                                        <input type="text" class="form-control" v-model="employeeEdit.email">
                                     </div>
                                 </div>
 
@@ -193,7 +209,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Address</label>
-                                <textarea rows="5" class="form-control" v-model="customerEdit.address"></textarea>
+                                <textarea rows="5" class="form-control" v-model="employeeEdit.address"></textarea>
                             </div>
                         </div>
 
@@ -210,7 +226,7 @@
                             </button>
 
                             <button v-if="mode === 'update'" class="btn btn-danger btn-fill btn-icon pull-right"
-                                    @click="modalDelete(customerEdit.id)">
+                                    @click="modalDelete(employeeEdit.id)">
                                 <i class="fa fa-trash"></i> Delete user
                             </button>
                         </div>
@@ -237,8 +253,9 @@
     import Pagination from '../mixins/Pagination';
     import DialogModal from "./DialogModal";
 
-    const CustomerRef = {
+    const EmployeeRef = {
         name: '',
+        role_id: 0,
         email: '',
         phone: '',
         address: '',
@@ -252,12 +269,12 @@
                 listUpdating: true,
                 saving: false,
 
-                findBy: 'name',
-                findQuery: '',
+                byRole: 0,
                 sort: 'name@desc',
 
-                customerEdit: {},
-                customersList: [],
+                employeeEdit: {},
+                employeesList: [],
+                rolesList: [],
             }
         },
 
@@ -268,19 +285,32 @@
         ],
 
         created() {
-            this.initCustomerData();
+            this.initEmployeeData();
+            this.getRolesList();
             this.getList();
         },
 
         methods: {
 
-            initCustomerData() {
-                this.customerEdit = this.clone(CustomerRef, true);
+            initEmployeeData() {
+                this.employeeEdit = this.clone(EmployeeRef, true);
             },
 
             paginate(page) {
                 this.page = page;
                 this.getList();
+            },
+
+            getRolesList() {
+
+                axios.get(
+                    '/employees/get-roles-list'
+                ).then(function(response) {
+
+                    this.rolesList = response.data;
+                    //console.log(this.rolesList);
+
+                }.bind(this));
             },
 
             getList(resetPage = false) {
@@ -292,13 +322,12 @@
                 let sortDir = sortData[1];
 
                 axios.get(
-                    '/customers/get-list',
+                    '/employees/get-list',
                     {
                         params: {
                             page: this.page,
                             per_page: this.perPage,
-                            find_by: this.findBy,
-                            find_query: this.findQuery,
+                            by_role: this.byRole,
                             sort_field: sortField,
                             sort_dir: sortDir,
                         },
@@ -307,8 +336,8 @@
 
                     let data = response.data;
 
-                    this.customersList = JSON.parse(data.items);
-                    //console.log(this.customersList);
+                    this.employeesList = JSON.parse(data.items);
+                    //console.log(this.employeesList);
                     this.pagesCount = data.pages_count;
 
                     this.listUpdating = false;
@@ -316,46 +345,46 @@
                 }.bind(this))
                 .catch(function() {
 
-                    this.notifyError('Load customers list error.');
+                    this.notifyError('Load employees list error.');
 
                 }.bind(this));
             },
 
             openBox() {
                 this.mode = 'add_new';
-                this.initCustomerData();
+                this.initEmployeeData();
             },
 
             closeBox() {
                 this.mode = 'list';
-                this.initCustomerData();
+                this.initEmployeeData();
             },
 
             saveUser() {
                 this.saving = true;
                 let update = this.mode === 'update';
 
-                let apiUrl = (update) ? '/customers/save' : '/customers/add-new';
+                let apiUrl = (update) ? '/employees/save' : '/employees/add-new';
 
                 axios.post(apiUrl,
-                    this.customerEdit
+                    this.employeeEdit
                 ).then(function(response) {
 
-                    let id = (update) ? this.customerEdit.id : response.data;
-                    let successMsg = 'Customer ID:' + id + ' successfully ' +
+                    let id = (update) ? this.employeeEdit.id : response.data;
+                    let successMsg = 'Employee ID:' + id + ' successfully ' +
                         ((update) ? 'updated.' : 'added.');
 
                     this.notifySuccess(successMsg);
                     this.closeBox();
 
-                    this.initCustomerData();
+                    this.initEmployeeData();
                     this.saving = false;
                     this.getList();
 
                 }.bind(this))
                 .catch(function() {
 
-                    let errorMsg = ((update) ? 'Update' : 'Add') + ' customer error.';
+                    let errorMsg = ((update) ? 'Update' : 'Add') + ' employee error.';
 
                     this.saving = false;
                     this.notifyError(errorMsg);
@@ -364,14 +393,15 @@
             },
 
             editUser(index) {
-                let customerData = this.customersList[index];
+                let employeeData = this.employeesList[index];
 
-                this.customerEdit = {
-                    id: customerData.id,
-                    name: customerData.name,
-                    email: customerData.user.email,
-                    phone: customerData.phone,
-                    address: customerData.address,
+                this.employeeEdit = {
+                    id: employeeData.id,
+                    name: employeeData.name,
+                    role_id: employeeData.role_id,
+                    email: employeeData.user.email,
+                    phone: employeeData.phone,
+                    address: employeeData.address,
                 };
                 this.mode = 'update';
             },
@@ -382,8 +412,8 @@
                     DialogModal,
                     {
                         'data': {
-                            header: `Delete customer ID:${id}`,
-                            text: 'Customer will be deleted.',
+                            header: `Delete employee ID:${id}`,
+                            text: 'Employee will be deleted.',
                             onConfirm: function () {
                                 this.deleteItem(id);
                             }.bind(this),
@@ -402,7 +432,7 @@
             deleteItem(id) {
 
                 axios.get(
-                    '/customers/delete',
+                    '/employees/delete',
                     {
                         params: {
                             id
@@ -410,14 +440,14 @@
                     }
                 ).then(function(response) {
 
-                    this.notifySuccess(`Customer ID:${id} successfully deleted.`);
+                    this.notifySuccess(`Employee ID:${id} successfully deleted.`);
                     this.closeBox();
                     this.getList();
 
                 }.bind(this))
                 .catch(function() {
 
-                    this.notifyError('Delete customer error.');
+                    this.notifyError('Delete employee error.');
 
                 }.bind(this));
             }

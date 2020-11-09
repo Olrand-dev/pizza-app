@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Models\Customer;
+use App\Models\PizzaSet;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,10 +44,10 @@ class OrdersController extends Controller
         }
 
         return (int) $set->id;
-    }
+    }*/
 
 
-    public function save(Request $request) : void
+    /*public function save(Request $request) : void
     {
         try {
 
@@ -77,10 +80,25 @@ class OrdersController extends Controller
 
             abort(500, $e->getMessage());
         }
+    }*/
+
+
+    public function getDataLists(Request $request) : array
+    {
+        $pizzaSets = PizzaSet::all()->toArray();
+        $addProds = Product::where('type_id', SystemConst::PRODUCT_TYPE_ADD_PRODUCTS)
+            ->orderBy('name', 'desc')
+            ->get()
+            ->toArray();
+
+        return [
+            'pizza_sets_list' => $pizzaSets,
+            'add_prods_list' => $addProds,
+        ];
     }
 
 
-    public function getList(Request $request) : array
+    /*public function getList(Request $request) : array
     {
         $input = $request->input();
 
@@ -121,10 +139,10 @@ class OrdersController extends Controller
             'items' => $results->toJson(),
             'pages_count' => $pagesCount,
         ];
-    }
+    }*/
 
 
-    public function delete(Request $request) : void
+    /*public function delete(Request $request) : void
     {
         try {
 

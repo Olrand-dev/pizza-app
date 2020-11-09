@@ -8,6 +8,7 @@ use \App\Http\Controllers\ProductsController;
 use \App\Http\Controllers\PizzaSetsController;
 use \App\Http\Controllers\OrdersController;
 use \App\Http\Controllers\CustomersController;
+use \App\Http\Controllers\EmployeesController;
 use \App\Http\Controllers\HomeController;
 
 /*
@@ -49,6 +50,7 @@ Route::prefix('orders')->group(function() {
     Route::post('add-new', [OrdersController::class, 'addNew']);
     Route::post('save', [OrdersController::class, 'save']);
     Route::get('get-list', [OrdersController::class, 'getList']);
+    Route::get('get-data-lists', [OrdersController::class, 'getDataLists']);
     Route::get('delete', [OrdersController::class, 'delete']);
 });
 
@@ -59,6 +61,15 @@ Route::prefix('customers')->group(function() {
     Route::post('save', [CustomersController::class, 'save']);
     Route::get('get-list', [CustomersController::class, 'getList']);
     Route::get('delete', [CustomersController::class, 'delete']);
+});
+
+Route::prefix('employees')->group(function() {
+    Route::get('', [EmployeesController::class, 'index']);
+    Route::post('add-new', [EmployeesController::class, 'addNew']);
+    Route::post('save', [EmployeesController::class, 'save']);
+    Route::get('get-roles-list', [EmployeesController::class, 'getRolesList']);
+    Route::get('get-list', [EmployeesController::class, 'getList']);
+    Route::get('delete', [EmployeesController::class, 'delete']);
 });
 
 Auth::routes();

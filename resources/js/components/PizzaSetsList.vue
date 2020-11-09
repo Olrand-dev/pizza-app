@@ -366,11 +366,13 @@
 
                     this.notifySuccess('Pizza set ID:' + response.data + ' successfully added.');
                     this.closeBox();
+                    this.saving = false;
                     this.getList();
 
                 }.bind(this))
                 .catch(function() {
 
+                    this.saving = false;
                     this.notifyError('Add pizza set error.');
 
                 }.bind(this));

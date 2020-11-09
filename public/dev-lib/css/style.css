@@ -213,6 +213,53 @@ input[type=file] {
   margin-top: 27px;
 }
 
+#users-list .top-panel-btn {
+  position: relative;
+  top: 28px;
+}
+
+#users-list .new-user-btn {
+  right: 14px;
+}
+
+#users-list .update-list-btn {
+  min-width: 35px;
+}
+
+#users-list .user-box-list {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 20px 0;
+}
+
+#users-list .user-box-list .user-box {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+#users-list .user-box-list .user-box .user-data-top {
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+#users-list .user-box-list .user-box .user-data-line {
+  display: block;
+  color: #9A9A9A;
+}
+
+#users-list .user-box-list .user-box .user-data-line.user-name {
+  font-size: 18px;
+}
+
+#users-list .user-box-list .user-box .user-data-line.user-address {
+  font-size: 16px;
+}
+
+#users-list .user-box-list .user-box .user-data-line i {
+  color: #666;
+  margin-right: 5px;
+}
+
 /*----- Slide Down Transition ----------------*/
 
 .slide-down-enter-active {

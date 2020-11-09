@@ -44,6 +44,12 @@ class SidebarMenuConst
                 'icon' => 'pe-7s-user',
                 'url' => url('/customers'),
             ],
+            [
+                'name' => 'Employees',
+                'slug' => 'employees',
+                'icon' => 'pe-7s-users',
+                'url' => url('/employees'),
+            ],
 
         ];
     }
