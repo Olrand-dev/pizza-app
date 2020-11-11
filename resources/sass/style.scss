@@ -96,6 +96,11 @@ select, input[type="file"] {
 
 #users-list {
 
+    &.customers {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
     .top-panel-btn {
         position: relative;
         top: 28px;
@@ -107,6 +112,8 @@ select, input[type="file"] {
 
     .update-list-btn {
         min-width: 35px;
+        position: relative;
+        right: 12px;
     }
 
     .user-box-list {

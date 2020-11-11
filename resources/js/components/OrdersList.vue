@@ -34,10 +34,17 @@
 
                         <div class="col-12"></div>
                         <div class="col-12">
-                            <button v-if="order.customer_id === 0" class="btn btn-default btn-icon"
+
+                            <button class="btn btn-default btn-icon"
                                     @click="modalSelectCustomer">
-                                <i class="fa fa-times"></i> Select Customer
+                                <span v-if="order.customer_id === 0">
+                                    <i class="fa fa-user"></i> Select Customer
+                                </span>
+                                <span v-else>
+                                    <i class="fa fa-user-edit"></i> Change Customer
+                                </span>
                             </button>
+
                         </div>
 
                     </div>
@@ -62,7 +69,7 @@
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
     import Pagination from '../mixins/Pagination';
-    import EditProductModal from "./EditProductModal";
+    import SelectOrderCustomerModal from "./SelectOrderCustomerModal";
 
     const OrderRef = {
         customer_id: 0,
@@ -127,7 +134,7 @@
                     '/orders/get-data-lists',
                 ).then(function(response) {
 
-                    let data = JSON.parse(response.data);
+                    let data = response.data;
                     //console.log(data);return;
 
                     this.pizzaSetsList = data.pizza_sets_list;
@@ -171,11 +178,13 @@
             modalSelectCustomer() { //todo: добавить компонент выбора покупателя заказа
 
                 this.$modal.show(
-                    selectOrderCustomerModal,
+                    SelectOrderCustomerModal,
                     {
-                        onConfirm: function () {
-
-                        }.bind(this),
+                        'modal-data': {
+                            onConfirm: function (id) { console.log(id);
+                                this.order.customer_id = id;
+                            }.bind(this),
+                        }
                     },
                     {
                         adaptive: true,

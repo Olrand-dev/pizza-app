@@ -63,7 +63,7 @@
 
                                         <div class="col-md-12 user-data-top">
 
-                                            <div class="col-md-6">
+                                            <div class="col-md-5">
                                                 <span class="user-data-line user-name">
                                                     <i class="fas fa-user-tie"></i>
                                                     {{ item.name }}
@@ -91,7 +91,7 @@
 
                                             </div>
 
-                                            <div class="col-md-1 text-right">
+                                            <div class="col-md-2 text-right">
                                                 <button class="btn btn-info btn-sm" @click="editUser(index)">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
@@ -411,7 +411,7 @@
                 this.$modal.show(
                     DialogModal,
                     {
-                        'data': {
+                        'modal-data': {
                             header: `Delete employee ID:${id}`,
                             text: 'Employee will be deleted.',
                             onConfirm: function () {

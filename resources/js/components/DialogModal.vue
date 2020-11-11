@@ -10,7 +10,7 @@
                         <div class="row">
                             <div class="col-12">
 
-                                <h4 class="title pull-left">{{ data.header }}</h4>
+                                <h4 class="title pull-left">{{ modalData.header }}</h4>
                                 <button class="btn btn-default pull-right" @click="$emit('close')">Close</button>
 
                             </div>
@@ -22,7 +22,7 @@
 
                             <div class="col-12 modal-text">
 
-                                <p>{{ data.text }}</p>
+                                <p>{{ modalData.text }}</p>
 
                             </div>
 
@@ -63,13 +63,13 @@
 export default {
 
     props: [
-        'data'
+        'modal-data'
     ],
 
     methods: {
 
         confirmEvent() {
-            this.data.onConfirm();
+            this.modalData.onConfirm();
             this.$emit('close');
         }
     }
