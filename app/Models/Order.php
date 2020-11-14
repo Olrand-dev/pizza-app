@@ -4,12 +4,6 @@ namespace App\Models;
 
 class Order extends Model
 {
-    public function pizzas()
-    {
-        return $this->hasMany('App\Models\Pizza');
-    }
-
-
     public function customer()
     {
         return $this->belongsTo('App\Models\Customer');
@@ -24,7 +18,13 @@ class Order extends Model
 
     public function comments()
     {
-        return $this->morphToMany('App\Models\Comment', 'commentable');
+        return $this->morphMany('App\Models\Comment', 'commentable');
+    }
+
+
+    public function status()
+    {
+        return $this->belongsTo('App\Models\OrderStatus');
     }
 
 

@@ -6,7 +6,7 @@ use App\Consts\SystemConst;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class RoleSeeder extends Seeder
+class OrderStatusSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,11 +15,11 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $rolesData = SystemConst::USER_ROLES_MAP;
+        $statusesData = SystemConst::ORDER_STATUSES_MAP;
 
-        foreach ($rolesData as $id => $data) {
+        foreach ($statusesData as $id => $data) {
             if ($id === 0) continue;
-            DB::table('roles')->insert($data);
+            DB::table('order_statuses')->insert($data);
         }
     }
 }

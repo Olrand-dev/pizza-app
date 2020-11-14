@@ -55,7 +55,7 @@
         methods: {
 
             onSelect(item) {
-                this.modalData.onConfirm(item.id);
+                this.modalData.onConfirm(item);
                 this.$emit('close');
             }
         }

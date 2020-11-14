@@ -13,6 +13,12 @@ class PizzaSet extends Model
     ];
 
 
+    public function comments()
+    {
+        return $this->morphMany('App\Models\Comment', 'commentable');
+    }
+
+
     public function products()
     {
         return $this->belongsToMany(
@@ -24,12 +30,6 @@ class PizzaSet extends Model
             ->as('connection')
             ->withPivot('quantity')
             ->withTimestamps();
-    }
-
-
-    public function pizzas()
-    {
-        return $this->hasMany('App\Models\Pizza');
     }
 
 

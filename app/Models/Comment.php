@@ -4,20 +4,14 @@ namespace App\Models;
 
 class Comment extends Model
 {
-    public function orders()
+    public function user()
     {
-        return $this->morphedByMany('App\Models\Order', 'commentable');
+        return $this->hasOne('App\Models\User');
     }
 
 
-    public function pizzas()
+    public function commentable()
     {
-        return $this->morphedByMany('App\Models\Pizza', 'commentable');
-    }
-
-
-    public function stocks()
-    {
-        return $this->morphedByMany('App\Models\Stock', 'commentable');
+        return $this->morphTo();
     }
 }

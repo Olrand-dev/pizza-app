@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Models\Comment;
 use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\PizzaSet;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
 {
@@ -19,68 +22,64 @@ class OrdersController extends Controller
     }
 
 
-    /*public function addNew(Request $request) : int
+    public function addNew(Request $request) : int
     {
+        DB::beginTransaction();
         try {
 
-            $setData = $request->input();
-            $ingredients = json_decode($setData['ingredients'], true);
-            $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
-            $set = PizzaSet::create(['name' => $setData['name']]);
+            //todo: добавить проверку создающего заказ пользователя, от гостей и покупателей
+            //ставить заказу статус нового, от менеджера - принятый
 
-            $this->attachProdsToSet($set, $ingredients);
+            $orderData = $request->input();
+            $orderStatus = SystemConst::ORDER_STATUS_NEW;
+            $status = OrderStatus::find($orderStatus);
 
-            $image = $request->file('image_file');
-            if (!empty($image)) {
-                $this->handleRequestImageFile($set, $image, "pizza_set_{$set->id}");
+            $order = new Order();
+            $order->cost = (float) $orderData['cost'];
+            $order->weight = (int) $orderData['weight'];
+
+            $customer = Customer::find($orderData['customer_id']);
+            $order->customer()->associate($customer);
+            $order->status()->associate($status);
+
+            $comment = new Comment();
+            $comment->content = $orderData['customer_comment'];
+            $order->save();
+            $comment->commentable()->associate($order);
+            $comment->save();
+
+            foreach ($orderData['pizza_sets'] as $set) {
+                $instance = PizzaSet::find($set['id']);
+                if (!empty($instance)) {
+                    $order->pizzasets()->attach($instance->id, ['quantity' => $set['quantity']]);
+                }
             }
-
-            $set->save();
-            $this->calculatePizzaSet($set->id);
-
-        } catch(\Throwable $e) {
-
-            abort(500, $e->getMessage());
-        }
-
-        return (int) $set->id;
-    }*/
-
-
-    /*public function save(Request $request) : void
-    {
-        try {
-
-            $setData = $request->input();
-            $setId = (int) $setData['id'];
-            $ingredients = json_decode($setData['ingredients'], true);
-            $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
-            $set = PizzaSet::find($setId);
-
-            $set->products()->detach();
-            $this->attachProdsToSet($set, $ingredients);
-
-            if ($setData['image_changed'] === 'true') {
-                $image = $request->file('image_file');
-
-                if (!empty($image)) {
-                    $this->handleRequestImageFile($set, $image, "pizza_set_{$setId}");
+            foreach ($orderData['products'] as $prod) {
+                $instance = Product::find($prod['id']);
+                if (!empty($instance)) {
+                    $order->products()->attach($instance->id, ['quantity' => $prod['quantity']]);
                 }
             }
 
-            $set->update($setData);
-            $this->calculatePizzaSet($set->id);
+        } catch(\Throwable $e) {
+            DB::rollBack();
+            abort(500, $e->getMessage());
+        }
 
-            $updatedSet = PizzaSet::find($setId);
-            if ($updatedSet->weight !== $set->weight) {
-                //todo: добавить пересчет веса заказов
-            }
+        DB::commit();
+        return (int) $order->id;
+    }
+
+
+    public function save(Request $request) : void
+    {
+        try {
 
         } catch(\Throwable $e) {
 
             abort(500, $e->getMessage());
         }
-    }*/
+    }
 
 
     public function getDataLists(Request $request) : array
@@ -90,24 +89,41 @@ class OrdersController extends Controller
             ->orderBy('name', 'desc')
             ->get()
             ->toArray();
+        $orderStatuses = OrderStatus::all()->toArray();
 
         return [
             'pizza_sets_list' => $pizzaSets,
             'add_prods_list' => $addProds,
+            'order_statuses_list' => $orderStatuses,
         ];
     }
 
 
-    /*public function getList(Request $request) : array
+    public function getList(Request $request) : array
     {
         $input = $request->input();
 
         $page = (int) $input['page'];
         $perPage = (int) $input['per_page'];
+        $byStatus = (int) $input['by_status'];
+        $findBy = $input['find_by'];
+        $findQuery = $input['find_query'];
         $sortField = $input['sort_field'];
         $sortDirection = $input['sort_dir'];
 
-        $query = PizzaSet::with('products');
+        $query = Order::with(['products', 'pizzasets', 'status']);
+
+        if ($byStatus > 0) {
+            $query = $query->where('status_id', $byStatus);
+        }
+        if ($findQuery !== '') {
+            $query = $query->whereHas(
+                'customer',
+                function ($query) use ($findBy, $findQuery) {
+                    return $query->where($findBy, 'like', "%{$findQuery}%");
+                }
+            );
+        }
         $query = $query->orderBy($sortField, $sortDirection);
 
         $allResultsCount = $query->get()->count();
@@ -116,21 +132,7 @@ class OrdersController extends Controller
             ->limit($perPage)
             ->get()
             ->each(function ($item, $key) {
-                $ingredients = [];
 
-                foreach ($item->products as $index => $product) {
-                    if ($product->type_id === SystemConst::PRODUCT_TYPE_PIZZA_BASE) {
-                        $item->base_id = $product->id;
-                    } else {
-                        $ingredients[] = [
-                            'type_id' => $product->type_id,
-                            'prod_id' => $product->id,
-                            'quantity' => $product->connection->quantity,
-                        ];
-                    }
-                }
-                $item->ingredients = $ingredients;
-                $item->image_thumbs = $this->getImageThumbs("pizza_set_{$item->id}", $this->imagesDir);
             });
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
@@ -139,7 +141,7 @@ class OrdersController extends Controller
             'items' => $results->toJson(),
             'pages_count' => $pagesCount,
         ];
-    }*/
+    }
 
 
     /*public function delete(Request $request) : void

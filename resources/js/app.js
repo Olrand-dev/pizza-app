@@ -27,6 +27,7 @@ Vue.use(VModal, { dialog: true });
 Vue.component('products-list', require('./components/ProductsList.vue').default);
 Vue.component('pizzasets-list', require('./components/PizzaSetsList.vue').default);
 Vue.component('orders-list', require('./components/OrdersList.vue').default);
+Vue.component('order-ingredients', require('./components/OrderIngredientsList.vue').default);
 Vue.component('customers-list', require('./components/CustomersList.vue').default);
 Vue.component('users-list-customers', require('./components/UsersListCustomers.vue').default);
 Vue.component('employees-list', require('./components/EmployeesList.vue').default);

@@ -18,6 +18,7 @@ class ProductTypeSeeder extends Seeder
         $typesData = SystemConst::PRODUCT_TYPES_MAP;
 
         foreach ($typesData as $id => $data) {
+            if ($id === 0) continue;
             DB::table('product_types')->insert($data);
         }
     }
