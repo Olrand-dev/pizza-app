@@ -2,8 +2,16 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+
 class Order extends Model
 {
+    protected $appends = [
+        'ordered_at',
+        'last_updated_at',
+    ];
+
+
     public function customer()
     {
         return $this->belongsTo('App\Models\Customer');
@@ -47,5 +55,17 @@ class Order extends Model
             'order_id',
             'pizzaset_id'
         )->as('connection')->withTimestamps();
+    }
+
+
+    public function getOrderedAtAttribute()
+    {
+        return Carbon::parse($this->created_at)->format('d-m-Y, H:i');
+    }
+
+
+    public function getLastUpdatedAtAttribute()
+    {
+        return Carbon::parse($this->updated_at)->format('d-m-Y, H:i');
     }
 }

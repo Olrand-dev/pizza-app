@@ -2,7 +2,7 @@
 
     <div class="row justify-content-center">
 
-        <div id="users-list" class="col-md-7">
+        <div id="boxed-list" class="col-md-7 users-list">
 
             <div class="card">
                 <div class="content">
@@ -57,14 +57,14 @@
                         <div class="row">
 
                             <div class="col-12">
-                                <div class="row user-box-list">
+                                <div class="row list">
 
-                                    <div v-for="(item, index) in employeesList" :key="item.id" class="col-md-12 box user-box">
+                                    <div v-for="(item, index) in employeesList" :key="item.id" class="col-md-12 box boxed-list-box">
 
-                                        <div class="col-md-12 user-data-top">
+                                        <div class="col-md-12 data-top">
 
                                             <div class="col-md-5">
-                                                <span class="user-data-line user-name">
+                                                <span class="data-line user-name">
                                                     <i class="fas fa-user-tie"></i>
                                                     {{ item.name }}
                                                 </span>
@@ -72,19 +72,19 @@
 
                                             <div class="col-md-5">
 
-                                                <span class="user-data-line">
+                                                <span class="data-line">
                                                     <i class="fas fa-user-cog"></i>
                                                     {{ item.role.name }}
                                                 </span>
-                                                <span class="user-data-line">
+                                                <span class="data-line">
                                                     <i class="fas fa-phone-alt"></i>
                                                     {{ item.phone }}
                                                 </span>
-                                                <span class="user-data-line">
+                                                <span class="data-line">
                                                     <i class="fas fa-at"></i>
                                                     {{ item.user.email }}
                                                 </span>
-                                                <span class="user-data-line">
+                                                <span class="data-line">
                                                     <i class="fas fa-table"></i>
                                                     {{ item.registered_at }}
                                                 </span>
@@ -100,7 +100,7 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                            <span class="user-data-line user-address">
+                                            <span class="data-line user-address">
                                                 <i class="fas fa-map-marker-alt"></i>
                                                 {{ item.address }}
                                             </span>

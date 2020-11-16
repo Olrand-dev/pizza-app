@@ -23,12 +23,6 @@
     }
 }
 
-.box {
-    border: 1px solid $s-light-gray;
-    padding: 0;
-    border-radius: 6px;
-}
-
 .btn {
     &.btn-icon {
         padding-left: 10px;
@@ -94,7 +88,51 @@ select, input[type="file"] {
 }
 
 
-#users-list {
+.box {
+    border: 1px solid $s-light-gray;
+    padding: 0;
+    border-radius: 6px;
+}
+
+#boxed-list {
+
+    .update-list-btn {
+        min-width: 35px;
+        position: relative;
+        right: 12px;
+    }
+
+    .list {
+
+        padding-left: 15px;
+        padding-right: 15px;
+        margin: 20px 0;
+
+        .boxed-list-box {
+
+            padding: 10px;
+            margin-bottom: 10px;
+
+            .data-top {
+                padding: 0;
+                margin-bottom: 6px;
+            }
+
+            .data-line {
+                display: block;
+                color: $s-soft-gray;
+
+                i {
+                    color: $s-dark-gray;
+                    margin-right: 5px;
+                }
+            }
+        }
+    }
+}
+
+
+.users-list {
 
     &.customers {
         padding-left: 15px;
@@ -110,45 +148,12 @@ select, input[type="file"] {
         right: 14px;
     }
 
-    .update-list-btn {
-        min-width: 35px;
-        position: relative;
-        right: 12px;
+    .user-name {
+        font-size: 18px;
     }
 
-    .user-box-list {
-
-        padding-left: 15px;
-        padding-right: 15px;
-        margin: 20px 0;
-
-        .user-box {
-
-            padding: 10px;
-            margin-bottom: 10px;
-
-            .user-data-top {
-                padding: 0;
-                margin-bottom: 6px;
-            }
-
-            .user-data-line {
-                display: block;
-                color: $s-soft-gray;
-
-                &.user-name {
-                    font-size: 18px;
-                }
-                &.user-address {
-                    font-size: 16px;
-                }
-
-                i {
-                    color: $s-dark-gray;
-                    margin-right: 5px;
-                }
-            }
-        }
+    .user-address {
+        font-size: 16px;
     }
 }
 

@@ -1,6 +1,6 @@
 <template>
 
-    <div id="users-list" class="row" :class="customListClass">
+    <div id="boxed-list" class="row users-list" :class="customListClass">
 
         <div class="col-12">
 
@@ -48,14 +48,14 @@
             <div class="row">
 
                 <div class="col-12">
-                    <div class="row user-box-list">
+                    <div class="row list">
 
-                        <div v-for="(item, index) in list" :key="item.id" class="col-md-12 box user-box">
+                        <div v-for="(item, index) in list" :key="item.id" class="col-md-12 box boxed-list-box">
 
-                            <div class="col-md-12 user-data-top">
+                            <div class="col-md-12 data-top">
 
                                 <div class="col-md-5">
-                                    <span class="user-data-line user-name">
+                                    <span class="data-line user-name">
                                         <i class="fas fa-user"></i>
                                         {{ item.name }}
                                     </span>
@@ -63,15 +63,15 @@
 
                                 <div class="col-md-5">
 
-                                    <span class="user-data-line">
+                                    <span class="data-line">
                                         <i class="fas fa-phone-alt"></i>
                                         {{ item.phone }}
                                     </span>
-                                    <span class="user-data-line">
+                                    <span class="data-line">
                                         <i class="fas fa-at"></i>
                                         {{ item.user.email }}
                                     </span>
-                                    <span class="user-data-line">
+                                    <span class="data-line">
                                         <i class="fas fa-table"></i>
                                         {{ item.registered_at }}
                                     </span>
@@ -79,7 +79,7 @@
                                 </div>
 
                                 <div class="col-md-2 text-right">
-                                    <button class="btn btn-success btn-sm" :class="btnClass" @click="onButtonClick(index)">
+                                    <button class="btn btn-sm" :class="btnClass" @click="onButtonClick(index)">
                                         <i :class="btnIconClass"></i>
                                     </button>
                                 </div>
@@ -87,7 +87,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                    <span class="user-data-line user-address">
+                                    <span class="data-line user-address">
                                         <i class="fas fa-map-marker-alt"></i>
                                         {{ item.address }}
                                     </span>

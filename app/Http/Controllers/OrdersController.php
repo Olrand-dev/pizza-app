@@ -13,6 +13,7 @@ use App\Models\PizzaSet;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 class OrdersController extends Controller
 {
@@ -42,11 +43,15 @@ class OrdersController extends Controller
             $order->customer()->associate($customer);
             $order->status()->associate($status);
 
-            $comment = new Comment();
-            $comment->content = $orderData['customer_comment'];
             $order->save();
-            $comment->commentable()->associate($order);
-            $comment->save();
+
+            $customerComment = $orderData['customer_comment'];
+            if (!empty($customerComment)) {
+                $comment = new Comment();
+                $comment->content = $customerComment;
+                $comment->commentable()->associate($order);
+                $comment->save();
+            }
 
             foreach ($orderData['pizza_sets'] as $set) {
                 $instance = PizzaSet::find($set['id']);
@@ -99,6 +104,17 @@ class OrdersController extends Controller
     }
 
 
+    public function getOrderFullData(Request $request) : array
+    {
+        $id = (int) $request->input('id');
+
+        return Order::with(['products', 'pizzasets', 'status', 'customer', 'comments'])
+            ->where('id', $id)
+            ->first()
+            ->toArray();
+    }
+
+
     public function getList(Request $request) : array
     {
         $input = $request->input();
@@ -111,7 +127,7 @@ class OrdersController extends Controller
         $sortField = $input['sort_field'];
         $sortDirection = $input['sort_dir'];
 
-        $query = Order::with(['products', 'pizzasets', 'status']);
+        $query = Order::with(['status', 'customer']);
 
         if ($byStatus > 0) {
             $query = $query->where('status_id', $byStatus);
@@ -130,10 +146,7 @@ class OrdersController extends Controller
         $results = $query
             ->offset($perPage * ($page - 1))
             ->limit($perPage)
-            ->get()
-            ->each(function ($item, $key) {
-
-            });
+            ->get();
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
 
