@@ -5,7 +5,18 @@
         <div class="col-md-7">
 
             <div class="card">
-                <div class="content">
+                <div class="content users-list">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <button class="btn btn-info btn-fill btn-sm new-user-btn"
+                                    @click="openBox">
+                                <i class="fas fa-user-plus"></i> Add New
+                            </button>
+
+                        </div>
+                    </div>
 
                     <users-list-customers btn-class="btn-info"
                                           btn-icon-class="fa fa-edit"

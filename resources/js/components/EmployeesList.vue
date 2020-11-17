@@ -7,140 +7,141 @@
             <div class="card">
                 <div class="content">
 
-                        <div class="row">
+                    <div class="row">
+                        <div class="col-md-12">
 
-                            <div class="col-md-11">
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="roleFilter">Show by role</label>
-                                        <select v-model="byRole" class="form-control" id="roleFilter">
-                                            <option value="0">all</option>
-                                            <option v-for="role in rolesList" :key="role.id"
-                                                    :value="role.id">
-                                                {{ role.name }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="sortSelect">Sort</label>
-                                        <select v-model="sort" class="form-control" id="sortSelect">
-                                            <option value="name@desc">Name A-Z</option>
-                                            <option value="name@asc">Name Z-A</option>
-                                            <option value="created_at@desc">Register date - newest</option>
-                                            <option value="created_at@asc">Register date - oldest</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-1">
-                                    <button class="btn btn-default btn-sm top-panel-btn update-list-btn"
-                                            @click="getList(true)">
-                                        <i class="fas fa-sync-alt" :class="{ 'anim-rotate': listUpdating }"></i>
-                                    </button>
-                                </div>
-
-                            </div>
-
-                            <div class="col-md-1">
-                                <button class="btn btn-info btn-fill btn-sm top-panel-btn new-user-btn"
-                                        @click="openBox">
-                                    <i class="fas fa-user-plus"></i>
-                                </button>
-                            </div>
+                            <button class="btn btn-info btn-fill btn-sm new-user-btn"
+                                    @click="openBox">
+                                <i class="fas fa-user-plus"></i> Add New
+                            </button>
 
                         </div>
+                    </div>
 
-                        <div class="row">
+                    <div class="row">
 
-                            <div class="col-12">
-                                <div class="row list">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="roleFilter">Show by role</label>
+                                <select v-model="byRole" class="form-control" id="roleFilter">
+                                    <option value="0">all</option>
+                                    <option v-for="role in rolesList" :key="role.id"
+                                            :value="role.id">
+                                        {{ role.name }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
 
-                                    <div v-for="(item, index) in employeesList" :key="item.id" class="col-md-12 box boxed-list-box">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="sortSelect">Sort</label>
+                                <select v-model="sort" class="form-control" id="sortSelect">
+                                    <option value="name@desc">Name A-Z</option>
+                                    <option value="name@asc">Name Z-A</option>
+                                    <option value="created_at@desc">Register date - newest</option>
+                                    <option value="created_at@asc">Register date - oldest</option>
+                                </select>
+                            </div>
+                        </div>
 
-                                        <div class="col-md-12 data-top">
+                        <div class="col-md-1">
+                            <button class="btn btn-default btn-sm top-panel-btn update-list-btn"
+                                    @click="getList(true)">
+                                <i class="fas fa-sync-alt" :class="{ 'anim-rotate': listUpdating }"></i>
+                            </button>
+                        </div>
 
-                                            <div class="col-md-5">
-                                                <span class="data-line user-name">
-                                                    <i class="fas fa-user-tie"></i>
-                                                    {{ item.name }}
-                                                </span>
-                                            </div>
+                    </div>
 
-                                            <div class="col-md-5">
 
-                                                <span class="data-line">
-                                                    <i class="fas fa-user-cog"></i>
-                                                    {{ item.role.name }}
-                                                </span>
-                                                <span class="data-line">
-                                                    <i class="fas fa-phone-alt"></i>
-                                                    {{ item.phone }}
-                                                </span>
-                                                <span class="data-line">
-                                                    <i class="fas fa-at"></i>
-                                                    {{ item.user.email }}
-                                                </span>
-                                                <span class="data-line">
-                                                    <i class="fas fa-table"></i>
-                                                    {{ item.registered_at }}
-                                                </span>
+                    <div class="row">
 
-                                            </div>
+                        <div class="col-12">
+                            <div class="row list">
 
-                                            <div class="col-md-2 text-right">
-                                                <button class="btn btn-info btn-sm" @click="editUser(index)">
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
-                                            </div>
+                                <div v-for="(item, index) in employeesList" :key="item.id" class="col-md-12 box boxed-list-box">
 
-                                        </div>
+                                    <div class="col-md-12 data-top">
 
-                                        <div class="col-md-12">
-                                            <span class="data-line user-address">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                {{ item.address }}
+                                        <div class="col-md-5">
+                                            <span class="data-line user-name">
+                                                <i class="fas fa-user-tie"></i>
+                                                {{ item.name }}
                                             </span>
                                         </div>
 
+                                        <div class="col-md-5">
+
+                                            <span class="data-line">
+                                                <i class="fas fa-user-cog"></i>
+                                                {{ item.role.name }}
+                                            </span>
+                                            <span class="data-line">
+                                                <i class="fas fa-phone-alt"></i>
+                                                {{ item.phone }}
+                                            </span>
+                                            <span class="data-line">
+                                                <i class="fas fa-at"></i>
+                                                {{ item.user.email }}
+                                            </span>
+                                            <span class="data-line">
+                                                <i class="fas fa-table"></i>
+                                                {{ item.registered_at }}
+                                            </span>
+
+                                        </div>
+
+                                        <div class="col-md-2 text-right">
+                                            <button class="btn btn-info btn-sm" @click="editUser(index)">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <span class="data-line user-address">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ item.address }}
+                                        </span>
                                     </div>
 
                                 </div>
+
+                            </div>
+                        </div>
+
+                        <div v-if="employeesList.length === 0" class="col-12 text-center">
+                            <span class="no-items">No items to show.</span>
+                        </div>
+
+                        <div class="col-12">
+
+                            <div class="col-md-10">
+
+                                <pagination :page="page" :pages-count="pagesCount" @click-handler="paginate"
+                                            range="5"></pagination>
+
                             </div>
 
-                            <div v-if="employeesList.length === 0" class="col-12 text-center">
-                                <span class="no-items">No items to show.</span>
-                            </div>
-
-                            <div class="col-12">
-
-                                <div class="col-md-10">
-
-                                    <pagination :page="page" :pages-count="pagesCount" @click-handler="paginate"
-                                                range="5"></pagination>
-
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="perPageSelect">Per page</label>
+                                    <select v-model="perPage" class="form-control" id="perPageSelect"
+                                            @change="getList(true)">
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="15">15</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                    </select>
                                 </div>
-
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="perPageSelect">Per page</label>
-                                        <select v-model="perPage" class="form-control" id="perPageSelect"
-                                                @change="getList(true)">
-                                            <option value="5">5</option>
-                                            <option value="10">10</option>
-                                            <option value="15">15</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                        </select>
-                                    </div>
-                                </div>
-
                             </div>
 
                         </div>
+
+                    </div>
 
                 </div>
             </div>

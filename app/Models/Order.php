@@ -43,18 +43,24 @@ class Order extends Model
             'order_product',
             'order_id',
             'product_id'
-        )->as('connection')->withTimestamps();
+        )
+            ->as('connection')
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 
 
-    public function pizzasets()
+    public function pizzaSets()
     {
         return $this->belongsToMany(
             'App\Models\PizzaSet',
             'order_pizzaset',
             'order_id',
             'pizzaset_id'
-        )->as('connection')->withTimestamps();
+        )
+            ->as('connection')
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 
 

@@ -20,7 +20,11 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Set</label>
-                                        <select v-model="set.id" class="form-control" @change="updateTotal">
+
+                                        <input v-if="mode === 'show'" type="text" class="form-control"
+                                               :value="getItemById(pizzaSetsList, set.id).name" readonly>
+
+                                        <select v-else v-model="set.id" class="form-control" @change="updateTotal">
                                             <option v-for="option in pizzaSetsList" :key="option.id"
                                                     :value="option.id">
                                                 {{ option.name }}
@@ -32,13 +36,13 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Q-ty</label>
-                                        <input type="number" step="1" min="1"
+                                        <input type="number" step="1" min="1" :readonly="mode === 'show'"
                                                v-model="set.quantity" class="form-control" @change="updateTotal">
                                     </div>
                                 </div>
 
                                 <div class="col-md-2 text-right">
-                                    <button class="btn btn-danger btn-sm ing-del-btn"
+                                    <button class="btn btn-danger btn-sm ing-del-btn" :disabled="mode === 'show'"
                                             @click="deletePizzaSet(index)">
                                         <i class="fa fa-trash"></i>
                                     </button>
@@ -49,7 +53,7 @@
 
                     </div>
 
-                    <div class="col-md-12">
+                    <div v-if="mode === 'edit' || mode === 'add_new'" class="col-md-12">
                         <button class="btn btn-info btn-fill btn-icon"
                                 @click="addPizzaSet">
                             <i class="fa fa-plus"></i> Add Pizza Set
@@ -73,7 +77,11 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Product</label>
-                                        <select v-model="prod.id" class="form-control" @change="updateTotal">
+
+                                        <input v-if="mode === 'show'" type="text" class="form-control"
+                                               :value="getItemById(addProdsList, prod.id).name" readonly>
+
+                                        <select v-else v-model="prod.id" class="form-control" @change="updateTotal">
                                             <option v-for="option in addProdsList" :key="option.id"
                                                     :value="option.id">
                                                 {{ option.name }}
@@ -85,13 +93,13 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Q-ty</label>
-                                        <input type="number" step="1" min="1"
+                                        <input type="number" step="1" min="1" :readonly="mode === 'show'"
                                                v-model="prod.quantity" class="form-control" @change="updateTotal">
                                     </div>
                                 </div>
 
                                 <div class="col-md-2 text-right">
-                                    <button class="btn btn-danger btn-sm ing-del-btn"
+                                    <button class="btn btn-danger btn-sm ing-del-btn" :disabled="mode === 'show'"
                                             @click="deleteAddProd(index)">
                                         <i class="fa fa-trash"></i>
                                     </button>
@@ -102,7 +110,7 @@
 
                     </div>
 
-                    <div class="col-md-12">
+                    <div v-if="mode === 'edit' || mode === 'add_new'" class="col-md-12">
                         <button class="btn btn-info btn-fill btn-icon"
                                 @click="addProd">
                             <i class="fa fa-plus"></i> Add Product
@@ -215,11 +223,16 @@
         ],
 
         props: [
+            'mode',
             'order-pizza-sets',
             'order-add-prods',
             'pizza-sets-list',
             'add-prods-list',
         ],
+
+        created() {
+            this.updateTotal();
+        },
 
         methods: {
 

@@ -17,7 +17,7 @@
                         </div>
                     </div>
 
-                    <div class="content">
+                    <div class="content users-list">
 
                         <users-list-customers btn-class="btn-success"
                                               btn-icon-class="fa fa-check"
@@ -35,11 +35,7 @@
 </template>
 
 
-<style scoped lang="scss">
-
-    .features {
-
-    }
+<style scoped>
 
 </style>
 

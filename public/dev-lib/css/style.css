@@ -245,18 +245,13 @@ input[type=file] {
   margin-right: 5px;
 }
 
-.users-list.customers {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
 .users-list .top-panel-btn {
   position: relative;
   top: 28px;
 }
 
 .users-list .new-user-btn {
-  right: 14px;
+  margin-bottom: 10px;
 }
 
 .users-list .user-name {

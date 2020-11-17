@@ -44,15 +44,54 @@
         </div>
 
 
-        <div v-if="mode === 'show' || mode === 'edit'" class="col-md-12 mt-10">
+        <div id="edit-order-box">
+            <div v-if="mode === 'show' || mode === 'edit'" class="col-md-12 mt-10">
 
-            <div class="col-md-12">
-                <h3 v-if="mode === 'show'">Order ID:{{ orderSelected.id }}</h3>
-                <h3 v-if="mode === 'edit'">Order ID:{{ orderSelected.id }} edit</h3>
+                <div class="col-md-12">
+                    <h3 v-if="mode === 'show'">Order ID:{{ orderSelected.id }}</h3>
+                    <h3 v-if="mode === 'edit'">Order ID:{{ orderSelected.id }} edit</h3>
+                </div>
+
+                <div class="col-md-12">
+                    <h4>Customer Data</h4>
+                </div>
+
+                <div class="col-md-12">
+                    <order-customer-data :data="orderSelected.customer"></order-customer-data>
+                </div>
+
+                <div v-if="mode === 'edit'" class="col-md-12 mb-20">
+
+                    <button class="btn btn-default btn-icon"
+                            @click="modalSelectCustomer">
+                        <span>
+                            <i class="fa fa-user-edit"></i> Change Customer
+                        </span>
+                    </button>
+
+                </div>
+
+                <div v-if="orderSelected.comments[0]" class="col-md-12">
+                    <div class="form-group">
+                        <label>Customer comment</label>
+                        <textarea rows="5" class="form-control" :readonly="mode === 'show'"
+                                  v-model="orderSelected.comments[0].content"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-md-12 ing-header">
+                    <h4>Ingredients</h4>
+                </div>
+
+                <order-ingredients ref="orderIngEdit"
+                                   :mode="mode"
+                                   :order-pizza-sets="orderSelected.pizza_sets"
+                                   :order-add-prods="orderSelected.products"
+                                   :pizza-sets-list="pizzaSetsList"
+                                   :add-prods-list="addProductsList"
+                                   @on-ing-list-change="setOrderData"></order-ingredients>
+
             </div>
-
-            <!--TODO: доделать вкладку показа/редактирования заказа-->
-
         </div>
 
 
@@ -101,7 +140,8 @@
                         <h4>Ingredients</h4>
                     </div>
 
-                    <order-ingredients ref="orderIng"
+                    <order-ingredients ref="orderIngNew"
+                                       :mode="mode"
                                        :order-pizza-sets="order.pizza_sets"
                                        :order-add-prods="order.products"
                                        :pizza-sets-list="pizzaSetsList"
@@ -180,11 +220,16 @@
 
                             <div class="col-md-12 data-top">
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
+
+                                    <span class="text-muted order-id">
+                                        #{{ item.id }}
+                                    </span>
                                     <span class="data-line customer-name">
                                         <i class="fas fa-user"></i>
                                         {{ item.customer.name }}
                                     </span>
+
                                 </div>
 
                                 <div class="col-md-3">
@@ -217,7 +262,7 @@
 
                                 </div>
 
-                                <div class="col-md-2 text-center">
+                                <div class="col-md-1 text-center">
                                     <span class="order-status-label" :class="'status-' + item.status.slug">
                                         {{ item.status.name }}
                                     </span>
@@ -320,11 +365,17 @@
         }
 
         .customer-name {
+            display: inline-block !important;
             font-size: 16px;
         }
 
         .customer-address {
             font-size: 15px;
+        }
+
+        .order-id {
+            display: inline-block;
+            margin-right: 5px;
         }
 
         .order-status-label {
@@ -424,8 +475,8 @@
 
             initEmptyOrder() {
                 this.order = this.clone(OrderRef, true);
-                if (this.hop(this.$refs, 'orderIng')) {
-                    this.$refs.orderIng.clearData();
+                if (this.hop(this.$refs, 'orderIngNew')) {
+                    this.$refs.orderIngNew.clearData();
                 }
             },
 
@@ -470,6 +521,7 @@
             },
 
             openOrder(id, toEdit = false) {
+                const editBox = document.getElementById('edit-order-box');
 
                 axios.get(
                     '/orders/get-order-data',
@@ -481,9 +533,13 @@
                 ).then(function(response) {
 
                     let data = response.data;
-                    //console.log(data);return;
+                    //console.log(data);
                     this.mode = (toEdit) ? 'edit' : 'show';
                     this.orderSelected = data;
+
+                    this.$smoothScroll({
+                        scrollTo: editBox,
+                    });
 
                 }.bind(this));
             },
@@ -513,7 +569,7 @@
                 .catch(function() {
 
                     this.saving = false;
-                    this.notifyError('Save order error.');
+                    this.notifyError('Save order error1.');
 
                 }.bind(this));
             },
@@ -535,8 +591,10 @@
             },
 
             setOrderData(data) {
-                this.order.cost = data.cost;
-                this.order.weight = data.weight;
+                let target = (this.mode === 'add_new') ? 'order' : 'orderSelected';
+
+                this[target].cost = data.cost;
+                this[target].weight = data.weight;
             },
 
             getList(resetPage = false) {
@@ -565,7 +623,7 @@
                     let data = response.data;
 
                     this.ordersList = JSON.parse(data.items);
-                    console.log(this.ordersList);
+                    //console.log(this.ordersList);
                     this.pagesCount = data.pages_count;
 
                     this.listUpdating = false;
@@ -585,8 +643,14 @@
                     {
                         'modal-data': {
                             onConfirm: function (item) {
-                                this.order.customer_data = this.clone(item, true);
-                                this.order.customer_id = item.id;
+                                let copy = this.clone(item, true);
+
+                                if (this.mode === 'add_new') {
+                                    this.order.customer_data = copy;
+                                    this.order.customer_id = copy.id;
+                                } else {
+                                    this.orderSelected.customer = copy;
+                                }
                             }.bind(this),
                         }
                     },

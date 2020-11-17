@@ -7,13 +7,13 @@ namespace App\Http\Controllers;
 use App\Consts\SystemConst;
 use App\Models\Comment;
 use App\Models\Customer;
+use App\Models\Model;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PizzaSet;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 
 class OrdersController extends Controller
 {
@@ -25,6 +25,18 @@ class OrdersController extends Controller
 
     public function addNew(Request $request) : int
     {
+        return $this->saveOrder($request, true);
+    }
+
+
+    public function save(Request $request) : void
+    {
+        $this->saveOrder($request);
+    }
+
+
+    public function saveOrder(Request $request, bool $newOrder = false) : int
+    {
         DB::beginTransaction();
         try {
 
@@ -32,38 +44,42 @@ class OrdersController extends Controller
             //ставить заказу статус нового, от менеджера - принятый
 
             $orderData = $request->input();
-            $orderStatus = SystemConst::ORDER_STATUS_NEW;
-            $status = OrderStatus::find($orderStatus);
 
-            $order = new Order();
+            $order = ($newOrder) ? new Order() : Order::find($orderData['id']);
             $order->cost = (float) $orderData['cost'];
             $order->weight = (int) $orderData['weight'];
 
-            $customer = Customer::find($orderData['customer_id']);
+            if ($newOrder) {
+                $orderStatus = SystemConst::ORDER_STATUS_NEW;
+                $status = OrderStatus::find($orderStatus);
+                $order->status()->associate($status);
+            }
+
+            $customerId = ($newOrder) ? $orderData['customer_id'] : $orderData['customer']['id'];
+            $customer =  Customer::find($customerId);
             $order->customer()->associate($customer);
-            $order->status()->associate($status);
 
             $order->save();
 
-            $customerComment = $orderData['customer_comment'];
+            $customerComment = ($newOrder) ? $orderData['customer_comment'] : $orderData['comments'][0];
             if (!empty($customerComment)) {
-                $comment = new Comment();
-                $comment->content = $customerComment;
-                $comment->commentable()->associate($order);
+                $comment = ($newOrder) ? new Comment() : Comment::find($customerComment['id']);
+                $comment->content = ($newOrder) ? $customerComment : $customerComment['content'];
+                if ($newOrder) $comment->commentable()->associate($order);
                 $comment->save();
             }
 
-            foreach ($orderData['pizza_sets'] as $set) {
-                $instance = PizzaSet::find($set['id']);
-                if (!empty($instance)) {
-                    $order->pizzasets()->attach($instance->id, ['quantity' => $set['quantity']]);
+            $orderElements = [
+                'pizza_sets' => [PizzaSet::class, 'pizzaSets'],
+                'products' => [Product::class, 'products'],
+            ];
+            foreach ($orderElements as $elementsAlias => $options) {
+
+                if (!$newOrder) {
+                    $relationName = $options[1];
+                    $order->$relationName()->detach();
                 }
-            }
-            foreach ($orderData['products'] as $prod) {
-                $instance = Product::find($prod['id']);
-                if (!empty($instance)) {
-                    $order->products()->attach($instance->id, ['quantity' => $prod['quantity']]);
-                }
+                $this->handleOrderElements($order, $orderData, $elementsAlias, $options);
             }
 
         } catch(\Throwable $e) {
@@ -76,13 +92,22 @@ class OrdersController extends Controller
     }
 
 
-    public function save(Request $request) : void
+    private function handleOrderElements(
+        Model $order,
+        array $newOrderData,
+        string $elementsAlias,
+        array $options
+    ) : void
     {
-        try {
+        $elements = $newOrderData[$elementsAlias];
+        $modelClass = $options[0];
+        $relationName = $options[1];
 
-        } catch(\Throwable $e) {
-
-            abort(500, $e->getMessage());
+        foreach ($elements as $element) {
+            $instance = $modelClass::find($element['id']);
+            if (!empty($instance)) {
+                $order->$relationName()->attach($instance->id, ['quantity' => $element['quantity']]);
+            }
         }
     }
 
@@ -108,10 +133,18 @@ class OrdersController extends Controller
     {
         $id = (int) $request->input('id');
 
-        return Order::with(['products', 'pizzasets', 'status', 'customer', 'comments'])
+        $data = Order::with(['products', 'pizzaSets', 'status', 'customer.user', 'comments'])
             ->where('id', $id)
-            ->first()
-            ->toArray();
+            ->first();
+
+        foreach ($data->products as &$product) {
+            $product->quantity = $product->connection->quantity;
+        }
+        foreach ($data->pizzaSets as &$pizzaSet) {
+            $pizzaSet->quantity = $pizzaSet->connection->quantity;
+        }
+
+        return $data->toArray();
     }
 
 

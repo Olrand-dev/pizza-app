@@ -134,18 +134,13 @@ select, input[type="file"] {
 
 .users-list {
 
-    &.customers {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
     .top-panel-btn {
         position: relative;
         top: 28px;
     }
 
     .new-user-btn {
-        right: 14px;
+        margin-bottom: 10px;
     }
 
     .user-name {

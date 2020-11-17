@@ -1,8 +1,8 @@
 <template>
 
-    <div id="boxed-list" class="row users-list" :class="customListClass">
+    <div id="boxed-list" :class="customListClass">
 
-        <div class="col-12">
+        <div class="row">
 
             <div class="col-md-3">
                 <div class="form-group">
@@ -44,90 +44,89 @@
 
         </div>
 
-        <div class="col-12">
-            <div class="row">
 
-                <div class="col-12">
-                    <div class="row list">
+        <div class="row">
 
-                        <div v-for="(item, index) in list" :key="item.id" class="col-md-12 box boxed-list-box">
+            <div class="col-12">
+                <div class="row list">
 
-                            <div class="col-md-12 data-top">
+                    <div v-for="(item, index) in list" :key="item.id" class="col-md-12 box boxed-list-box">
 
-                                <div class="col-md-5">
-                                    <span class="data-line user-name">
-                                        <i class="fas fa-user"></i>
-                                        {{ item.name }}
-                                    </span>
-                                </div>
+                        <div class="col-md-12 data-top">
 
-                                <div class="col-md-5">
+                            <div class="col-md-5">
+                                <span class="data-line user-name">
+                                    <i class="fas fa-user"></i>
+                                    {{ item.name }}
+                                </span>
+                            </div>
 
-                                    <span class="data-line">
-                                        <i class="fas fa-phone-alt"></i>
-                                        {{ item.phone }}
-                                    </span>
-                                    <span class="data-line">
-                                        <i class="fas fa-at"></i>
-                                        {{ item.user.email }}
-                                    </span>
-                                    <span class="data-line">
-                                        <i class="fas fa-table"></i>
-                                        {{ item.registered_at }}
-                                    </span>
+                            <div class="col-md-5">
 
-                                </div>
-
-                                <div class="col-md-2 text-right">
-                                    <button class="btn btn-sm" :class="btnClass" @click="onButtonClick(index)">
-                                        <i :class="btnIconClass"></i>
-                                    </button>
-                                </div>
+                                <span class="data-line">
+                                    <i class="fas fa-phone-alt"></i>
+                                    {{ item.phone }}
+                                </span>
+                                <span class="data-line">
+                                    <i class="fas fa-at"></i>
+                                    {{ item.user.email }}
+                                </span>
+                                <span class="data-line">
+                                    <i class="fas fa-table"></i>
+                                    {{ item.registered_at }}
+                                </span>
 
                             </div>
 
-                            <div class="col-md-12">
-                                    <span class="data-line user-address">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ item.address }}
-                                    </span>
+                            <div class="col-md-2 text-right">
+                                <button class="btn btn-sm" :class="btnClass" @click="onButtonClick(index)">
+                                    <i :class="btnIconClass"></i>
+                                </button>
                             </div>
 
                         </div>
 
-                    </div>
-                </div>
-
-                <div v-if="list.length === 0" class="col-12 text-center">
-                    <span class="no-items">No items to show.</span>
-                </div>
-
-                <div class="col-12">
-
-                    <div class="col-md-10">
-
-                        <pagination :page="page" :pages-count="pagesCount" @click-handler="paginate"
-                                    range="5"></pagination>
-
-                    </div>
-
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="perPageSelect">Per page</label>
-                            <select v-model="perPage" class="form-control" id="perPageSelect"
-                                    @change="getList(true)">
-                                <option value="5">5</option>
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                            </select>
+                        <div class="col-md-12">
+                                <span class="data-line user-address">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ item.address }}
+                                </span>
                         </div>
+
                     </div>
 
+                </div>
+            </div>
+
+            <div v-if="list.length === 0" class="col-12 text-center">
+                <span class="no-items">No items to show.</span>
+            </div>
+
+            <div class="col-12">
+
+                <div class="col-md-10">
+
+                    <pagination :page="page" :pages-count="pagesCount" @click-handler="paginate"
+                                range="5"></pagination>
+
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="perPageSelect">Per page</label>
+                        <select v-model="perPage" class="form-control" id="perPageSelect"
+                                @change="getList(true)">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
                 </div>
 
             </div>
+
         </div>
 
     </div>
