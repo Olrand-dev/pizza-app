@@ -49,6 +49,7 @@ Route::prefix('orders')->group(function() {
     Route::get('', [OrdersController::class, 'index']);
     Route::post('add-new', [OrdersController::class, 'addNew']);
     Route::post('save', [OrdersController::class, 'save']);
+    Route::post('set-status', [OrdersController::class, 'setStatus']);
     Route::get('get-order-data', [OrdersController::class, 'getOrderFullData']);
     Route::get('get-list', [OrdersController::class, 'getList']);
     Route::get('get-data-lists', [OrdersController::class, 'getDataLists']);

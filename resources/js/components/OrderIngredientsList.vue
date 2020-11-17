@@ -17,7 +17,7 @@
                         <div v-for="(set, index) in pizza_sets" :key="index" class="row">
                             <div class="col-md-12 box ingredient-box">
 
-                                <div class="col-md-6">
+                                <div :class="{ 'col-md-6': mode !== 'show', 'col-md-8': mode === 'show' }">
                                     <div class="form-group">
                                         <label>Set</label>
 
@@ -41,8 +41,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-2 text-right">
-                                    <button class="btn btn-danger btn-sm ing-del-btn" :disabled="mode === 'show'"
+                                <div v-if="mode !== 'show'" class="col-md-2 text-right">
+                                    <button class="btn btn-danger btn-sm ing-del-btn"
                                             @click="deletePizzaSet(index)">
                                         <i class="fa fa-trash"></i>
                                     </button>
@@ -74,7 +74,7 @@
                         <div v-for="(prod, index) in add_prods" :key="index" class="row">
                             <div class="col-md-12 box ingredient-box">
 
-                                <div class="col-md-6">
+                                <div :class="{ 'col-md-6': mode !== 'show', 'col-md-8': mode === 'show' }">
                                     <div class="form-group">
                                         <label>Product</label>
 
@@ -98,8 +98,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-2 text-right">
-                                    <button class="btn btn-danger btn-sm ing-del-btn" :disabled="mode === 'show'"
+                                <div v-if="mode !== 'show'" class="col-md-2 text-right">
+                                    <button class="btn btn-danger btn-sm ing-del-btn"
                                             @click="deleteAddProd(index)">
                                         <i class="fa fa-trash"></i>
                                     </button>

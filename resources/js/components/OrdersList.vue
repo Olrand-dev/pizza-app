@@ -7,14 +7,17 @@
 
                 <div class="col-md-12">
 
-                    <div v-if="mode === 'list'">
+                    <div class="btn-box" v-if="mode === 'list'">
+
                         <button class="btn btn-info btn-fill btn-icon"
                                 @click="openBox">
                             <i class="fa fa-plus"></i> New Order
                         </button>
+
                     </div>
 
-                    <div v-if="mode === 'add_new' || mode === 'edit'">
+                    <div class="btn-box" v-if="mode === 'add_new' || mode === 'edit'">
+
                         <button class="btn btn-success btn-fill btn-icon"
                                 @click="onSave">
                             <i v-if="saving" class="fa fa-spinner anim-rotate"></i>
@@ -25,17 +28,137 @@
                                 @click="onCancel">
                             <i class="fa fa-ban"></i> Cancel
                         </button>
+
                     </div>
 
-                    <div v-if="mode === 'show'">
-                        <button class="btn btn-primary btn-fill btn-icon"
-                                @click="closeOrder">
-                            <i class="fa fa-arrow-left"></i> Back
-                        </button>
-                        <button class="btn btn-info btn-fill btn-icon"
-                                @click="edit">
-                            <i class="fa fa-edit"></i> Edit Order
-                        </button>
+                    <div class="btn-box" v-if="mode === 'show'">
+
+                        <div class="btn-box">
+                            <button class="btn btn-primary btn-fill btn-icon"
+                                    @click="closeOrder">
+                                <i class="fa fa-arrow-left"></i> Back
+                            </button>
+                        </div>
+
+                        <div v-if="
+                            orderSelected.status &&
+                            !inArray(orderSelected.status.slug, [
+                                'delivery', 'delivered', 'completed', 'archived', 'declined'
+                            ])
+                        " class="btn-box">
+                            <button class="btn btn-info btn-fill btn-icon"
+                                    @click="edit">
+                                <i class="fa fa-edit"></i> Edit Order
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                    <!--Order Status Manage-->
+                    <div class="btn-box" v-if="orderSelected.status && mode === 'show'">
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'new'
+                        ">
+
+                            <button class="btn order-status-btn btn-fill btn-icon"
+                                    @click="setOrderStatus('accepted')">
+                                <i class="fa fa-arrow-right"></i> Accept
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'accepted'
+                        ">
+
+                            <button class="btn order-status-btn btn-fill btn-icon"
+                                    @click="setOrderStatus('cooking')">
+                                <i class="fa fa-arrow-right"></i> Cooking
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'cooking'
+                        ">
+
+                            <button class="btn order-status-btn btn-fill btn-icon"
+                                    @click="setOrderStatus('ready')">
+                                <i class="fa fa-arrow-right"></i> Ready
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'ready'
+                        ">
+
+                            <button class="btn order-status-btn btn-fill btn-icon"
+                                    @click="setOrderStatus('delivery')">
+                                <i class="fa fa-arrow-right"></i> Delivery
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'delivery'
+                        ">
+
+                            <button class="btn order-status-btn btn-fill btn-icon"
+                                    @click="setOrderStatus('delivered')">
+                                <i class="fa fa-arrow-right"></i> Delivered
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'delivered'
+                        ">
+
+                            <button class="btn btn-success btn-fill btn-icon"
+                                    @click="setOrderStatus('completed')">
+                                <i class="fa fa-check"></i> Completed
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'completed'
+                        ">
+
+                            <button class="btn btn-default btn-fill btn-icon"
+                                    @click="setOrderStatus('archived')">
+                                <i class="fas fa-archive"></i> Archive
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            !inArray(orderSelected.status.slug, [
+                                'new', 'declined', 'archived'
+                            ])
+                        ">
+
+                            <button class="btn btn-warning btn-fill btn-icon"
+                                    @click="setOrderStatus('declined')">
+                                <i class="fa fa-ban"></i> Decline
+                            </button>
+
+                        </div>
+
+                        <div class="btn-box" v-if="
+                            orderSelected.status.slug === 'declined'
+                        ">
+
+                            <button class="btn btn-danger btn-fill btn-icon"
+                                    @click="modalDelete(orderSelected.id)">
+                                <i class="fa fa-trash"></i> Delete Order
+                            </button>
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -274,7 +397,13 @@
                                             @click="openOrder(item.id)">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-info btn-sm open-order-btn"
+
+                                    <button v-if="
+                                        item.status &&
+                                        !inArray(item.status.slug, [
+                                            'delivery', 'delivered', 'completed', 'archived', 'declined'
+                                        ])
+                                    " class="btn btn-info btn-sm open-order-btn"
                                             @click="openOrder(item.id, true)">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -349,6 +478,22 @@
         }
     }
 
+    .order-status-btn {
+        &.btn-fill {
+            background-color: $purple;
+            border-color: $purple;
+
+            &:hover {
+                background-color: $dark-purple;
+                border-color: $dark-purple;
+            }
+
+            &:active:focus {
+                border-color: $darker-purple;
+            }
+        }
+    }
+
 
     .orders-list {
 
@@ -419,13 +564,13 @@
 
 </style>
 
-
 <script>
 
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
     import Pagination from '../mixins/Pagination';
     import SelectOrderCustomerModal from "./SelectOrderCustomerModal";
+    import DialogModal from "./DialogModal";
 
     const OrderRef = {
         customer_id: 0,
@@ -533,7 +678,7 @@
                 ).then(function(response) {
 
                     let data = response.data;
-                    //console.log(data);
+                    console.log(data);
                     this.mode = (toEdit) ? 'edit' : 'show';
                     this.orderSelected = data;
 
@@ -569,9 +714,54 @@
                 .catch(function() {
 
                     this.saving = false;
-                    this.notifyError('Save order error1.');
+                    this.notifyError('Save order error.');
 
                 }.bind(this));
+            },
+
+            setOrderStatus(status) {
+
+                this.$modal.show(
+                    DialogModal,
+                    {
+                        'modal-data': {
+                            header: `Change order status`,
+                            text: `Order status will be changed to "${status}".`,
+                            onConfirm: function () {
+
+                                this.saving = true;
+
+                                axios.post('/orders/set-status',
+                                    {
+                                        order_id: this.orderSelected.id,
+                                        status
+                                    }
+                                ).then(function(response) {
+
+                                    this.notifySuccess('Order status successfully updated.');
+                                    this.closeOrder();
+                                    this.saving = false;
+                                    this.getList();
+
+                                }.bind(this))
+                                .catch(function() {
+
+                                    this.saving = false;
+                                    this.notifyError('Set order status error.');
+
+                                }.bind(this));
+
+                            }.bind(this),
+                        },
+                    },
+                    {
+                        adaptive: true,
+                        height: 'auto',
+                    },
+                    {
+                        'before-close': event => {}
+                    }
+                );
             },
 
             getDataLists() {
@@ -687,7 +877,30 @@
                 }.bind(this));
             },
 
-            /*deleteItem(id) {
+            modalDelete(id) {
+
+                this.$modal.show(
+                    DialogModal,
+                    {
+                        'modal-data': {
+                            header: `Delete order ID:${id}`,
+                            text: 'Order will be deleted.',
+                            onConfirm: function () {
+                                this.deleteItem(id);
+                            }.bind(this),
+                        },
+                    },
+                    {
+                        adaptive: true,
+                        height: 'auto',
+                    },
+                    {
+                        'before-close': event => {}
+                    }
+                );
+            },
+
+            deleteItem(id) {
 
                 axios.get(
                     '/orders/delete',
@@ -698,18 +911,17 @@
                     }
                 ).then(function(response) {
 
-                    this.$modal.hide('dialog');
                     this.notifySuccess(`Order ID:${id} successfully deleted.`);
+                    this.closeOrder();
                     this.getList();
 
                 }.bind(this))
                 .catch(function() {
 
-                    this.$modal.hide('dialog');
                     this.notifyError('Delete order error.');
 
                 }.bind(this));
-            }*/
+            }
         }
     }
 </script>

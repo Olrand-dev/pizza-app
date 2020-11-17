@@ -3427,6 +3427,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/Notify */ "./resources/js/mixins/Notify.js");
 /* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
 /* harmony import */ var _SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./SelectOrderCustomerModal */ "./resources/js/components/SelectOrderCustomerModal.vue");
+/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DialogModal */ "./resources/js/components/DialogModal.vue");
 //
 //
 //
@@ -3849,6 +3850,151 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -3943,8 +4089,8 @@ var OrderRef = {
           id: id
         }
       }).then(function (response) {
-        var data = response.data; //console.log(data);
-
+        var data = response.data;
+        console.log(data);
         this.mode = toEdit ? 'edit' : 'show';
         this.orderSelected = data;
         this.$smoothScroll({
@@ -3968,8 +4114,36 @@ var OrderRef = {
         this.getList();
       }.bind(this))["catch"](function () {
         this.saving = false;
-        this.notifyError('Save order error1.');
+        this.notifyError('Save order error.');
       }.bind(this));
+    },
+    setOrderStatus: function setOrderStatus(status) {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        'modal-data': {
+          header: "Change order status",
+          text: "Order status will be changed to \"".concat(status, "\"."),
+          onConfirm: function () {
+            this.saving = true;
+            axios.post('/orders/set-status', {
+              order_id: this.orderSelected.id,
+              status: status
+            }).then(function (response) {
+              this.notifySuccess('Order status successfully updated.');
+              this.closeOrder();
+              this.saving = false;
+              this.getList();
+            }.bind(this))["catch"](function () {
+              this.saving = false;
+              this.notifyError('Set order status error.');
+            }.bind(this));
+          }.bind(this)
+        }
+      }, {
+        adaptive: true,
+        height: 'auto'
+      }, {
+        'before-close': function beforeClose(event) {}
+      });
     },
     getDataLists: function getDataLists() {
       axios.get('/orders/get-data-lists').then(function (response) {
@@ -4045,26 +4219,36 @@ var OrderRef = {
         this.saving = false;
         this.notifyError('Add order error.');
       }.bind(this));
+    },
+    modalDelete: function modalDelete(id) {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        'modal-data': {
+          header: "Delete order ID:".concat(id),
+          text: 'Order will be deleted.',
+          onConfirm: function () {
+            this.deleteItem(id);
+          }.bind(this)
+        }
+      }, {
+        adaptive: true,
+        height: 'auto'
+      }, {
+        'before-close': function beforeClose(event) {}
+      });
+    },
+    deleteItem: function deleteItem(id) {
+      axios.get('/orders/delete', {
+        params: {
+          id: id
+        }
+      }).then(function (response) {
+        this.notifySuccess("Order ID:".concat(id, " successfully deleted."));
+        this.closeOrder();
+        this.getList();
+      }.bind(this))["catch"](function () {
+        this.notifyError('Delete order error.');
+      }.bind(this));
     }
-    /*deleteItem(id) {
-         axios.get(
-            '/orders/delete',
-            {
-                params: {
-                    id
-                },
-            }
-        ).then(function(response) {
-             this.$modal.hide('dialog');
-            this.notifySuccess(`Order ID:${id} successfully deleted.`);
-            this.getList();
-         }.bind(this))
-        .catch(function() {
-             this.$modal.hide('dialog');
-            this.notifyError('Delete order error.');
-         }.bind(this));
-    }*/
-
   }
 });
 
@@ -5566,7 +5750,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".new-order-box h4[data-v-2845f04e] {\n  margin-top: 15px;\n}\n.new-order-box .ing-header[data-v-2845f04e] {\n  margin-bottom: 0;\n  margin-top: 30px;\n}\n.orders-list[data-v-2845f04e] {\n  margin-top: 20px;\n}\n.orders-list .update-list-btn[data-v-2845f04e] {\n  position: relative;\n  top: 28px;\n}\n.orders-list .open-order-btn[data-v-2845f04e] {\n  position: relative;\n  top: 4px;\n}\n.orders-list .customer-name[data-v-2845f04e] {\n  display: inline-block !important;\n  font-size: 16px;\n}\n.orders-list .customer-address[data-v-2845f04e] {\n  font-size: 15px;\n}\n.orders-list .order-id[data-v-2845f04e] {\n  display: inline-block;\n  margin-right: 5px;\n}\n.orders-list .order-status-label[data-v-2845f04e] {\n  color: white;\n  background-color: #9A9A9A;\n  padding: 8px 14px;\n  border-radius: 6px;\n  position: relative;\n  top: 10px;\n}\n.orders-list .order-status-label.status-new[data-v-2845f04e] {\n  background-color: #3490dc;\n}\n.orders-list .order-status-label.status-accepted[data-v-2845f04e] {\n  background-color: #6cb2eb;\n}\n.orders-list .order-status-label.status-cooking[data-v-2845f04e] {\n  background-color: #9561e2;\n}\n.orders-list .order-status-label.status-ready[data-v-2845f04e] {\n  background-color: #e3342f;\n}\n.orders-list .order-status-label.status-delivery[data-v-2845f04e] {\n  background-color: #f6993f;\n}\n.orders-list .order-status-label.status-delivered[data-v-2845f04e] {\n  background-color: #ffed4a;\n  color: #666;\n}\n.orders-list .order-status-label.status-declined[data-v-2845f04e] {\n  background-color: #f66d9b;\n}\n.orders-list .order-status-label.status-completed[data-v-2845f04e] {\n  background-color: #38c172;\n}\n.orders-list .order-status-label.status-archived[data-v-2845f04e] {\n  background-color: #9A9A9A;\n}", ""]);
+exports.push([module.i, ".new-order-box h4[data-v-2845f04e] {\n  margin-top: 15px;\n}\n.new-order-box .ing-header[data-v-2845f04e] {\n  margin-bottom: 0;\n  margin-top: 30px;\n}\n.order-status-btn.btn-fill[data-v-2845f04e] {\n  background-color: #9561e2;\n  border-color: #9561e2;\n}\n.order-status-btn.btn-fill[data-v-2845f04e]:hover {\n  background-color: #8948d4;\n  border-color: #8948d4;\n}\n.order-status-btn.btn-fill[data-v-2845f04e]:active:focus {\n  border-color: #704d9d;\n}\n.orders-list[data-v-2845f04e] {\n  margin-top: 20px;\n}\n.orders-list .update-list-btn[data-v-2845f04e] {\n  position: relative;\n  top: 28px;\n}\n.orders-list .open-order-btn[data-v-2845f04e] {\n  position: relative;\n  top: 4px;\n}\n.orders-list .customer-name[data-v-2845f04e] {\n  display: inline-block !important;\n  font-size: 16px;\n}\n.orders-list .customer-address[data-v-2845f04e] {\n  font-size: 15px;\n}\n.orders-list .order-id[data-v-2845f04e] {\n  display: inline-block;\n  margin-right: 5px;\n}\n.orders-list .order-status-label[data-v-2845f04e] {\n  color: white;\n  background-color: #9A9A9A;\n  padding: 8px 14px;\n  border-radius: 6px;\n  position: relative;\n  top: 10px;\n}\n.orders-list .order-status-label.status-new[data-v-2845f04e] {\n  background-color: #3490dc;\n}\n.orders-list .order-status-label.status-accepted[data-v-2845f04e] {\n  background-color: #6cb2eb;\n}\n.orders-list .order-status-label.status-cooking[data-v-2845f04e] {\n  background-color: #9561e2;\n}\n.orders-list .order-status-label.status-ready[data-v-2845f04e] {\n  background-color: #e3342f;\n}\n.orders-list .order-status-label.status-delivery[data-v-2845f04e] {\n  background-color: #f6993f;\n}\n.orders-list .order-status-label.status-delivered[data-v-2845f04e] {\n  background-color: #ffed4a;\n  color: #666;\n}\n.orders-list .order-status-label.status-declined[data-v-2845f04e] {\n  background-color: #f66d9b;\n}\n.orders-list .order-status-label.status-completed[data-v-2845f04e] {\n  background-color: #38c172;\n}\n.orders-list .order-status-label.status-archived[data-v-2845f04e] {\n  background-color: #9A9A9A;\n}", ""]);
 
 // exports
 
@@ -27845,79 +28029,91 @@ var render = function() {
                 _vm._l(_vm.pizza_sets, function(set, index) {
                   return _c("div", { key: index, staticClass: "row" }, [
                     _c("div", { staticClass: "col-md-12 box ingredient-box" }, [
-                      _c("div", { staticClass: "col-md-6" }, [
-                        _c("div", { staticClass: "form-group" }, [
-                          _c("label", [_vm._v("Set")]),
-                          _vm._v(" "),
-                          _vm.mode === "show"
-                            ? _c("input", {
-                                staticClass: "form-control",
-                                attrs: { type: "text", readonly: "" },
-                                domProps: {
-                                  value: _vm.getItemById(
-                                    _vm.pizzaSetsList,
-                                    set.id
-                                  ).name
-                                }
-                              })
-                            : _c(
-                                "select",
-                                {
-                                  directives: [
-                                    {
-                                      name: "model",
-                                      rawName: "v-model",
-                                      value: set.id,
-                                      expression: "set.id"
-                                    }
-                                  ],
+                      _c(
+                        "div",
+                        {
+                          class: {
+                            "col-md-6": _vm.mode !== "show",
+                            "col-md-8": _vm.mode === "show"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "form-group" }, [
+                            _c("label", [_vm._v("Set")]),
+                            _vm._v(" "),
+                            _vm.mode === "show"
+                              ? _c("input", {
                                   staticClass: "form-control",
-                                  on: {
-                                    change: [
-                                      function($event) {
-                                        var $$selectedVal = Array.prototype.filter
-                                          .call($event.target.options, function(
-                                            o
-                                          ) {
-                                            return o.selected
-                                          })
-                                          .map(function(o) {
-                                            var val =
-                                              "_value" in o ? o._value : o.value
-                                            return val
-                                          })
-                                        _vm.$set(
-                                          set,
-                                          "id",
-                                          $event.target.multiple
-                                            ? $$selectedVal
-                                            : $$selectedVal[0]
-                                        )
-                                      },
-                                      _vm.updateTotal
-                                    ]
+                                  attrs: { type: "text", readonly: "" },
+                                  domProps: {
+                                    value: _vm.getItemById(
+                                      _vm.pizzaSetsList,
+                                      set.id
+                                    ).name
                                   }
-                                },
-                                _vm._l(_vm.pizzaSetsList, function(option) {
-                                  return _c(
-                                    "option",
-                                    {
-                                      key: option.id,
-                                      domProps: { value: option.id }
-                                    },
-                                    [
-                                      _vm._v(
-                                        "\n                                            " +
-                                          _vm._s(option.name) +
-                                          "\n                                        "
-                                      )
-                                    ]
-                                  )
-                                }),
-                                0
-                              )
-                        ])
-                      ]),
+                                })
+                              : _c(
+                                  "select",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: set.id,
+                                        expression: "set.id"
+                                      }
+                                    ],
+                                    staticClass: "form-control",
+                                    on: {
+                                      change: [
+                                        function($event) {
+                                          var $$selectedVal = Array.prototype.filter
+                                            .call(
+                                              $event.target.options,
+                                              function(o) {
+                                                return o.selected
+                                              }
+                                            )
+                                            .map(function(o) {
+                                              var val =
+                                                "_value" in o
+                                                  ? o._value
+                                                  : o.value
+                                              return val
+                                            })
+                                          _vm.$set(
+                                            set,
+                                            "id",
+                                            $event.target.multiple
+                                              ? $$selectedVal
+                                              : $$selectedVal[0]
+                                          )
+                                        },
+                                        _vm.updateTotal
+                                      ]
+                                    }
+                                  },
+                                  _vm._l(_vm.pizzaSetsList, function(option) {
+                                    return _c(
+                                      "option",
+                                      {
+                                        key: option.id,
+                                        domProps: { value: option.id }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                            " +
+                                            _vm._s(option.name) +
+                                            "\n                                        "
+                                        )
+                                      ]
+                                    )
+                                  }),
+                                  0
+                                )
+                          ])
+                        ]
+                      ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-4" }, [
                         _c("div", { staticClass: "form-group" }, [
@@ -27953,21 +28149,23 @@ var render = function() {
                         ])
                       ]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-md-2 text-right" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-danger btn-sm ing-del-btn",
-                            attrs: { disabled: _vm.mode === "show" },
-                            on: {
-                              click: function($event) {
-                                return _vm.deletePizzaSet(index)
-                              }
-                            }
-                          },
-                          [_c("i", { staticClass: "fa fa-trash" })]
-                        )
-                      ])
+                      _vm.mode !== "show"
+                        ? _c("div", { staticClass: "col-md-2 text-right" }, [
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "btn btn-danger btn-sm ing-del-btn",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.deletePizzaSet(index)
+                                  }
+                                }
+                              },
+                              [_c("i", { staticClass: "fa fa-trash" })]
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ])
                 }),
@@ -28002,79 +28200,91 @@ var render = function() {
                 _vm._l(_vm.add_prods, function(prod, index) {
                   return _c("div", { key: index, staticClass: "row" }, [
                     _c("div", { staticClass: "col-md-12 box ingredient-box" }, [
-                      _c("div", { staticClass: "col-md-6" }, [
-                        _c("div", { staticClass: "form-group" }, [
-                          _c("label", [_vm._v("Product")]),
-                          _vm._v(" "),
-                          _vm.mode === "show"
-                            ? _c("input", {
-                                staticClass: "form-control",
-                                attrs: { type: "text", readonly: "" },
-                                domProps: {
-                                  value: _vm.getItemById(
-                                    _vm.addProdsList,
-                                    prod.id
-                                  ).name
-                                }
-                              })
-                            : _c(
-                                "select",
-                                {
-                                  directives: [
-                                    {
-                                      name: "model",
-                                      rawName: "v-model",
-                                      value: prod.id,
-                                      expression: "prod.id"
-                                    }
-                                  ],
+                      _c(
+                        "div",
+                        {
+                          class: {
+                            "col-md-6": _vm.mode !== "show",
+                            "col-md-8": _vm.mode === "show"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "form-group" }, [
+                            _c("label", [_vm._v("Product")]),
+                            _vm._v(" "),
+                            _vm.mode === "show"
+                              ? _c("input", {
                                   staticClass: "form-control",
-                                  on: {
-                                    change: [
-                                      function($event) {
-                                        var $$selectedVal = Array.prototype.filter
-                                          .call($event.target.options, function(
-                                            o
-                                          ) {
-                                            return o.selected
-                                          })
-                                          .map(function(o) {
-                                            var val =
-                                              "_value" in o ? o._value : o.value
-                                            return val
-                                          })
-                                        _vm.$set(
-                                          prod,
-                                          "id",
-                                          $event.target.multiple
-                                            ? $$selectedVal
-                                            : $$selectedVal[0]
-                                        )
-                                      },
-                                      _vm.updateTotal
-                                    ]
+                                  attrs: { type: "text", readonly: "" },
+                                  domProps: {
+                                    value: _vm.getItemById(
+                                      _vm.addProdsList,
+                                      prod.id
+                                    ).name
                                   }
-                                },
-                                _vm._l(_vm.addProdsList, function(option) {
-                                  return _c(
-                                    "option",
-                                    {
-                                      key: option.id,
-                                      domProps: { value: option.id }
-                                    },
-                                    [
-                                      _vm._v(
-                                        "\n                                            " +
-                                          _vm._s(option.name) +
-                                          "\n                                        "
-                                      )
-                                    ]
-                                  )
-                                }),
-                                0
-                              )
-                        ])
-                      ]),
+                                })
+                              : _c(
+                                  "select",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: prod.id,
+                                        expression: "prod.id"
+                                      }
+                                    ],
+                                    staticClass: "form-control",
+                                    on: {
+                                      change: [
+                                        function($event) {
+                                          var $$selectedVal = Array.prototype.filter
+                                            .call(
+                                              $event.target.options,
+                                              function(o) {
+                                                return o.selected
+                                              }
+                                            )
+                                            .map(function(o) {
+                                              var val =
+                                                "_value" in o
+                                                  ? o._value
+                                                  : o.value
+                                              return val
+                                            })
+                                          _vm.$set(
+                                            prod,
+                                            "id",
+                                            $event.target.multiple
+                                              ? $$selectedVal
+                                              : $$selectedVal[0]
+                                          )
+                                        },
+                                        _vm.updateTotal
+                                      ]
+                                    }
+                                  },
+                                  _vm._l(_vm.addProdsList, function(option) {
+                                    return _c(
+                                      "option",
+                                      {
+                                        key: option.id,
+                                        domProps: { value: option.id }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                            " +
+                                            _vm._s(option.name) +
+                                            "\n                                        "
+                                        )
+                                      ]
+                                    )
+                                  }),
+                                  0
+                                )
+                          ])
+                        ]
+                      ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-4" }, [
                         _c("div", { staticClass: "form-group" }, [
@@ -28110,21 +28320,23 @@ var render = function() {
                         ])
                       ]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-md-2 text-right" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-danger btn-sm ing-del-btn",
-                            attrs: { disabled: _vm.mode === "show" },
-                            on: {
-                              click: function($event) {
-                                return _vm.deleteAddProd(index)
-                              }
-                            }
-                          },
-                          [_c("i", { staticClass: "fa fa-trash" })]
-                        )
-                      ])
+                      _vm.mode !== "show"
+                        ? _c("div", { staticClass: "col-md-2 text-right" }, [
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "btn btn-danger btn-sm ing-del-btn",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.deleteAddProd(index)
+                                  }
+                                }
+                              },
+                              [_c("i", { staticClass: "fa fa-trash" })]
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ])
                 }),
@@ -28233,7 +28445,7 @@ var render = function() {
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col-md-12" }, [
             _vm.mode === "list"
-              ? _c("div", [
+              ? _c("div", { staticClass: "btn-box" }, [
                   _c(
                     "button",
                     {
@@ -28249,7 +28461,7 @@ var render = function() {
               : _vm._e(),
             _vm._v(" "),
             _vm.mode === "add_new" || _vm.mode === "edit"
-              ? _c("div", [
+              ? _c("div", { staticClass: "btn-box" }, [
                   _c(
                     "button",
                     {
@@ -28281,30 +28493,236 @@ var render = function() {
               : _vm._e(),
             _vm._v(" "),
             _vm.mode === "show"
-              ? _c("div", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary btn-fill btn-icon",
-                      on: { click: _vm.closeOrder }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-arrow-left" }),
-                      _vm._v(" Back\n                    ")
-                    ]
-                  ),
+              ? _c("div", { staticClass: "btn-box" }, [
+                  _c("div", { staticClass: "btn-box" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary btn-fill btn-icon",
+                        on: { click: _vm.closeOrder }
+                      },
+                      [
+                        _c("i", { staticClass: "fa fa-arrow-left" }),
+                        _vm._v(" Back\n                        ")
+                      ]
+                    )
+                  ]),
                   _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-info btn-fill btn-icon",
-                      on: { click: _vm.edit }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-edit" }),
-                      _vm._v(" Edit Order\n                    ")
-                    ]
-                  )
+                  _vm.orderSelected.status &&
+                  !_vm.inArray(_vm.orderSelected.status.slug, [
+                    "delivery",
+                    "delivered",
+                    "completed",
+                    "archived",
+                    "declined"
+                  ])
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-info btn-fill btn-icon",
+                            on: { click: _vm.edit }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-edit" }),
+                            _vm._v(" Edit Order\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e()
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.orderSelected.status && _vm.mode === "show"
+              ? _c("div", { staticClass: "btn-box" }, [
+                  _vm.orderSelected.status.slug === "new"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn order-status-btn btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("accepted")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-arrow-right" }),
+                            _vm._v(" Accept\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.orderSelected.status.slug === "accepted"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn order-status-btn btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("cooking")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-arrow-right" }),
+                            _vm._v(" Cooking\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.orderSelected.status.slug === "cooking"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn order-status-btn btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("ready")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-arrow-right" }),
+                            _vm._v(" Ready\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.orderSelected.status.slug === "ready"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn order-status-btn btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("delivery")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-arrow-right" }),
+                            _vm._v(" Delivery\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.orderSelected.status.slug === "delivery"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn order-status-btn btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("delivered")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-arrow-right" }),
+                            _vm._v(" Delivered\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.orderSelected.status.slug === "delivered"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-success btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("completed")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-check" }),
+                            _vm._v(" Completed\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.orderSelected.status.slug === "completed"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-default btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("archived")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fas fa-archive" }),
+                            _vm._v(" Archive\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  !_vm.inArray(_vm.orderSelected.status.slug, [
+                    "new",
+                    "declined",
+                    "archived"
+                  ])
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-warning btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.setOrderStatus("declined")
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-ban" }),
+                            _vm._v(" Decline\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.orderSelected.status.slug === "declined"
+                    ? _c("div", { staticClass: "btn-box" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-danger btn-fill btn-icon",
+                            on: {
+                              click: function($event) {
+                                return _vm.modalDelete(_vm.orderSelected.id)
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-trash" }),
+                            _vm._v(" Delete Order\n                        ")
+                          ]
+                        )
+                      ])
+                    : _vm._e()
                 ])
               : _vm._e()
           ])
@@ -28876,19 +29294,28 @@ var render = function() {
                                 [_c("i", { staticClass: "fas fa-eye" })]
                               ),
                               _vm._v(" "),
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "btn btn-info btn-sm open-order-btn",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.openOrder(item.id, true)
-                                    }
-                                  }
-                                },
-                                [_c("i", { staticClass: "fas fa-edit" })]
-                              )
+                              item.status &&
+                              !_vm.inArray(item.status.slug, [
+                                "delivery",
+                                "delivered",
+                                "completed",
+                                "archived",
+                                "declined"
+                              ])
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "btn btn-info btn-sm open-order-btn",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.openOrder(item.id, true)
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "fas fa-edit" })]
+                                  )
+                                : _vm._e()
                             ])
                           ]),
                           _vm._v(" "),

@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
 {
+    private $orderElements = [
+        'pizza_sets' => [PizzaSet::class, 'pizzaSets'],
+        'products' => [Product::class, 'products'],
+    ];
+
     public function index()
     {
         return view('app.orders');
@@ -69,17 +74,19 @@ class OrdersController extends Controller
                 $comment->save();
             }
 
-            $orderElements = [
-                'pizza_sets' => [PizzaSet::class, 'pizzaSets'],
-                'products' => [Product::class, 'products'],
-            ];
-            foreach ($orderElements as $elementsAlias => $options) {
+            foreach ($this->orderElements as $elementsSlug => $options) {
 
                 if (!$newOrder) {
                     $relationName = $options[1];
                     $order->$relationName()->detach();
                 }
-                $this->handleOrderElements($order, $orderData, $elementsAlias, $options);
+                $this->handleOrderElements(
+                    'reattach',
+                    $order,
+                    $orderData,
+                    $elementsSlug,
+                    $options
+                );
             }
 
         } catch(\Throwable $e) {
@@ -93,21 +100,50 @@ class OrdersController extends Controller
 
 
     private function handleOrderElements(
+        string $action,
         Model $order,
         array $newOrderData,
-        string $elementsAlias,
+        string $elementsSlug,
         array $options
     ) : void
     {
-        $elements = $newOrderData[$elementsAlias];
         $modelClass = $options[0];
         $relationName = $options[1];
+        $elements = ($action === 'reattach') ? $newOrderData[$elementsSlug] : $order->$relationName;
 
         foreach ($elements as $element) {
-            $instance = $modelClass::find($element['id']);
-            if (!empty($instance)) {
-                $order->$relationName()->attach($instance->id, ['quantity' => $element['quantity']]);
+
+            if ($action === 'destroy') {
+                $modelClass::destroy($element->id);
+            } else {
+                $instance = $modelClass::find($element['id']);
+
+                if (!empty($instance)) {
+                    $order->$relationName()->attach($instance->id, ['quantity' => $element['quantity']]);
+                }
             }
+        }
+    }
+
+
+    public function setStatus(Request $request) : void
+    {
+        try {
+
+            $orderId = (int) $request->input('order_id');
+            $statusSlug = $request->input('status');
+
+            $order = Order::find($orderId);
+            $status = OrderStatus::where('slug', 'like', $statusSlug)->first();
+
+            if (!empty($order) and !empty($status)) {
+                $order->status()->associate($status);
+            }
+            $order->save();
+
+        } catch(\Throwable $e) {
+
+            abort(500, $e->getMessage());
         }
     }
 
@@ -190,25 +226,37 @@ class OrdersController extends Controller
     }
 
 
-    /*public function delete(Request $request) : void
+    public function delete(Request $request) : void
     {
+        DB::beginTransaction();
         try {
 
             $id = (int) $request->input('id');
+            $order = Order::find($id);
 
-            $instance = PizzaSet::find($id);
-            $instance->products()->detach();
+            if (!empty($order)) {
 
-            $prodImages = $this->getImagePathesList("pizza_set_{$id}", $this->imagesDir);
-            if (!empty($prodImages)) {
-                Storage::delete($prodImages);
+                foreach ($order->comments as $comment) {
+                    Comment::destroy($comment->id);
+                }
+                //todo: проверить почему не удаляются товары и наборы пицц заказа
+                foreach ($this->orderElements as $elementsSlug => $options) {
+
+                    $this->handleOrderElements(
+                        'destroy',
+                        $order,
+                        [],
+                        $elementsSlug,
+                        $options
+                    );
+                }
+                Order::destroy($id);
             }
 
-            PizzaSet::destroy($id);
-
         } catch(\Throwable $e) {
-
+            DB::rollBack();
             abort(500, $e->getMessage());
         }
-    }*/
+        DB::commit();
+    }
 }
