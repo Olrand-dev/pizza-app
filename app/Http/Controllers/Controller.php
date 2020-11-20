@@ -6,12 +6,15 @@ namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
 use App\Models\Model;
+use App\Models\Order;
 use App\Models\PizzaSet;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
@@ -146,9 +149,50 @@ class Controller extends BaseController
 
             $cost += $product->cost * $quantity;
             $weight += $product->weight * $quantity;
-            //dd($product->connection->quantity);
         }
         $instance->cost = $cost;
+        $instance->weight = $weight;
+        $instance->save();
+
+        $ordersId = DB::table('order_pizzaset')
+            ->whereIn('order_id', function ($query) {
+                $this->getActiveOrdersId($query);
+            })
+            ->where('pizzaset_id', $id)
+            ->pluck('order_id');
+        if (!empty($ordersId)) {
+            foreach ($ordersId as $orderId) {
+                $this->calculateOrder($orderId, OrdersController::$orderElements);
+            }
+        }
+    }
+
+
+    protected function getActiveOrdersId(Builder $query) : Builder
+    {
+        $query->select('id')
+            ->from('orders')
+            ->whereNotIn('status_id', [
+                SystemConst::ORDER_STATUS_DECLINED,
+                SystemConst::ORDER_STATUS_ARCHIVED
+            ]);
+        return $query;
+    }
+
+
+    protected function calculateOrder(int $id, array $orderElements) : void
+    {
+        $instance = Order::find($id);
+        $weight = 0;
+
+        foreach ($orderElements as $elementsData) {
+            $relationName = $elementsData[1];
+
+            foreach($instance->$relationName as $item) {
+                $quantity = $item->connection->quantity;
+                $weight += $item->weight * $quantity;
+            }
+        }
         $instance->weight = $weight;
         $instance->save();
     }

@@ -785,6 +785,8 @@
 
                 this[target].cost = data.cost;
                 this[target].weight = data.weight;
+                this[target].pizza_sets = this.clone(data.pizza_sets, true);
+                this[target].products = this.clone(data.products, true);
             },
 
             getList(resetPage = false) {

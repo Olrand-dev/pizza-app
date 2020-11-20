@@ -17,10 +17,11 @@ use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
 {
-    private $orderElements = [
+    public static $orderElements = [
         'pizza_sets' => [PizzaSet::class, 'pizzaSets'],
         'products' => [Product::class, 'products'],
     ];
+
 
     public function index()
     {
@@ -67,21 +68,19 @@ class OrdersController extends Controller
             $order->save();
 
             $customerComment = ($newOrder) ? $orderData['customer_comment'] : $orderData['comments'][0];
-            if (!empty($customerComment)) {
-                $comment = ($newOrder) ? new Comment() : Comment::find($customerComment['id']);
-                $comment->content = ($newOrder) ? $customerComment : $customerComment['content'];
-                if ($newOrder) $comment->commentable()->associate($order);
-                $comment->save();
-            }
+            if (empty($customerComment)) $customerComment = '';
+            $comment = ($newOrder) ? new Comment() : Comment::find($customerComment['id']);
+            $comment->content = ($newOrder) ? $customerComment : $customerComment['content'];
+            if ($newOrder) $comment->commentable()->associate($order);
+            $comment->save();
 
-            foreach ($this->orderElements as $elementsSlug => $options) {
+            foreach (self::$orderElements as $elementsSlug => $options) {
 
                 if (!$newOrder) {
                     $relationName = $options[1];
                     $order->$relationName()->detach();
                 }
-                $this->handleOrderElements(
-                    'reattach',
+                $this->attachOrderElements(
                     $order,
                     $orderData,
                     $elementsSlug,
@@ -99,8 +98,7 @@ class OrdersController extends Controller
     }
 
 
-    private function handleOrderElements(
-        string $action,
+    private function attachOrderElements(
         Model $order,
         array $newOrderData,
         string $elementsSlug,
@@ -109,18 +107,13 @@ class OrdersController extends Controller
     {
         $modelClass = $options[0];
         $relationName = $options[1];
-        $elements = ($action === 'reattach') ? $newOrderData[$elementsSlug] : $order->$relationName;
+        $elements = $newOrderData[$elementsSlug];
 
         foreach ($elements as $element) {
+            $instance = $modelClass::find($element['id']);
 
-            if ($action === 'destroy') {
-                $modelClass::destroy($element->id);
-            } else {
-                $instance = $modelClass::find($element['id']);
-
-                if (!empty($instance)) {
-                    $order->$relationName()->attach($instance->id, ['quantity' => $element['quantity']]);
-                }
+            if (!empty($instance)) {
+                $order->$relationName()->attach($instance->id, ['quantity' => $element['quantity']]);
             }
         }
     }
@@ -239,16 +232,10 @@ class OrdersController extends Controller
                 foreach ($order->comments as $comment) {
                     Comment::destroy($comment->id);
                 }
-                //todo: проверить почему не удаляются товары и наборы пицц заказа
-                foreach ($this->orderElements as $elementsSlug => $options) {
+                foreach (self::$orderElements as $elementsSlug => $options) {
 
-                    $this->handleOrderElements(
-                        'destroy',
-                        $order,
-                        [],
-                        $elementsSlug,
-                        $options
-                    );
+                    $relationName = $options[1];
+                    $order->$relationName()->detach();
                 }
                 Order::destroy($id);
             }

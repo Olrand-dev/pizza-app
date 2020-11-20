@@ -26,7 +26,8 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label>Product</label>
-                            <select v-model="prod.prod_id" class="form-control" :disabled="prod.type_id === 0">
+                            <select v-model="prod.prod_id" class="form-control" :disabled="prod.type_id === 0"
+                                    @change="onChangeList">
                                 <option v-for="prod in ingList[prod.type_id]" :key="prod.id"
                                         :value="prod.id">
                                     {{ prod.name }}
@@ -39,7 +40,7 @@
                         <div class="form-group">
                             <label>Q-ty</label>
                             <input type="number" step="1" min="1"
-                                   v-model="prod.quantity" class="form-control">
+                                   v-model="prod.quantity" class="form-control" @change="onChangeList">
                         </div>
                     </div>
 
@@ -122,6 +123,10 @@
             deleteIngredient(index) {
                 this.removeByIndex(this.items, index);
             },
+
+            onChangeList() {
+                this.$emit('on-change-list', this.items);
+            }
         }
     }
 

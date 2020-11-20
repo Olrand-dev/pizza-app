@@ -77,11 +77,6 @@ class PizzaSetsController extends Controller
             $set->update($setData);
             $this->calculatePizzaSet($set->id);
 
-            $updatedSet = PizzaSet::find($setId);
-            if ($updatedSet->weight !== $set->weight) {
-                //todo: добавить пересчет веса заказов
-            }
-
         } catch(\Throwable $e) {
             DB::rollBack();
             abort(500, $e->getMessage());
@@ -191,12 +186,16 @@ class PizzaSetsController extends Controller
     }
 
 
-    public function delete(Request $request) : void
+    public function delete(Request $request)
     {
         DB::beginTransaction();
         try {
 
             $id = (int) $request->input('id');
+            $check = $this->checkPizzaSetCanBeDeleted($id);
+            if (!$check['result']) {
+                return $this->ajaxError($check['errorMsg']);
+            }
 
             $instance = PizzaSet::find($id);
             $instance->products()->detach();
@@ -213,5 +212,30 @@ class PizzaSetsController extends Controller
             abort(500, $e->getMessage());
         }
         DB::commit();
+    }
+
+
+    private function checkPizzaSetCanBeDeleted(int $id) : array
+    {
+        $check = true;
+
+        $setsId = DB::table('order_pizzaset')
+            ->whereIn('order_id', function ($query) {
+                $this->getActiveOrdersId($query);
+            })
+            ->distinct()
+            ->pluck('pizzaset_id');
+
+        $error = 'Pizza sets that are part of active orders cannot be removed.';
+
+        foreach ($setsId as $setId) {
+            if ($setId === $id) {
+                $check = false;
+            }
+        }
+        return [
+            'result' => $check,
+            'errorMsg' => $error,
+        ];
     }
 }

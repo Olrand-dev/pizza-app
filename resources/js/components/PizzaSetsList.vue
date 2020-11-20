@@ -79,8 +79,11 @@
 
                             <div class="col-md-7 pizza-set-ingredients-list">
 
-                                <ingredients-list ref="ingList" :items-list="pizzaSet.ingredients"
-                                                  :types="pizzaIngTypesList" :ing-list="pizzaIngredientsList"></ingredients-list>
+                                <ingredients-list ref="ingList"
+                                                  :items-list="pizzaSet.ingredients"
+                                                  :types="pizzaIngTypesList"
+                                                  :ing-list="pizzaIngredientsList"
+                                                  @on-change-list="updateIngList"></ingredients-list>
 
                             </div>
 
@@ -271,6 +274,10 @@
                 this.pizzaSet = this.clone(PizzaSetRef, true);
             },
 
+            updateIngList(list) {
+                this.pizzaSet.ingredients = this.clone(list, true);
+            },
+
             sortableHeaderClickHandler() {
                 this.getList();
             },
@@ -445,6 +452,13 @@
                 ).then(function(response) {
 
                     this.$modal.hide('dialog');
+
+                    let data = response.data;
+                    if (data.status && data.status === 'error') {
+                        this.notifyError(data.message);
+                        return;
+                    }
+
                     this.notifySuccess(`Pizza set ID:${id} successfully deleted.`);
                     this.getList();
 

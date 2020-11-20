@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Consts\SystemConst;
 use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
@@ -58,13 +59,14 @@ class ProductsController extends Controller
 
             $prodData = $request->input();
             $prodId = (int) $prodData['id'];
+            $typeId = (int) $prodData['type_id'];
             $prod = Product::find($prodId);
 
             $costChanged = (float) $prodData['cost'] !== $prod->cost;
             $weightChanged = (int) $prodData['weight'] !== $prod->weight;
 
-            if ($prod->type_id != $prodData['type_id']) {
-                $prodType = ProductType::find((int) $prodData['type_id']);
+            if ($prod->type_id !== $typeId) {
+                $prodType = ProductType::find($typeId);
 
                 if (!empty($prodType)) {
                     $prod->type()->associate($prodType);
@@ -86,8 +88,21 @@ class ProductsController extends Controller
                     $this->calculatePizzaSet($set->id);
                 }
             }
-            if ($weightChanged) {
-                //todo: добавить пересчет веса заказов
+
+            //если есть связи товара с активными заказами, пересчитать их вес
+            if ($weightChanged and $typeId === SystemConst::PRODUCT_TYPE_ADD_PRODUCTS) {
+                $ordersId = DB::table('order_product')
+                    ->whereIn('order_id', function ($query) {
+                        $this->getActiveOrdersId($query);
+                    })
+                    ->where('product_id', $prodId)
+                    ->pluck('order_id');
+
+                if (!empty($ordersId)) {
+                    foreach ($ordersId as $id) {
+                        $this->calculateOrder($id, OrdersController::$orderElements);
+                    }
+                }
             }
 
         } catch(\Throwable $e) {
@@ -141,8 +156,9 @@ class ProductsController extends Controller
     public function delete(Request $request)
     {
         $id = (int) $request->input('id');
-        if (!$this->checkProductCanBeDeleted($id)) {
-            return $this->ajaxError('Products that are part of pizza sets cannot be removed.');
+        $check = $this->checkProductCanBeDeleted($id);
+        if (!$check['result']) {
+            return $this->ajaxError($check['errorMsg']);
         }
 
         try {
@@ -161,16 +177,37 @@ class ProductsController extends Controller
     }
 
 
-    private function checkProductCanBeDeleted(int $id) : bool
+    private function checkProductCanBeDeleted(int $id) : array
     {
         $check = true;
+        $prod = Product::find($id);
+        $typeId = $prod->type_id;
 
-        $setProds = DB::table('pizzaset_product')->pluck('product_id');
-        foreach ($setProds as $prodId) {
+        switch ($typeId) {
+            case SystemConst::PRODUCT_TYPE_ADD_PRODUCTS: {
+                $prodsId = DB::table('order_product')
+                    ->whereIn('order_id', function ($query) {
+                        $this->getActiveOrdersId($query);
+                    })
+                    ->distinct()
+                    ->pluck('product_id');
+                $error = 'Additional products that are part of active orders cannot be removed.';
+                break;
+            }
+            default: {
+                $prodsId = DB::table('pizzaset_product')->pluck('product_id');
+                $error = 'Products that are part of pizza sets cannot be removed.';
+            }
+        }
+
+        foreach ($prodsId as $prodId) {
             if ($prodId === $id) {
                 $check = false;
             }
         }
-        return $check;
+        return [
+            'result' => $check,
+            'errorMsg' => $error,
+        ];
     }
 }

@@ -69,9 +69,9 @@
                         <label>Additional Products</label>
                     </div>
 
-                    <div v-if="add_prods.length > 0" class="col-md-12">
+                    <div v-if="products.length > 0" class="col-md-12">
 
-                        <div v-for="(prod, index) in add_prods" :key="index" class="row">
+                        <div v-for="(prod, index) in products" :key="index" class="row">
                             <div class="col-md-12 box ingredient-box">
 
                                 <div :class="{ 'col-md-6': mode !== 'show', 'col-md-8': mode === 'show' }">
@@ -212,7 +212,7 @@
         data() {
             return {
                 pizza_sets: this.orderPizzaSets,
-                add_prods: this.orderAddProds,
+                products: this.orderAddProds,
                 orderCost: 0,
                 orderWeight: 0,
             }
@@ -251,19 +251,21 @@
                 this.pizza_sets.forEach(item => {
                     addToTotal(this.pizzaSetsList, item);
                 });
-                this.add_prods.forEach(item => {
+                this.products.forEach(item => {
                     addToTotal(this.addProdsList, item);
                 });
 
                 this.$emit('on-ing-list-change', {
                     cost: this.orderCost,
                     weight: this.orderWeight,
+                    pizza_sets: this.pizza_sets,
+                    products: this.products,
                 });
             },
 
             clearData() {
                 this.pizza_sets = [];
-                this.add_prods = [];
+                this.products = [];
                 this.orderCost = 0;
                 this.orderWeight = 0;
             },
@@ -280,11 +282,11 @@
 
             addProd() {
                 let prod = this.clone(addProdRef);
-                this.add_prods.push(prod);
+                this.products.push(prod);
             },
 
             deleteAddProd(index) {
-                this.removeByIndex(this.add_prods, index);
+                this.removeByIndex(this.products, index);
                 this.updateTotal();
             },
         }
