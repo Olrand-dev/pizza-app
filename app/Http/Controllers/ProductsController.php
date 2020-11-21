@@ -179,7 +179,6 @@ class ProductsController extends Controller
 
     private function checkProductCanBeDeleted(int $id) : array
     {
-        $check = true;
         $prod = Product::find($id);
         $typeId = $prod->type_id;
 
@@ -200,14 +199,6 @@ class ProductsController extends Controller
             }
         }
 
-        foreach ($prodsId as $prodId) {
-            if ($prodId === $id) {
-                $check = false;
-            }
-        }
-        return [
-            'result' => $check,
-            'errorMsg' => $error,
-        ];
+        return $this->checkCanBeDeleted($prodsId, $id, $error);
     }
 }

@@ -149,13 +149,13 @@
         </div>
 
 
-        <div v-if="mode === 'add_new' || mode === 'update'" class="col-md-5">
+        <div v-if="mode === 'add_new' || mode === 'edit'" class="col-md-5">
             <div class="card">
 
                 <div class="header">
                     <h5 class="title">
                         <span v-if="mode === 'add_new'">Add New Employee</span>
-                        <span v-if="mode === 'update'">Update Employee ID:{{ employeeEdit.id }}</span>
+                        <span v-if="mode === 'edit'">Edit Employee ID:{{ employeeEdit.id }}</span>
                     </h5>
                 </div>
 
@@ -209,6 +209,14 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label v-if="mode === 'add_new'">Password</label>
+                                <label v-if="mode === 'edit'">New password</label>
+                                <input type="text" class="form-control" v-model="employeeEdit.password">
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label>Address</label>
                                 <textarea rows="5" class="form-control" v-model="employeeEdit.address"></textarea>
                             </div>
@@ -226,7 +234,7 @@
                                 <i class="fa fa-ban"></i> Cancel
                             </button>
 
-                            <button v-if="mode === 'update'" class="btn btn-danger btn-fill btn-icon pull-right"
+                            <button v-if="mode === 'edit'" class="btn btn-danger btn-fill btn-icon pull-right"
                                     @click="modalDelete(employeeEdit.id)">
                                 <i class="fa fa-trash"></i> Delete user
                             </button>
@@ -260,6 +268,7 @@
         email: '',
         phone: '',
         address: '',
+        password: '',
     };
 
     export default {
@@ -363,17 +372,17 @@
 
             saveUser() {
                 this.saving = true;
-                let update = this.mode === 'update';
+                let edit = this.mode === 'edit';
 
-                let apiUrl = (update) ? '/employees/save' : '/employees/add-new';
+                let apiUrl = (edit) ? '/employees/save' : '/employees/add-new';
 
                 axios.post(apiUrl,
                     this.employeeEdit
                 ).then(function(response) {
 
-                    let id = (update) ? this.employeeEdit.id : response.data;
+                    let id = (edit) ? this.employeeEdit.id : response.data;
                     let successMsg = 'Employee ID:' + id + ' successfully ' +
-                        ((update) ? 'updated.' : 'added.');
+                        ((edit) ? 'updated.' : 'added.');
 
                     this.notifySuccess(successMsg);
                     this.closeBox();
@@ -385,7 +394,7 @@
                 }.bind(this))
                 .catch(function() {
 
-                    let errorMsg = ((update) ? 'Update' : 'Add') + ' employee error.';
+                    let errorMsg = ((edit) ? 'Update' : 'Add') + ' employee error.';
 
                     this.saving = false;
                     this.notifyError(errorMsg);
@@ -403,8 +412,9 @@
                     email: employeeData.user.email,
                     phone: employeeData.phone,
                     address: employeeData.address,
+                    password: '',
                 };
-                this.mode = 'update';
+                this.mode = 'edit';
             },
 
             modalDelete(id) {
@@ -440,6 +450,12 @@
                         },
                     }
                 ).then(function(response) {
+
+                    let data = response.data;
+                    if (data.status && data.status === 'error') {
+                        this.notifyError(data.message);
+                        return;
+                    }
 
                     this.notifySuccess(`Employee ID:${id} successfully deleted.`);
                     this.closeBox();

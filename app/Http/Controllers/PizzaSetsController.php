@@ -217,8 +217,6 @@ class PizzaSetsController extends Controller
 
     private function checkPizzaSetCanBeDeleted(int $id) : array
     {
-        $check = true;
-
         $setsId = DB::table('order_pizzaset')
             ->whereIn('order_id', function ($query) {
                 $this->getActiveOrdersId($query);
@@ -228,14 +226,6 @@ class PizzaSetsController extends Controller
 
         $error = 'Pizza sets that are part of active orders cannot be removed.';
 
-        foreach ($setsId as $setId) {
-            if ($setId === $id) {
-                $check = false;
-            }
-        }
-        return [
-            'result' => $check,
-            'errorMsg' => $error,
-        ];
+        return $this->checkCanBeDeleted($setsId, $id, $error);
     }
 }

@@ -2144,6 +2144,13 @@ var CustomerRef = {
           id: id
         }
       }).then(function (response) {
+        var data = response.data;
+
+        if (data.status && data.status === 'error') {
+          this.notifyError(data.message);
+          return;
+        }
+
         this.notifySuccess("Customer ID:".concat(id, " successfully deleted."));
         this.closeBox();
         this.getList();
@@ -2933,6 +2940,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2942,7 +2957,8 @@ var EmployeeRef = {
   role_id: 0,
   email: '',
   phone: '',
-  address: ''
+  address: '',
+  password: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -3011,18 +3027,18 @@ var EmployeeRef = {
     },
     saveUser: function saveUser() {
       this.saving = true;
-      var update = this.mode === 'update';
-      var apiUrl = update ? '/employees/save' : '/employees/add-new';
+      var edit = this.mode === 'edit';
+      var apiUrl = edit ? '/employees/save' : '/employees/add-new';
       axios.post(apiUrl, this.employeeEdit).then(function (response) {
-        var id = update ? this.employeeEdit.id : response.data;
-        var successMsg = 'Employee ID:' + id + ' successfully ' + (update ? 'updated.' : 'added.');
+        var id = edit ? this.employeeEdit.id : response.data;
+        var successMsg = 'Employee ID:' + id + ' successfully ' + (edit ? 'updated.' : 'added.');
         this.notifySuccess(successMsg);
         this.closeBox();
         this.initEmployeeData();
         this.saving = false;
         this.getList();
       }.bind(this))["catch"](function () {
-        var errorMsg = (update ? 'Update' : 'Add') + ' employee error.';
+        var errorMsg = (edit ? 'Update' : 'Add') + ' employee error.';
         this.saving = false;
         this.notifyError(errorMsg);
       }.bind(this));
@@ -3035,9 +3051,10 @@ var EmployeeRef = {
         role_id: employeeData.role_id,
         email: employeeData.user.email,
         phone: employeeData.phone,
-        address: employeeData.address
+        address: employeeData.address,
+        password: ''
       };
-      this.mode = 'update';
+      this.mode = 'edit';
     },
     modalDelete: function modalDelete(id) {
       this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
@@ -3061,6 +3078,13 @@ var EmployeeRef = {
           id: id
         }
       }).then(function (response) {
+        var data = response.data;
+
+        if (data.status && data.status === 'error') {
+          this.notifyError(data.message);
+          return;
+        }
+
         this.notifySuccess("Employee ID:".concat(id, " successfully deleted."));
         this.closeBox();
         this.getList();
@@ -27610,7 +27634,7 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm.mode === "add_new" || _vm.mode === "update"
+    _vm.mode === "add_new" || _vm.mode === "edit"
       ? _c("div", { staticClass: "col-md-5" }, [
           _c("div", { staticClass: "card" }, [
             _c("div", { staticClass: "header" }, [
@@ -27619,11 +27643,9 @@ var render = function() {
                   ? _c("span", [_vm._v("Add New Employee")])
                   : _vm._e(),
                 _vm._v(" "),
-                _vm.mode === "update"
+                _vm.mode === "edit"
                   ? _c("span", [
-                      _vm._v(
-                        "Update Employee ID:" + _vm._s(_vm.employeeEdit.id)
-                      )
+                      _vm._v("Edit Employee ID:" + _vm._s(_vm.employeeEdit.id))
                     ])
                   : _vm._e()
               ])
@@ -27794,6 +27816,44 @@ var render = function() {
                 _vm._v(" "),
                 _c("div", { staticClass: "col-md-12" }, [
                   _c("div", { staticClass: "form-group" }, [
+                    _vm.mode === "add_new"
+                      ? _c("label", [_vm._v("Password")])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.mode === "edit"
+                      ? _c("label", [_vm._v("New password")])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.employeeEdit.password,
+                          expression: "employeeEdit.password"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.employeeEdit.password },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.employeeEdit,
+                            "password",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-md-12" }, [
+                  _c("div", { staticClass: "form-group" }, [
                     _c("label", [_vm._v("Address")]),
                     _vm._v(" "),
                     _c("textarea", {
@@ -27853,7 +27913,7 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _vm.mode === "update"
+                  _vm.mode === "edit"
                     ? _c(
                         "button",
                         {

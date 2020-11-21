@@ -8,13 +8,16 @@ use App\Consts\SystemConst;
 use App\Models\Model;
 use App\Models\Order;
 use App\Models\PizzaSet;
+use App\Models\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
@@ -204,5 +207,29 @@ class Controller extends BaseController
             'status' => 'error',
             'message' => $message,
         ]);
+    }
+
+
+    protected function makeUserPassword(int $userId, string $pass) : void
+    {
+        $user = User::find($userId);
+        $user->password = Hash::make($pass);
+        $user->save();
+    }
+
+
+    protected function checkCanBeDeleted(Collection $idSet, int $targetId, string $errorMsg) : array
+    {
+        $check = true;
+
+        foreach ($idSet as $id) {
+            if ($id === $targetId) {
+                $check = false;
+            }
+        }
+        return [
+            'result' => $check,
+            'errorMsg' => $errorMsg,
+        ];
     }
 }

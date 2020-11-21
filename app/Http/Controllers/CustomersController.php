@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Consts\SystemConst;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -105,12 +106,16 @@ class CustomersController extends Controller
     }
 
 
-    public function delete(Request $request) : void
+    public function delete(Request $request)
     {
+        $id = (int) $request->input('id');
+        $check = $this->checkCustomerCanBeDeleted($id);
+        if (!$check['result']) {
+            return $this->ajaxError($check['errorMsg']);
+        }
+
         DB::beginTransaction();
         try {
-
-            $id = (int) $request->input('id');
 
             $customer = Customer::find($id);
             User::destroy($customer->user->id);
@@ -121,5 +126,21 @@ class CustomersController extends Controller
             abort(500, $e->getMessage());
         }
         DB::commit();
+    }
+
+
+    private function checkCustomerCanBeDeleted(int $id) : array
+    {
+        $customersId = DB::table('orders')
+            ->whereNotIn('status_id', [
+                SystemConst::ORDER_STATUS_DECLINED,
+                SystemConst::ORDER_STATUS_ARCHIVED
+            ])
+            ->groupBy('customer_id')
+            ->pluck('customer_id'); //dd($customersId);
+
+        $error = 'Customer attached to active orders cannot be removed.';
+
+        return $this->checkCanBeDeleted($customersId, $id, $error);
     }
 }

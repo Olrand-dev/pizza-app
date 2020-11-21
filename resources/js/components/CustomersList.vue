@@ -289,6 +289,12 @@
                     }
                 ).then(function(response) {
 
+                    let data = response.data;
+                    if (data.status && data.status === 'error') {
+                        this.notifyError(data.message);
+                        return;
+                    }
+
                     this.notifySuccess(`Customer ID:${id} successfully deleted.`);
                     this.closeBox();
                     this.getList();

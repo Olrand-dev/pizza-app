@@ -7,7 +7,6 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class EmployeesController extends Controller
 {
@@ -27,8 +26,10 @@ class EmployeesController extends Controller
             $user = new User();
             $user->name = $data['name'];
             $user->email = $data['email'];
-            $user->password = Hash::make('temp_pass');
             $user->save();
+
+            $password = $data['password'] ?? 'temp_pass';
+            $this->makeUserPassword($user->id, $password);
 
             $employee = new Employee();
             $employee->name = $data['name'];
@@ -69,6 +70,11 @@ class EmployeesController extends Controller
             $user->name = $data['name'];
             $user->email = $data['email'];
             $user->save();
+
+            //new password
+            if (!empty($data['password'])) {
+                $this->makeUserPassword($user->id, $data['password']);
+            }
 
             if ($employee->role_id != $data['role_id']) {
                 $role = Role::find((int) $data['role_id']);
@@ -124,12 +130,16 @@ class EmployeesController extends Controller
     }
 
 
-    public function delete(Request $request) : void
+    public function delete(Request $request)
     {
+        $id = (int) $request->input('id');
+        $check = $this->checkEmployeeCanBeDeleted($id);
+        if (!$check['result']) {
+            return $this->ajaxError($check['errorMsg']);
+        }
+
         DB::beginTransaction();
         try {
-
-            $id = (int) $request->input('id');
 
             $employee = Employee::find($id);
             User::destroy($employee->user->id);
@@ -140,5 +150,20 @@ class EmployeesController extends Controller
             abort(500, $e->getMessage());
         }
         DB::commit();
+    }
+
+
+    private function checkEmployeeCanBeDeleted(int $id) : array
+    {
+        $employeesId = DB::table('employee_order')
+            ->whereIn('order_id', function ($query) {
+                $this->getActiveOrdersId($query);
+            })
+            ->distinct()
+            ->pluck('employee_id');
+
+        $error = 'Employee attached to active orders cannot be removed.';
+
+        return $this->checkCanBeDeleted($employeesId, $id, $error);
     }
 }
