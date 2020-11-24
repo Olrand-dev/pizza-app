@@ -1,10 +1,47 @@
 @import 'variables';
 @import 'utilities';
+@import "mixins";
+
+.vm--modal {
+    margin-top: 1vh;
+    height: 90vh !important;
+    max-height: 90vh;
+    overflow: auto !important;
+}
 
 .page-name {
     display: inline-block;
     font-size: 21px;
     margin-top: 15px;
+
+    @include maxw(768) {
+        margin-left: 15px;
+    }
+}
+
+.scroll-x-box {
+
+    @include minmaxw(768,1500) {
+        overflow-x: scroll;
+    }
+}
+
+.top-user-mobile {
+    display: inline-block;
+    float: right !important;
+    position: relative;
+    right: 50px;
+
+    .navbar-nav > li > a {
+        color: $s-dark;
+    }
+
+    @include minw(990) {
+        display: none;
+    }
+    @include maxw(520) {
+        right: 20px;
+    }
 }
 
 .card {
@@ -24,10 +61,42 @@
 }
 
 .btn {
+    margin-top: 3px;
+
     &.btn-icon {
         padding-left: 10px;
         padding-right: 15px;
     }
+}
+
+.form-error-msg {
+    color: $red;
+    margin-top: 3px;
+    display: block;
+}
+
+.app-logo-text {
+    color: $s-dark-gray;
+    font-size: 21px;
+    padding: 10px;
+}
+
+.login-box {
+    margin-top: 15vh;
+}
+
+.user-top-icon {
+    font-size: 18px;
+    color: $s-dark-gray;
+    margin-right: 3px;
+}
+.user-top-name {
+    font-size: 16px;
+    color: $s-soft-gray;
+    margin-right: 5px;
+}
+.user-logout-btn {
+    display: inline-block !important;
 }
 
 .no-items {
@@ -104,6 +173,11 @@ select, input[type="file"] {
         min-width: 35px;
         position: relative;
         right: 12px;
+
+        @include maxw(990) {
+            top: 0;
+            left: 0;
+        }
     }
 
     .list {

@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 
 class TopMenu extends Component
@@ -12,6 +13,11 @@ class TopMenu extends Component
      */
     private $pageName;
 
+    /**
+     * @var array
+     */
+    private $userData;
+
 
     /**
      * Create a new component instance.
@@ -20,6 +26,9 @@ class TopMenu extends Component
      */
     public function __construct()
     {
+        if (Auth::check()) {
+            $this->userData = Auth::user();
+        }
         $this->pageName = session('page_name', 'Dashboard');
     }
 
@@ -33,6 +42,7 @@ class TopMenu extends Component
     {
         return view('components.top-menu', [
             'pageName' => $this->pageName,
+            'user' => $this->userData,
         ]);
     }
 

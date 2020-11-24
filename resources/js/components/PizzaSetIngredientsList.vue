@@ -71,6 +71,7 @@
 <style scoped lang="scss">
 
     @import './../../sass/variables';
+    @import './../../sass/mixins';
 
     .ingredient-box {
         position: relative;
@@ -82,6 +83,10 @@
         position: relative;
         top: 28px;
         right: 20px;
+
+        @include maxw(990) {
+            top: -8px;
+        }
     }
 
 </style>

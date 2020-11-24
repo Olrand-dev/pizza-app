@@ -183,7 +183,7 @@
                     <order-customer-data :data="orderSelected.customer"></order-customer-data>
                 </div>
 
-                <div v-if="mode === 'edit'" class="col-md-12 mb-20">
+                <div v-if="mode === 'edit'" class="col-md-12 mb-20 customer-change">
 
                     <button class="btn btn-default btn-icon"
                             @click="modalSelectCustomer">
@@ -235,7 +235,7 @@
 
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12 customer-change">
 
                             <button class="btn btn-default btn-icon"
                                     @click="modalSelectCustomer">
@@ -343,7 +343,7 @@
 
                             <div class="col-md-12 data-top">
 
-                                <div class="col-md-4">
+                                <div class="col-md-4 name-block">
 
                                     <span class="text-muted order-id">
                                         #{{ item.id }}
@@ -355,7 +355,7 @@
 
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-3 data-block">
 
                                     <span class="data-line">
                                         <i class="fas fa-phone-alt"></i>
@@ -372,7 +372,7 @@
 
                                 </div>
 
-                                <div class="col-md-2">
+                                <div class="col-md-2 add-block">
 
                                     <span class="data-line">
                                         <i class="fas fa-weight-hanging"></i>
@@ -393,7 +393,7 @@
 
                                 <div class="col-md-2 text-right">
 
-                                    <button class="btn btn-primary btn-sm open-order-btn"
+                                    <button class="btn btn-primary btn-sm order-btn open-order-btn"
                                             @click="openOrder(item.id)">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -403,7 +403,7 @@
                                         !inArray(item.status.slug, [
                                             'delivery', 'delivered', 'completed', 'archived', 'declined'
                                         ])
-                                    " class="btn btn-info btn-sm open-order-btn"
+                                    " class="btn btn-info btn-sm order-btn open-order-btn"
                                             @click="openOrder(item.id, true)">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -412,7 +412,7 @@
 
                             </div>
 
-                            <div class="col-md-12">
+                            <div class="col-md-12 address-block">
                                     <span class="data-line customer-address">
                                         <i class="fas fa-map-marker-alt"></i>
                                         {{ item.customer.address }}
@@ -465,6 +465,7 @@
 <style scoped lang="scss">
 
     @import './../../sass/variables';
+    @import './../../sass/mixins';
 
     .new-order-box {
 
@@ -476,6 +477,10 @@
             margin-bottom: 0;
             margin-top: 30px;
         }
+    }
+
+    .btn-box {
+        margin-top: 3px;
     }
 
     .order-status-btn {
@@ -495,18 +500,68 @@
     }
 
 
+    .customer-change {
+
+        @include maxw(990) {
+            margin-bottom: 15px;
+        }
+    }
+
     .orders-list {
 
         margin-top: 20px;
 
+        .name-block {
+
+            @include maxw(990) {
+                margin-bottom: 12px;
+
+                .customer-name {
+                    font-size: 18px;
+                }
+            }
+        }
+
+        .data-block {
+
+            @include maxw(990) {
+                margin-bottom: 12px;
+            }
+        }
+
+        .add-block {
+
+            @include maxw(990) {
+                margin-bottom: 12px;
+            }
+        }
+
+        .address-block {
+
+            @include maxw(990) {
+                margin-top: 40px;
+            }
+        }
+
         .update-list-btn {
             position: relative;
             top: 28px;
+
+            @include maxw(990) {
+                top: 0;
+            }
         }
 
-        .open-order-btn {
+        .order-btn {
             position: relative;
             top: 4px;
+
+            @include maxw(990) {
+                top: 30px;
+            }
+            @include minmaxw(991,1200) {
+                top: 57px;
+            }
         }
 
         .customer-name {

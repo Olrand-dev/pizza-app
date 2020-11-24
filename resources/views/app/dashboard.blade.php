@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('title')
-Dashboard
+    Dashboard
 @endsection
 
 @section('content')
 <div class="container-fluid">
-    <div class="row justify-content-center">
+    <div class="row">
 
         123
 

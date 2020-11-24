@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
 @section('title')
-Pizza Sets
+    Pizza Sets
 @endsection
 
 @section('content')
 <div class="container-fluid">
-    <div class="row justify-content-center">
+    <div class="row">
 
         <div class="col-md-12">
             <div class="card">
 
-                <div class="content">
+                <div class="content scroll-x-box">
 
                     <pizzasets-list></pizzasets-list>
 

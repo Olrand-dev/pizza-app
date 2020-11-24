@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-Customers
+    Customers
 @endsection
 
 @section('content')

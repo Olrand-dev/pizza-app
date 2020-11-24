@@ -450,6 +450,11 @@
                     {
                         adaptive: true,
                         height: 'auto',
+                    },
+                    {
+                        'before-close': event => {
+
+                        }
                     }
                 );
             },

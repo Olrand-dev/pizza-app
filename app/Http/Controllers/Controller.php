@@ -26,6 +26,12 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+
     protected function saveImage(UploadedFile $image, string $path, string $name) : string
     {
         $imagePath = '';

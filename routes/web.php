@@ -9,7 +9,7 @@ use \App\Http\Controllers\PizzaSetsController;
 use \App\Http\Controllers\OrdersController;
 use \App\Http\Controllers\CustomersController;
 use \App\Http\Controllers\EmployeesController;
-use \App\Http\Controllers\HomeController;
+use \App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +22,8 @@ use \App\Http\Controllers\HomeController;
 |
 */
 
-Route::get('/', [DashboardController::class, 'index']);
+//Route::get('/', [DashboardController::class, 'index']);
+Route::redirect('/', '/products');
 
 
 Route::prefix('products')->group(function() {
@@ -75,5 +76,4 @@ Route::prefix('employees')->group(function() {
 });
 
 Auth::routes();
-
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/logout', [LoginController::class, 'logout']);

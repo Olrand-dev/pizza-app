@@ -11,8 +11,12 @@
 
         <span class="page-name">{{ $pageName }}</span>
 
+        <div class="top-user-mobile">
+            <x-top-user :user="$user"/>
+        </div>
+
     </div>
-    
+
     <div class="collapse navbar-collapse">
 
         {{-- <ul class="nav navbar-nav navbar-left">
@@ -23,14 +27,8 @@
             </li>
         </ul> --}}
 
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                <a href="">
-                    Account
-                </a>
-            </li>
-        </ul>
-        
+        <x-top-user :user="$user"/>
+
     </div>
 
 </div>

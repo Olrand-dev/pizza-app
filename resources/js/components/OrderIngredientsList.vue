@@ -129,7 +129,7 @@
                         <label>Order Total</label>
                     </div>
 
-                    <div class="col-md-12 box">
+                    <div class="col-md-12 box data">
                         <span><b>Cost:</b> ${{orderCost}}</span>
                         <span><b>Weight:</b> {{orderWeight}} g.</span>
                     </div>
@@ -151,6 +151,7 @@
 <style scoped lang="scss">
 
     @import './../../sass/variables';
+    @import './../../sass/mixins';
 
     .ing-list {
         margin-bottom: 15px;
@@ -158,7 +159,7 @@
 
     .ingredient-box {
         position: relative;
-        right: 15px;
+        right: 8px;
         margin-bottom: 9px;
         margin-left: 15px;
     }
@@ -172,6 +173,10 @@
         top: 21px;
         right: 20px;
         margin-top: 6px;
+
+        @include maxw(990) {
+            top: -8px;
+        }
     }
 
     .order-total {
@@ -187,6 +192,10 @@
             padding: 10px;
             font-size: 16px;
             color: $s-dark-gray;
+        }
+
+        .data {
+            max-width: 200px;
         }
     }
 

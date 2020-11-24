@@ -14,12 +14,12 @@ class SidebarMenuConst
     public function __construct()
     {
         $this->elements = [
-            [
+            /*[
                 'name' => 'Dashboard',
                 'slug' => 'dashboard',
                 'icon' => 'pe-7s-graph2',
                 'url' => url('/'),
-            ],
+            ],*/
             [
                 'name' => 'Products',
                 'slug' => 'products',

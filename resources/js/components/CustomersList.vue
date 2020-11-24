@@ -1,6 +1,6 @@
 <template>
 
-    <div class="row justify-content-center">
+    <div class="row">
 
         <div class="col-md-7">
 
@@ -26,10 +26,12 @@
                 </div>
             </div>
 
+            <div id="list-bottom"></div>
+
         </div>
 
 
-        <div v-if="mode === 'add_new' || mode === 'update'" class="col-md-5">
+        <div id="edit-user-box" v-show="mode === 'add_new' || mode === 'update'" class="col-md-5">
             <div class="card">
 
                 <div class="header">
@@ -200,7 +202,15 @@
                 }.bind(this));
             },
 
+            scrollToEditBox() {
+                const editBox = document.getElementById('list-bottom');
+                this.$smoothScroll({
+                    scrollTo: editBox,
+                });
+            },
+
             openBox() {
+                this.scrollToEditBox();
                 this.mode = 'add_new';
                 this.initCustomerData();
             },
@@ -243,6 +253,7 @@
             },
 
             editUser(item) {
+                this.scrollToEditBox();
                 let customerData = item;
 
                 this.customerEdit = {
