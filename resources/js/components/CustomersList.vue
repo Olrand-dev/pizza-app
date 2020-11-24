@@ -26,13 +26,11 @@
                 </div>
             </div>
 
-            <div id="list-bottom"></div>
-
         </div>
 
 
-        <div id="edit-user-box" v-show="mode === 'add_new' || mode === 'update'" class="col-md-5">
-            <div class="card">
+        <div id="edit-user-box" class="col-md-5">
+            <div class="card" v-show="mode === 'add_new' || mode === 'update'">
 
                 <div class="header">
                     <h5 class="title">
@@ -203,7 +201,7 @@
             },
 
             scrollToEditBox() {
-                const editBox = document.getElementById('list-bottom');
+                const editBox = document.getElementById('edit-user-box');
                 this.$smoothScroll({
                     scrollTo: editBox,
                 });
@@ -319,4 +317,5 @@
             }
         }
     }
+
 </script>

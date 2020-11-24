@@ -22,7 +22,7 @@
 
                             @csrf
 
-                            <div class="col-md-8 col-md-offset-2 no-pad">
+                            <div class="col-md-8 col-md-offset-2 login-form-row">
                                 <div class="form-group">
 
                                     <label for="email">Email</label>
@@ -40,7 +40,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-8 col-md-offset-2 no-pad">
+                            <div class="col-md-8 col-md-offset-2 login-form-row">
                                 <div class="form-group">
 
                                     <label for="password">Password</label>
@@ -58,7 +58,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-8 col-md-offset-2 no-pad">
+                            <div class="col-md-8 col-md-offset-2 login-form-row">
                                 <div class="form-group">
 
                                     <div class="form-check">
@@ -73,7 +73,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-8 col-md-offset-2">
+                            <div class="col-md-8 col-md-offset-2 login-form-row">
                                 <div class="form-group">
 
                                     <button type="submit" class="btn btn-primary">

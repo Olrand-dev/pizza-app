@@ -9,10 +9,12 @@ use App\Models\Comment;
 use App\Models\Customer;
 use App\Models\Model;
 use App\Models\Order;
+use App\Models\OrderArchived;
 use App\Models\OrderStatus;
 use App\Models\PizzaSet;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
@@ -46,9 +48,6 @@ class OrdersController extends Controller
         DB::beginTransaction();
         try {
 
-            //todo: добавить проверку создающего заказ пользователя, от гостей и покупателей
-            //ставить заказу статус нового, от менеджера - принятый
-
             $orderData = $request->input();
 
             $order = ($newOrder) ? new Order() : Order::find($orderData['id']);
@@ -56,7 +55,10 @@ class OrdersController extends Controller
             $order->weight = (int) $orderData['weight'];
 
             if ($newOrder) {
-                $orderStatus = SystemConst::ORDER_STATUS_NEW;
+                $orderStatus = Auth::user()->isManager() ?
+                    SystemConst::ORDER_STATUS_ACCEPTED :
+                    SystemConst::ORDER_STATUS_NEW;
+
                 $status = OrderStatus::find($orderStatus);
                 $order->status()->associate($status);
             }
@@ -134,6 +136,19 @@ class OrdersController extends Controller
             }
             $order->save();
 
+            if (in_array($status->id, [
+                SystemConst::ORDER_STATUS_DECLINED,
+                SystemConst::ORDER_STATUS_ARCHIVED,
+            ])) {
+                $orderId = $order->id;
+                $orderData = $this->getOrderFullData($request, $orderId);
+
+                $archived = new OrderArchived();
+                $archived->order_id = $orderId;
+                $archived->data = json_encode($orderData);
+                $archived->save();
+            }
+
         } catch(\Throwable $e) {
 
             abort(500, $e->getMessage());
@@ -158,9 +173,10 @@ class OrdersController extends Controller
     }
 
 
-    public function getOrderFullData(Request $request) : array
+    public function getOrderFullData(Request $request, int $id = 0) : array
     {
-        $id = (int) $request->input('id');
+        if (empty($id)) $id = (int) $request->input('id', 0);
+        if (empty($id)) return [];
 
         $data = Order::with(['products', 'pizzaSets', 'status', 'customer.user', 'comments'])
             ->where('id', $id)

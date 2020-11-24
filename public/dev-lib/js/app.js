@@ -2023,8 +2023,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 
 
@@ -2088,7 +2086,7 @@ var CustomerRef = {
       }.bind(this));
     },
     scrollToEditBox: function scrollToEditBox() {
-      var editBox = document.getElementById('list-bottom');
+      var editBox = document.getElementById('edit-user-box');
       this.$smoothScroll({
         scrollTo: editBox
       });
@@ -2958,8 +2956,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 
 
@@ -3030,7 +3026,7 @@ var EmployeeRef = {
       }.bind(this));
     },
     scrollToEditBox: function scrollToEditBox() {
-      var editBox = document.getElementById('list-bottom');
+      var editBox = document.getElementById('edit-user-box');
       this.$smoothScroll({
         scrollTo: editBox
       });
@@ -26466,27 +26462,24 @@ var render = function() {
           ],
           1
         )
-      ]),
-      _vm._v(" "),
-      _c("div", { attrs: { id: "list-bottom" } })
+      ])
     ]),
     _vm._v(" "),
-    _c(
-      "div",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.mode === "add_new" || _vm.mode === "update",
-            expression: "mode === 'add_new' || mode === 'update'"
-          }
-        ],
-        staticClass: "col-md-5",
-        attrs: { id: "edit-user-box" }
-      },
-      [
-        _c("div", { staticClass: "card" }, [
+    _c("div", { staticClass: "col-md-5", attrs: { id: "edit-user-box" } }, [
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.mode === "add_new" || _vm.mode === "update",
+              expression: "mode === 'add_new' || mode === 'update'"
+            }
+          ],
+          staticClass: "card"
+        },
+        [
           _c("div", { staticClass: "header" }, [
             _c("h5", { staticClass: "title" }, [
               _vm.mode === "add_new"
@@ -26681,9 +26674,9 @@ var render = function() {
               ])
             ])
           ])
-        ])
-      ]
-    )
+        ]
+      )
+    ])
   ])
 }
 var staticRenderFns = []
@@ -27730,28 +27723,25 @@ var render = function() {
               ])
             ])
           ])
-        ]),
-        _vm._v(" "),
-        _c("div", { attrs: { id: "list-bottom" } })
+        ])
       ]
     ),
     _vm._v(" "),
-    _c(
-      "div",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.mode === "add_new" || _vm.mode === "edit",
-            expression: "mode === 'add_new' || mode === 'edit'"
-          }
-        ],
-        staticClass: "col-md-5",
-        attrs: { id: "edit-user-box" }
-      },
-      [
-        _c("div", { staticClass: "card" }, [
+    _c("div", { staticClass: "col-md-5", attrs: { id: "edit-user-box" } }, [
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.mode === "add_new" || _vm.mode === "edit",
+              expression: "mode === 'add_new' || mode === 'edit'"
+            }
+          ],
+          staticClass: "card"
+        },
+        [
           _c("div", { staticClass: "header" }, [
             _c("h5", { staticClass: "title" }, [
               _vm.mode === "add_new"
@@ -28049,9 +28039,9 @@ var render = function() {
               ])
             ])
           ])
-        ])
-      ]
-    )
+        ]
+      )
+    ])
   ])
 }
 var staticRenderFns = []

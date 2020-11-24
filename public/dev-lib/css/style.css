@@ -140,9 +140,18 @@
 
 .vm--modal {
   margin-top: 1vh;
-  height: 90vh !important;
-  max-height: 90vh;
+  max-height: 90vh !important;
   overflow: auto !important;
+}
+
+.login-form-row {
+  padding: 0 !important;
+}
+
+@media (max-width: 990px) {
+  .login-form-row {
+    padding: 0 30px !important;
+  }
 }
 
 .page-name {
