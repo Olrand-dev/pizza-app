@@ -30,6 +30,9 @@
                                             <input v-if="prodImageChanged" type="file" id="productImage"
                                                    ref="prodImageFile"
                                                    @change="handleFileUpload">
+                                            <span v-if="checkErr('image_file')" class="error">
+                                                {{ getErr('image_file') }}
+                                            </span>
                                         </div>
 
                                         <div class="col-md-12 mt-5">
@@ -49,6 +52,9 @@
                                         <div class="form-group">
                                             <label>Name</label>
                                             <input type="text" class="form-control" v-model="prodEdit.name">
+                                            <span v-if="checkErr('name')" class="error">
+                                                {{ getErr('name') }}
+                                            </span>
                                         </div>
                                     </div>
 
@@ -66,6 +72,9 @@
                                                             {{ type.name }}
                                                         </option>
                                                     </select>
+                                                    <span v-if="checkErr('type_id')" class="error">
+                                                        {{ getErr('type_id') }}
+                                                    </span>
                                                 </div>
 
                                             </div>
@@ -82,6 +91,9 @@
                                                     <label>Cost ($)</label>
                                                     <input type="number" step="0.01" min="0.01"
                                                            class="form-control" v-model="prodEdit.cost">
+                                                    <span v-if="checkErr('cost')" class="error">
+                                                        {{ getErr('cost') }}
+                                                    </span>
                                                 </div>
 
                                             </div>
@@ -91,6 +103,9 @@
                                                     <label>Weight (g)</label>
                                                     <input type="number" step="1" min="1"
                                                            class="form-control" v-model="prodEdit.weight">
+                                                    <span v-if="checkErr('weight')" class="error">
+                                                        {{ getErr('weight') }}
+                                                    </span>
                                                 </div>
 
                                             </div>
@@ -104,6 +119,9 @@
                                             <label>Description</label>
                                             <textarea rows="5" class="form-control"
                                                       v-model="prodEdit.description"></textarea>
+                                            <span v-if="checkErr('description')" class="error">
+                                                {{ getErr('description') }}
+                                            </span>
                                         </div>
 
                                     </div>
@@ -159,6 +177,7 @@
 
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
+    import Validation from '../mixins/Validation';
 
     export default {
 
@@ -177,7 +196,8 @@
 
         mixins: [
             Utils,
-            Notify
+            Notify,
+            Validation
         ],
 
         created() {
@@ -215,11 +235,17 @@
                 ).then(function(response) {
 
                     this.notifySuccess('Product ID:' + this.prodEdit.id + ' successfully updated.');
+                    this.clearErrors();
                     this.closeModal();
 
                 }.bind(this))
-                .catch(function() {
+                .catch(function(error) {
 
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        this.saving = false;
+                        return;
+                    }
                     this.notifyError('Product update error.');
                     this.closeModal();
 

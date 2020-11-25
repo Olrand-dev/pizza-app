@@ -2473,6 +2473,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/Utils */ "./resources/js/mixins/Utils.js");
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/Notify */ "./resources/js/mixins/Notify.js");
+/* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mixins/Validation */ "./resources/js/mixins/Validation.js");
 //
 //
 //
@@ -2630,6 +2631,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2641,7 +2661,7 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   props: ['prod-data', 'prod-types-list'],
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"]],
   created: function created() {
     this.prodEdit = this.clone(this.prodData);
     this.prodEdit.image_changed = false;
@@ -2668,8 +2688,15 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (response) {
         this.notifySuccess('Product ID:' + this.prodEdit.id + ' successfully updated.');
+        this.clearErrors();
         this.closeModal();
-      }.bind(this))["catch"](function () {
+      }.bind(this))["catch"](function (error) {
+        if (this.checkValidationErrors(error.response.data)) {
+          this.notifyError('Form validation error.', 1500);
+          this.saving = false;
+          return;
+        }
+
         this.notifyError('Product update error.');
         this.closeModal();
       }.bind(this));
@@ -5123,12 +5150,13 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/Utils */ "./resources/js/mixins/Utils.js");
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/Notify */ "./resources/js/mixins/Notify.js");
-/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _mixins_Sortable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../mixins/Sortable */ "./resources/js/mixins/Sortable.js");
-/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-image-lightbox */ "./node_modules/vue-image-lightbox/dist/vue-image-lightbox.min.js");
-/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(vue_image_lightbox__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _ProductDetailsModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ProductDetailsModal */ "./resources/js/components/ProductDetailsModal.vue");
-/* harmony import */ var _EditProductModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EditProductModal */ "./resources/js/components/EditProductModal.vue");
+/* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mixins/Validation */ "./resources/js/mixins/Validation.js");
+/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
+/* harmony import */ var _mixins_Sortable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../mixins/Sortable */ "./resources/js/mixins/Sortable.js");
+/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue-image-lightbox */ "./node_modules/vue-image-lightbox/dist/vue-image-lightbox.min.js");
+/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _ProductDetailsModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ProductDetailsModal */ "./resources/js/components/ProductDetailsModal.vue");
+/* harmony import */ var _EditProductModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EditProductModal */ "./resources/js/components/EditProductModal.vue");
 //
 //
 //
@@ -5376,6 +5404,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -5413,9 +5460,9 @@ var ProductRef = {
       lbData: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Sortable__WEBPACK_IMPORTED_MODULE_3__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_Sortable__WEBPACK_IMPORTED_MODULE_4__["default"]],
   components: {
-    LightBox: vue_image_lightbox__WEBPACK_IMPORTED_MODULE_4___default.a
+    LightBox: vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5___default.a
   },
   created: function created() {
     this.initProdData();
@@ -5490,11 +5537,18 @@ var ProductRef = {
         }
       }).then(function (response) {
         this.notifySuccess('Product ID:' + response.data + ' successfully added.');
+        this.clearErrors();
         this.closeBox();
         this.saving = false;
         this.getList();
-      }.bind(this))["catch"](function () {
+      }.bind(this))["catch"](function (error) {
         this.saving = false;
+
+        if (this.checkValidationErrors(error.response.data)) {
+          this.notifyError('Form validation error.', 1500);
+          return;
+        }
+
         this.notifyError('Add product error.');
       }.bind(this));
     },
@@ -5502,7 +5556,7 @@ var ProductRef = {
       var _this = this;
 
       var prod = this.getItemById(this.prodsList, id);
-      this.$modal.show(_EditProductModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      this.$modal.show(_EditProductModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
         'prod-data': prod,
         'prod-types-list': this.prodTypesList
       }, {
@@ -5516,7 +5570,7 @@ var ProductRef = {
     },
     modalDetails: function modalDetails(id) {
       var prod = this.getItemById(this.prodsList, id);
-      this.$modal.show(_ProductDetailsModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      this.$modal.show(_ProductDetailsModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
         'prod-data': prod
       }, {
         adaptive: true,
@@ -27089,6 +27143,16 @@ var render = function() {
                             attrs: { type: "file", id: "productImage" },
                             on: { change: _vm.handleFileUpload }
                           })
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.checkErr("image_file")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                            " +
+                                _vm._s(_vm.getErr("image_file")) +
+                                "\n                                        "
+                            )
+                          ])
                         : _vm._e()
                     ]),
                     _vm._v(" "),
@@ -27142,7 +27206,17 @@ var render = function() {
                             _vm.$set(_vm.prodEdit, "name", $event.target.value)
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("name")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                            " +
+                                _vm._s(_vm.getErr("name")) +
+                                "\n                                        "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ]),
                   _vm._v(" "),
@@ -27202,7 +27276,17 @@ var render = function() {
                               )
                             }),
                             0
-                          )
+                          ),
+                          _vm._v(" "),
+                          _vm.checkErr("type_id")
+                            ? _c("span", { staticClass: "error" }, [
+                                _vm._v(
+                                  "\n                                                    " +
+                                    _vm._s(_vm.getErr("type_id")) +
+                                    "\n                                                "
+                                )
+                              ])
+                            : _vm._e()
                         ])
                       ])
                     ])
@@ -27242,7 +27326,17 @@ var render = function() {
                                 )
                               }
                             }
-                          })
+                          }),
+                          _vm._v(" "),
+                          _vm.checkErr("cost")
+                            ? _c("span", { staticClass: "error" }, [
+                                _vm._v(
+                                  "\n                                                    " +
+                                    _vm._s(_vm.getErr("cost")) +
+                                    "\n                                                "
+                                )
+                              ])
+                            : _vm._e()
                         ])
                       ]),
                       _vm._v(" "),
@@ -27274,7 +27368,17 @@ var render = function() {
                                 )
                               }
                             }
-                          })
+                          }),
+                          _vm._v(" "),
+                          _vm.checkErr("weight")
+                            ? _c("span", { staticClass: "error" }, [
+                                _vm._v(
+                                  "\n                                                    " +
+                                    _vm._s(_vm.getErr("weight")) +
+                                    "\n                                                "
+                                )
+                              ])
+                            : _vm._e()
                         ])
                       ])
                     ])
@@ -27308,7 +27412,17 @@ var render = function() {
                             )
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("description")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                            " +
+                                _vm._s(_vm.getErr("description")) +
+                                "\n                                        "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ])
                 ]),
@@ -30637,7 +30751,17 @@ var render = function() {
                                   )
                                 }
                               }
-                            })
+                            }),
+                            _vm._v(" "),
+                            _vm.checkErr("name")
+                              ? _c("span", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "\n                                            " +
+                                      _vm._s(_vm.getErr("name")) +
+                                      "\n                                        "
+                                  )
+                                ])
+                              : _vm._e()
                           ])
                         ]),
                         _vm._v(" "),
@@ -30704,7 +30828,17 @@ var render = function() {
                                     )
                                   }),
                                   0
-                                )
+                                ),
+                                _vm._v(" "),
+                                _vm.checkErr("type_id")
+                                  ? _c("span", { staticClass: "error" }, [
+                                      _vm._v(
+                                        "\n                                                    " +
+                                          _vm._s(_vm.getErr("type_id")) +
+                                          "\n                                                "
+                                      )
+                                    ])
+                                  : _vm._e()
                               ])
                             ])
                           ])
@@ -30744,7 +30878,17 @@ var render = function() {
                                       )
                                     }
                                   }
-                                })
+                                }),
+                                _vm._v(" "),
+                                _vm.checkErr("cost")
+                                  ? _c("span", { staticClass: "error" }, [
+                                      _vm._v(
+                                        "\n                                                    " +
+                                          _vm._s(_vm.getErr("cost")) +
+                                          "\n                                                "
+                                      )
+                                    ])
+                                  : _vm._e()
                               ])
                             ]),
                             _vm._v(" "),
@@ -30780,7 +30924,17 @@ var render = function() {
                                       )
                                     }
                                   }
-                                })
+                                }),
+                                _vm._v(" "),
+                                _vm.checkErr("weight")
+                                  ? _c("span", { staticClass: "error" }, [
+                                      _vm._v(
+                                        "\n                                                    " +
+                                          _vm._s(_vm.getErr("weight")) +
+                                          "\n                                                "
+                                      )
+                                    ])
+                                  : _vm._e()
                               ])
                             ]),
                             _vm._v(" "),
@@ -30794,7 +30948,17 @@ var render = function() {
                                   ref: "prodImageFile",
                                   attrs: { type: "file", id: "productImage" },
                                   on: { change: _vm.handleFileUpload }
-                                })
+                                }),
+                                _vm._v(" "),
+                                _vm.checkErr("image_file")
+                                  ? _c("span", { staticClass: "error" }, [
+                                      _vm._v(
+                                        "\n                                                    " +
+                                          _vm._s(_vm.getErr("image_file")) +
+                                          "\n                                                "
+                                      )
+                                    ])
+                                  : _vm._e()
                               ])
                             ])
                           ])
@@ -30830,7 +30994,17 @@ var render = function() {
                               )
                             }
                           }
-                        })
+                        }),
+                        _vm._v(" "),
+                        _vm.checkErr("description")
+                          ? _c("span", { staticClass: "error" }, [
+                              _vm._v(
+                                "\n                                    " +
+                                  _vm._s(_vm.getErr("description")) +
+                                  "\n                                "
+                              )
+                            ])
+                          : _vm._e()
                       ])
                     ]),
                     _vm._v(" "),
@@ -45488,6 +45662,47 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'array':
           return Array.isArray(val);
       }
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/mixins/Validation.js":
+/*!*******************************************!*\
+  !*** ./resources/js/mixins/Validation.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * Laravel form validation response handle mixin
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      errors: {}
+    };
+  },
+  methods: {
+    checkValidationErrors: function checkValidationErrors(response) {
+      if (response.hasOwnProperty('message') && response.message === 'The given data was invalid.') {
+        this.errors = response.hasOwnProperty('errors') ? response.errors : {};
+        return true;
+      }
+
+      return false;
+    },
+    checkErr: function checkErr(name) {
+      return this.errors.hasOwnProperty(name);
+    },
+    getErr: function getErr(name) {
+      return this.checkErr(name) ? this.errors[name][0] : '';
+    },
+    clearErrors: function clearErrors() {
+      this.errors = {};
     }
   }
 });

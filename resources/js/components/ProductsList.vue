@@ -44,6 +44,9 @@
                                         <div class="form-group">
                                             <label>Name</label>
                                             <input type="text" class="form-control" v-model="product.name">
+                                            <span v-if="checkErr('name')" class="error">
+                                                {{ getErr('name') }}
+                                            </span>
                                         </div>
                                     </div>
 
@@ -59,6 +62,9 @@
                                                             {{ type.name }}
                                                         </option>
                                                     </select>
+                                                    <span v-if="checkErr('type_id')" class="error">
+                                                        {{ getErr('type_id') }}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -72,6 +78,9 @@
                                                     <label>Cost ($)</label>
                                                     <input type="number" step="0.01" min="0.01"
                                                            class="form-control" v-model="product.cost">
+                                                    <span v-if="checkErr('cost')" class="error">
+                                                        {{ getErr('cost') }}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
@@ -79,6 +88,9 @@
                                                     <label>Weight (g)</label>
                                                     <input type="number" step="1" min="1"
                                                            class="form-control" v-model="product.weight">
+                                                    <span v-if="checkErr('weight')" class="error">
+                                                        {{ getErr('weight') }}
+                                                    </span>
                                                 </div>
                                             </div>
 
@@ -87,6 +99,9 @@
                                                     <label>Image (.jpg, .jpeg, .png)</label>
                                                     <input type="file" id="productImage" ref="prodImageFile"
                                                            @change="handleFileUpload">
+                                                    <span v-if="checkErr('image_file')" class="error">
+                                                        {{ getErr('image_file') }}
+                                                    </span>
                                                 </div>
                                             </div>
 
@@ -101,6 +116,9 @@
                                 <div class="form-group">
                                     <label>Description</label>
                                     <textarea rows="5" class="form-control" v-model="product.description"></textarea>
+                                    <span v-if="checkErr('description')" class="error">
+                                        {{ getErr('description') }}
+                                    </span>
                                 </div>
 
                             </div>
@@ -249,6 +267,7 @@
 
     import Utils from '../mixins/Utils';
     import Notify from '../mixins/Notify';
+    import Validation from '../mixins/Validation';
     import Pagination from '../mixins/Pagination';
     import Sortable from '../mixins/Sortable';
     import LightBox from 'vue-image-lightbox';
@@ -292,6 +311,7 @@
         mixins: [
             Utils,
             Notify,
+            Validation,
             Pagination,
             Sortable,
         ],
@@ -403,14 +423,19 @@
                 ).then(function(response) {
 
                     this.notifySuccess('Product ID:' + response.data + ' successfully added.');
+                    this.clearErrors();
                     this.closeBox();
                     this.saving = false;
                     this.getList();
 
                 }.bind(this))
-                .catch(function() {
+                .catch(function(error) {
 
                     this.saving = false;
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        return;
+                    }
                     this.notifyError('Add product error.');
 
                 }.bind(this));

@@ -154,6 +154,11 @@
   }
 }
 
+.error {
+  color: #e3342f;
+  font-weight: lighter;
+}
+
 .page-name {
   display: inline-block;
   font-size: 21px;

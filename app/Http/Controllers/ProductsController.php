@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Http\Requests\CreateProduct;
+use App\Http\Requests\SaveProduct;
 use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
@@ -22,12 +24,12 @@ class ProductsController extends Controller
     }
 
 
-    public function addNew(Request $request) : int
+    public function addNew(CreateProduct $request) : int
     {
         DB::beginTransaction();
         try {
 
-            $prodData = $request->input();
+            $prodData = $request->validated();
             $prod = Product::create($prodData);
 
             $prodType = ProductType::find((int) $prodData['type_id']);
@@ -52,12 +54,12 @@ class ProductsController extends Controller
     }
 
 
-    public function save(Request $request) : void
+    public function save(SaveProduct $request) : void
     {
         DB::beginTransaction();
         try {
 
-            $prodData = $request->input();
+            $prodData = $request->validated();
             $prodId = (int) $prodData['id'];
             $typeId = (int) $prodData['type_id'];
             $prod = Product::find($prodId);
