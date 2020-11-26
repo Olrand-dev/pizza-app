@@ -150,8 +150,8 @@
 
 <style scoped lang="scss">
 
-    @import './../../sass/variables';
-    @import './../../sass/mixins';
+    @import '../../../sass/variables';
+    @import '../../../sass/mixins';
 
     .ing-list {
         margin-bottom: 15px;
@@ -204,7 +204,7 @@
 
 <script>
 
-    import Utils from "../mixins/Utils";
+    import Utils from "../../mixins/Utils";
 
     const pizzaSetRef = {
         id: 0,

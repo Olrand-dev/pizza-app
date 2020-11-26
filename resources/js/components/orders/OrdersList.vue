@@ -464,8 +464,8 @@
 
 <style scoped lang="scss">
 
-    @import './../../sass/variables';
-    @import './../../sass/mixins';
+    @import '../../../sass/variables';
+    @import '../../../sass/mixins';
 
     .new-order-box {
 
@@ -621,11 +621,11 @@
 
 <script>
 
-    import Utils from '../mixins/Utils';
-    import Notify from '../mixins/Notify';
-    import Pagination from '../mixins/Pagination';
+    import Utils from '../../mixins/Utils';
+    import Notify from '../../mixins/Notify';
+    import Pagination from '../../mixins/Pagination';
     import SelectOrderCustomerModal from "./SelectOrderCustomerModal";
-    import DialogModal from "./DialogModal";
+    import DialogModal from "../DialogModal";
 
     const OrderRef = {
         customer_id: 0,

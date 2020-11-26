@@ -44,6 +44,9 @@
                                         <div class="form-group">
                                             <label>Name</label>
                                             <input type="text" class="form-control" v-model="pizzaSet.name">
+                                            <span v-if="checkErr('name')" class="error">
+                                                {{ getErr('name') }}
+                                            </span>
                                         </div>
                                     </div>
 
@@ -60,6 +63,9 @@
                                                             {{ base.name }}
                                                         </option>
                                                     </select>
+                                                    <span v-if="checkErr('base_id')" class="error">
+                                                        {{ getErr('base_id') }}
+                                                    </span>
                                                 </div>
                                             </div>
 
@@ -68,6 +74,9 @@
                                                     <label>Image (.jpg, .jpeg, .png)</label>
                                                     <input type="file" id="pizzaSetImage" ref="pizzaSetImageFile"
                                                            @change="handleFileUpload">
+                                                    <span v-if="checkErr('image_file')" class="error">
+                                                        {{ getErr('image_file') }}
+                                                    </span>
                                                 </div>
                                             </div>
 
@@ -83,7 +92,11 @@
                                                   :items-list="pizzaSet.ingredients"
                                                   :types="pizzaIngTypesList"
                                                   :ing-list="pizzaIngredientsList"
+                                                  :errors-list="getErr('ingredients', true)"
                                                   @on-change-list="updateIngList"></ingredients-list>
+                                <span v-if="checkErr('ingredients')" class="error">
+                                    {{ getErr('ingredients') }}
+                                </span>
 
                             </div>
 
@@ -211,14 +224,16 @@
 
 <script>
 
-    import Utils from '../mixins/Utils';
-    import Notify from '../mixins/Notify';
-    import Sortable from '../mixins/Sortable';
-    import Pagination from '../mixins/Pagination';
+    import Utils from '../../mixins/Utils';
+    import Notify from '../../mixins/Notify';
+    import Validation from '../../mixins/Validation';
+    import Sortable from '../../mixins/Sortable';
+    import Pagination from '../../mixins/Pagination';
     import LightBox from 'vue-image-lightbox';
     import EditSetModal from './EditPizzaSetModal';
 
     const PizzaSetRef = {
+        id: 0,
         name: '',
         base_id: 0,
         ingredients: [],
@@ -254,6 +269,7 @@
         mixins: [
             Utils,
             Notify,
+            Validation,
             Pagination,
             Sortable,
         ],
@@ -348,8 +364,15 @@
                 this.mode = 'add_new';
             },
 
+            closeBox() {
+                this.mode = 'list';
+                this.clearErrors();
+                this.initEmptySet();
+                this.$refs.ingList.items = [];
+            },
+
             addNew() {
-                let formData = new FormData();
+                let formData = new FormData(); //console.log(this.pizzaSet);
 
                 for (let prop in this.pizzaSet) {
                     let propData = this.pizzaSet[prop];
@@ -372,23 +395,22 @@
                 ).then(function(response) {
 
                     this.notifySuccess('Pizza set ID:' + response.data + ' successfully added.');
+                    this.clearErrors();
                     this.closeBox();
                     this.saving = false;
                     this.getList();
 
                 }.bind(this))
-                .catch(function() {
+                .catch(function(error) {
 
                     this.saving = false;
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        return;
+                    }
                     this.notifyError('Add pizza set error.');
 
                 }.bind(this));
-            },
-
-            closeBox() {
-                this.mode = 'list';
-                this.initEmptySet();
-                this.$refs.ingList.items = [];
             },
 
             modalEdit(id) {

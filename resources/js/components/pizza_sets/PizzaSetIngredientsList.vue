@@ -14,12 +14,15 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Type</label>
-                            <select v-model="prod.type_id" class="form-control">
+                            <select v-model="prod.type_id" class="form-control" @change="onChangeList">
                                 <option v-for="type in types" :key="type.id"
                                         :value="type.id">
                                     {{ type.name }}
                                 </option>
                             </select>
+                            <span v-if="checkSubItemErr(index, 'type_id')" class="error">
+                                {{ getSubItemErr(index, 'type_id') }}
+                            </span>
                         </div>
                     </div>
 
@@ -33,6 +36,9 @@
                                     {{ prod.name }}
                                 </option>
                             </select>
+                            <span v-if="checkSubItemErr(index, 'prod_id')" class="error">
+                                {{ getSubItemErr(index, 'prod_id') }}
+                            </span>
                         </div>
                     </div>
 
@@ -41,6 +47,9 @@
                             <label>Q-ty</label>
                             <input type="number" step="1" min="1"
                                    v-model="prod.quantity" class="form-control" @change="onChangeList">
+                            <span v-if="checkSubItemErr(index, 'quantity')" class="error">
+                                {{ getSubItemErr(index, 'quantity') }}
+                            </span>
                         </div>
                     </div>
 
@@ -70,8 +79,8 @@
 
 <style scoped lang="scss">
 
-    @import './../../sass/variables';
-    @import './../../sass/mixins';
+    @import '../../../sass/variables';
+    @import '../../../sass/mixins';
 
     .ingredient-box {
         position: relative;
@@ -94,7 +103,8 @@
 
 <script>
 
-    import Utils from "../mixins/Utils";
+    import Utils from "../../mixins/Utils";
+    import Validation from "../../mixins/Validation";
 
     const ingredientRef = {
         type_id: 0,
@@ -112,21 +122,31 @@
 
         mixins: [
             Utils,
+            Validation,
         ],
 
         props: [
-            'items-list', 'types', 'ing-list',
+            'items-list', 'types', 'ing-list', 'errors-list',
         ],
+
+        watch: {
+
+            errorsList(val) {
+                this.errors = val;
+            }
+        },
 
         methods: {
 
             addIngredient() {
                 let ingredient = this.clone(ingredientRef);
                 this.items.push(ingredient);
+                this.onChangeList();
             },
 
             deleteIngredient(index) {
                 this.removeByIndex(this.items, index);
+                this.onChangeList();
             },
 
             onChangeList() {

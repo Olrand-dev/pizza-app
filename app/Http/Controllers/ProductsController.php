@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
-use App\Http\Requests\CreateProduct;
 use App\Http\Requests\SaveProduct;
 use App\Models\Product;
 use App\Models\ProductType;
@@ -24,22 +23,68 @@ class ProductsController extends Controller
     }
 
 
-    public function addNew(CreateProduct $request) : int
+    public function addNew(SaveProduct $request) : int
+    {
+        return $this->saveProduct($request, true);
+    }
+
+
+    public function save(SaveProduct $request) : void
+    {
+        $this->saveProduct($request);
+    }
+
+
+    public function saveProduct(SaveProduct $request, bool $newProduct = false) : int
     {
         DB::beginTransaction();
         try {
 
             $prodData = $request->validated();
-            $prod = Product::create($prodData);
+            $prodId = (int) $prodData['id'];
+            $typeId = (int) $prodData['type_id'];
 
-            $prodType = ProductType::find((int) $prodData['type_id']);
+            $prod = ($newProduct) ? Product::create($prodData) : Product::find($prodId);
+
+            if ($newProduct) {
+                $prodId = $prod->id;
+            } else {
+                $costChanged = (float) $prodData['cost'] !== $prod->cost;
+                $weightChanged = (int) $prodData['weight'] !== $prod->weight;
+
+                if ($costChanged or $weightChanged) {
+                    foreach ($prod->sets as $set) {
+                        $this->calculatePizzaSet($set->id);
+                    }
+                }
+
+                $prod->update($prodData);
+
+                //если есть связи товара с активными заказами, пересчитать их вес
+                if ($weightChanged and $typeId === SystemConst::PRODUCT_TYPE_ADD_PRODUCTS) {
+                    $ordersId = DB::table('order_product')
+                        ->whereIn('order_id', function ($query) {
+                            $this->getActiveOrdersId($query);
+                        })
+                        ->where('product_id', $prodId)
+                        ->pluck('order_id');
+
+                    if (!empty($ordersId)) {
+                        foreach ($ordersId as $id) {
+                            $this->calculateOrder($id, OrdersController::$orderElements);
+                        }
+                    }
+                }
+            }
+
+            $prodType = ProductType::find($typeId);
             if (!empty($prodType)) {
                 $prod->type()->associate($prodType);
             }
 
             $image = $request->file('image_file');
             if (!empty($image)) {
-                $this->handleRequestImageFile($prod, $image, "prod_{$prod->id}");
+                $this->handleRequestImageFile($prod, $image, "prod_{$prodId}");
             }
 
             $prod->save();
@@ -51,67 +96,6 @@ class ProductsController extends Controller
 
         DB::commit();
         return (int) $prod->id;
-    }
-
-
-    public function save(SaveProduct $request) : void
-    {
-        DB::beginTransaction();
-        try {
-
-            $prodData = $request->validated();
-            $prodId = (int) $prodData['id'];
-            $typeId = (int) $prodData['type_id'];
-            $prod = Product::find($prodId);
-
-            $costChanged = (float) $prodData['cost'] !== $prod->cost;
-            $weightChanged = (int) $prodData['weight'] !== $prod->weight;
-
-            if ($prod->type_id !== $typeId) {
-                $prodType = ProductType::find($typeId);
-
-                if (!empty($prodType)) {
-                    $prod->type()->associate($prodType);
-                }
-            }
-
-            if ($prodData['image_changed'] === 'true') {
-                $image = $request->file('image_file');
-
-                if (!empty($image)) {
-                    $this->handleRequestImageFile($prod, $image, "prod_{$prodId}");
-                }
-            }
-
-            $prod->update($prodData);
-
-            if ($costChanged or $weightChanged) {
-                foreach ($prod->sets as $set) {
-                    $this->calculatePizzaSet($set->id);
-                }
-            }
-
-            //если есть связи товара с активными заказами, пересчитать их вес
-            if ($weightChanged and $typeId === SystemConst::PRODUCT_TYPE_ADD_PRODUCTS) {
-                $ordersId = DB::table('order_product')
-                    ->whereIn('order_id', function ($query) {
-                        $this->getActiveOrdersId($query);
-                    })
-                    ->where('product_id', $prodId)
-                    ->pluck('order_id');
-
-                if (!empty($ordersId)) {
-                    foreach ($ordersId as $id) {
-                        $this->calculateOrder($id, OrdersController::$orderElements);
-                    }
-                }
-            }
-
-        } catch(\Throwable $e) {
-            DB::rollBack();
-            abort(500, $e->getMessage());
-        }
-        DB::commit();
     }
 
 

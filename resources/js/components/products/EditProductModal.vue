@@ -175,9 +175,9 @@
 
 <script>
 
-    import Utils from '../mixins/Utils';
-    import Notify from '../mixins/Notify';
-    import Validation from '../mixins/Validation';
+    import Utils from '../../mixins/Utils';
+    import Notify from '../../mixins/Notify';
+    import Validation from '../../mixins/Validation';
 
     export default {
 
@@ -202,14 +202,12 @@
 
         created() {
             this.prodEdit = this.clone(this.prodData);
-            this.prodEdit.image_changed = false;
         },
 
         methods: {
 
             changeImage() {
                 this.prodImageChanged = true;
-                this.prodEdit.image_changed = true;
             },
 
             handleFileUpload() {

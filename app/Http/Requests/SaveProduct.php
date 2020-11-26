@@ -31,7 +31,6 @@ class SaveProduct extends FormRequest
             'weight' => ['required', 'numeric', 'integer'],
             'description' => ['nullable', 'string'],
             'image_file' => ['nullable', 'image'],
-            'image_changed' => ['string'],
         ];
     }
 }

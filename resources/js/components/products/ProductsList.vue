@@ -265,16 +265,17 @@
 
 <script>
 
-    import Utils from '../mixins/Utils';
-    import Notify from '../mixins/Notify';
-    import Validation from '../mixins/Validation';
-    import Pagination from '../mixins/Pagination';
-    import Sortable from '../mixins/Sortable';
+    import Utils from '../../mixins/Utils';
+    import Notify from '../../mixins/Notify';
+    import Validation from '../../mixins/Validation';
+    import Pagination from '../../mixins/Pagination';
+    import Sortable from '../../mixins/Sortable';
     import LightBox from 'vue-image-lightbox';
     import ProductDetailsModal from './ProductDetailsModal';
     import EditProductModal from './EditProductModal';
 
     const ProductRef = {
+        id: 0,
         name: '',
         cost: 1.0,
         weight: 100,
@@ -401,6 +402,7 @@
 
             closeBox() {
                 this.mode = 'list';
+                this.clearErrors();
                 this.initProdData();
             },
 

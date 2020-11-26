@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Http\Requests\SavePizzaSet;
 use App\Models\PizzaSet;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -22,22 +23,39 @@ class PizzaSetsController extends Controller
     }
 
 
-    public function addNew(Request $request) : int
+    public function addNew(SavePizzaSet $request) : int
+    {
+        return $this->saveSet($request, true);
+    }
+
+
+    public function save(SavePizzaSet $request) : void
+    {
+        $this->saveSet($request);
+    }
+
+
+    public function saveSet(SavePizzaSet $request, bool $newSet = false) : int
     {
         DB::beginTransaction();
         try {
 
-            $setData = $request->input();
+            $setData = $request->validated(); dd($setData);
+            $setId = (int) $setData['id'];
+
             $ingredients = json_decode($setData['ingredients'], true);
             $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
-            $set = PizzaSet::create(['name' => $setData['name']]);
+            $set = ($newSet) ? PizzaSet::create(['name' => $setData['name']]) : PizzaSet::find($setId);
 
+            $set->products()->detach();
             $this->attachProdsToSet($set, $ingredients);
 
             $image = $request->file('image_file');
             if (!empty($image)) {
                 $this->handleRequestImageFile($set, $image, "pizza_set_{$set->id}");
             }
+
+            if (!$newSet) $set->update($setData);
 
             $set->save();
             $this->calculatePizzaSet($set->id);
@@ -49,39 +67,6 @@ class PizzaSetsController extends Controller
 
         DB::commit();
         return (int) $set->id;
-    }
-
-
-    public function save(Request $request) : void
-    {
-        DB::beginTransaction();
-        try {
-
-            $setData = $request->input();
-            $setId = (int) $setData['id'];
-            $ingredients = json_decode($setData['ingredients'], true);
-            $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
-            $set = PizzaSet::find($setId);
-
-            $set->products()->detach();
-            $this->attachProdsToSet($set, $ingredients);
-
-            if ($setData['image_changed'] === 'true') {
-                $image = $request->file('image_file');
-
-                if (!empty($image)) {
-                    $this->handleRequestImageFile($set, $image, "pizza_set_{$setId}");
-                }
-            }
-
-            $set->update($setData);
-            $this->calculatePizzaSet($set->id);
-
-        } catch(\Throwable $e) {
-            DB::rollBack();
-            abort(500, $e->getMessage());
-        }
-        DB::commit();
     }
 
 

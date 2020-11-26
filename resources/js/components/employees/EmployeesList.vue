@@ -257,10 +257,10 @@
 
 <script>
 
-    import Utils from '../mixins/Utils';
-    import Notify from '../mixins/Notify';
-    import Pagination from '../mixins/Pagination';
-    import DialogModal from "./DialogModal";
+    import Utils from '../../mixins/Utils';
+    import Notify from '../../mixins/Notify';
+    import Pagination from '../../mixins/Pagination';
+    import DialogModal from "../DialogModal";
 
     const EmployeeRef = {
         name: '',

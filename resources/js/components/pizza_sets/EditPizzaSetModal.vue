@@ -133,8 +133,9 @@
 
 <script>
 
-    import Utils from '../mixins/Utils';
-    import Notify from '../mixins/Notify';
+    import Utils from '../../mixins/Utils';
+    import Notify from '../../mixins/Notify';
+    import Validation from '../../mixins/Validation';
 
     export default {
 
@@ -155,7 +156,8 @@
 
         mixins: [
             Utils,
-            Notify
+            Notify,
+            Validation
         ],
 
         created() {
@@ -165,14 +167,12 @@
             console.log('ing list:', this.ingList);*/
 
             this.setEdit = this.clone(this.setData);
-            this.setEdit.image_changed = false;
         },
 
         methods: {
 
             changeImage() {
                 this.setImageChanged = true;
-                this.setEdit.image_changed = true;
             },
 
             handleFileUpload() {
@@ -203,11 +203,17 @@
                 ).then(function(response) {
 
                     this.notifySuccess('Pizza set ID:' + this.setEdit.id + ' successfully updated.');
+                    this.clearErrors();
                     this.closeModal();
 
                 }.bind(this))
-                .catch(function() {
+                .catch(function(error) {
 
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        this.saving = false;
+                        return;
+                    }
                     this.notifyError('Pizza set update error.');
                     this.closeModal();
 
