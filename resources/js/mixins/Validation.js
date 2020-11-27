@@ -62,12 +62,22 @@ export default {
             return err;
         },
 
-        checkSubItemErr(index, name) {
-            return this.errors[index] !== undefined && this.errors[index].hasOwnProperty(name);
+        getSubItemErrLists(names) {
+            let errLists = {};
+            names.forEach((name) => {
+                errLists[name] = this.errors[name] || [];
+            });
+            return errLists;
         },
 
-        getSubItemErr(index, name) {
-            return this.errors[index][name][0] || '';
+        checkSubItemErr(index, name, alias = '') {
+            let errList = (alias !== '') ? this.errors[alias] : this.errors;
+            return errList[index] !== undefined && errList[index].hasOwnProperty(name);
+        },
+
+        getSubItemErr(index, name, alias = '') {
+            let errList = (alias !== '') ? this.errors[alias] : this.errors;
+            return errList[index][name][0] || '';
         },
 
         clearErrors() {

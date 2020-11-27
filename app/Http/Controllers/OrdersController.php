@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Http\Requests\SaveOrder;
 use App\Models\Comment;
 use App\Models\Customer;
 use App\Models\Model;
@@ -31,24 +32,24 @@ class OrdersController extends Controller
     }
 
 
-    public function addNew(Request $request) : int
+    public function addNew(SaveOrder $request) : int
     {
         return $this->saveOrder($request, true);
     }
 
 
-    public function save(Request $request) : void
+    public function save(SaveOrder $request) : void
     {
         $this->saveOrder($request);
     }
 
 
-    public function saveOrder(Request $request, bool $newOrder = false) : int
+    public function saveOrder(SaveOrder $request, bool $newOrder = false) : int
     {
         DB::beginTransaction();
         try {
 
-            $orderData = $request->input();
+            $orderData = $request->validated(); //dd($orderData);
 
             $order = ($newOrder) ? new Order() : Order::find($orderData['id']);
             $order->cost = (float) $orderData['cost'];
@@ -63,13 +64,13 @@ class OrdersController extends Controller
                 $order->status()->associate($status);
             }
 
-            $customerId = ($newOrder) ? $orderData['customer_id'] : $orderData['customer']['id'];
-            $customer =  Customer::find($customerId);
-            $order->customer()->associate($customer);
+            $customerId = $orderData['customer_id'];
+            $order->customer()->associate(Customer::find($customerId));
 
             $order->save();
 
-            $customerComment = ($newOrder) ? $orderData['customer_comment'] : $orderData['comments'][0];
+            //todo: временное решение, сделать механику комментариев
+            $customerComment = $orderData['comments'][0];
             if (empty($customerComment)) $customerComment = '';
             $comment = ($newOrder) ? new Comment() : Comment::find($customerComment['id']);
             $comment->content = ($newOrder) ? $customerComment : $customerComment['content'];

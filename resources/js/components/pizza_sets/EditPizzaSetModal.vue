@@ -30,6 +30,9 @@
                                             <input v-if="setImageChanged" type="file" id="setImage"
                                                    ref="setImageFile"
                                                    @change="handleFileUpload">
+                                            <span v-if="checkErr('image_file')" class="error">
+                                                {{ getErr('image_file') }}
+                                            </span>
                                         </div>
 
                                         <div class="col-12 mt-5">
@@ -49,6 +52,9 @@
                                         <div class="form-group">
                                             <label>Name</label>
                                             <input type="text" class="form-control" v-model="setEdit.name">
+                                            <span v-if="checkErr('name')" class="error">
+                                                {{ getErr('name') }}
+                                            </span>
                                         </div>
                                     </div>
 
@@ -65,6 +71,9 @@
                                                             {{ base.name }}
                                                         </option>
                                                     </select>
+                                                    <span v-if="checkErr('base_id')" class="error">
+                                                        {{ getErr('base_id') }}
+                                                    </span>
                                                 </div>
                                             </div>
 
@@ -74,8 +83,14 @@
 
                                     <div class="col-12 pizza-set-ingredients-list">
 
-                                        <ingredients-list ref="ingList" :items-list="setEdit.ingredients"
-                                                          :types="ingTypesList" :ing-list="ingList"></ingredients-list>
+                                        <ingredients-list ref="ingList"
+                                                          :errors-list="getErr('ingredients', true)"
+                                                          :items-list="setEdit.ingredients"
+                                                          :types="ingTypesList"
+                                                          :ing-list="ingList"></ingredients-list>
+                                        <span v-if="checkErr('ingredients')" class="error">
+                                            {{ getErr('ingredients') }}
+                                        </span>
 
                                     </div>
 

@@ -30,6 +30,9 @@
                                                 {{ option.name }}
                                             </option>
                                         </select>
+                                        <span v-if="checkSubItemErr(index, 'id', 'pizza_sets')" class="error">
+                                            {{ getSubItemErr(index, 'id', 'pizza_sets') }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -38,6 +41,9 @@
                                         <label>Q-ty</label>
                                         <input type="number" step="1" min="1" :readonly="mode === 'show'"
                                                v-model="set.quantity" class="form-control" @change="updateTotal">
+                                        <span v-if="checkSubItemErr(index, 'quantity', 'pizza_sets')" class="error">
+                                            {{ getSubItemErr(index, 'quantity', 'pizza_sets') }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -58,6 +64,9 @@
                                 @click="addPizzaSet">
                             <i class="fa fa-plus"></i> Add Pizza Set
                         </button>
+                        <span v-if="checkErr('pizza_sets')" class="error">
+                            {{ getErr('pizza_sets') }}
+                        </span>
                     </div>
 
                 </div>
@@ -87,6 +96,9 @@
                                                 {{ option.name }}
                                             </option>
                                         </select>
+                                        <span v-if="checkSubItemErr(index, 'id', 'products')" class="error">
+                                            {{ getSubItemErr(index, 'id', 'products') }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -95,6 +107,9 @@
                                         <label>Q-ty</label>
                                         <input type="number" step="1" min="1" :readonly="mode === 'show'"
                                                v-model="prod.quantity" class="form-control" @change="updateTotal">
+                                        <span v-if="checkSubItemErr(index, 'quantity', 'products')" class="error">
+                                            {{ getSubItemErr(index, 'quantity', 'products') }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -115,6 +130,9 @@
                                 @click="addProd">
                             <i class="fa fa-plus"></i> Add Product
                         </button>
+                        <span v-if="checkErr('products')" class="error">
+                            {{ getErr('products') }}
+                        </span>
                     </div>
 
                 </div>
@@ -205,6 +223,7 @@
 <script>
 
     import Utils from "../../mixins/Utils";
+    import Validation from "../../mixins/Validation";
 
     const pizzaSetRef = {
         id: 0,
@@ -229,6 +248,7 @@
 
         mixins: [
             Utils,
+            Validation,
         ],
 
         props: [
@@ -237,7 +257,20 @@
             'order-add-prods',
             'pizza-sets-list',
             'add-prods-list',
+            'errors-list',
+            'sub-items-fields-list',
         ],
+
+        watch: {
+
+            errorsList(val) {
+                this.errors = val;
+            },
+
+            subItemsFieldsList(val) {
+                this.subItemsFields = val;
+            }
+        },
 
         created() {
             this.updateTotal();
@@ -282,6 +315,7 @@
             addPizzaSet() {
                 let set = this.clone(pizzaSetRef);
                 this.pizza_sets.push(set);
+                this.updateTotal();
             },
 
             deletePizzaSet(index) {
@@ -292,6 +326,7 @@
             addProd() {
                 let prod = this.clone(addProdRef);
                 this.products.push(prod);
+                this.updateTotal();
             },
 
             deleteAddProd(index) {

@@ -157,6 +157,7 @@
 .error {
   color: #e3342f;
   font-weight: lighter;
+  display: block;
 }
 
 .page-name {

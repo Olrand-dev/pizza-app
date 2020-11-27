@@ -395,7 +395,6 @@
                 ).then(function(response) {
 
                     this.notifySuccess('Pizza set ID:' + response.data + ' successfully added.');
-                    this.clearErrors();
                     this.closeBox();
                     this.saving = false;
                     this.getList();

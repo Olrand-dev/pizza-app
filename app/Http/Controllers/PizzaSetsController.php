@@ -40,10 +40,10 @@ class PizzaSetsController extends Controller
         DB::beginTransaction();
         try {
 
-            $setData = $request->validated(); dd($setData);
+            $setData = $request->validated(); //dd($setData);
             $setId = (int) $setData['id'];
 
-            $ingredients = json_decode($setData['ingredients'], true);
+            $ingredients = $setData['ingredients'];
             $this->addBaseToIngredients((int) $setData['base_id'], $ingredients);
             $set = ($newSet) ? PizzaSet::create(['name' => $setData['name']]) : PizzaSet::find($setId);
 

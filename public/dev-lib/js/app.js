@@ -3052,6 +3052,25 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
+/* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3257,6 +3276,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 var pizzaSetRef = {
   id: 0,
   quantity: 1
@@ -3274,8 +3294,16 @@ var addProdRef = {
       orderWeight: 0
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"]],
-  props: ['mode', 'order-pizza-sets', 'order-add-prods', 'pizza-sets-list', 'add-prods-list'],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_1__["default"]],
+  props: ['mode', 'order-pizza-sets', 'order-add-prods', 'pizza-sets-list', 'add-prods-list', 'errors-list', 'sub-items-fields-list'],
+  watch: {
+    errorsList: function errorsList(val) {
+      this.errors = val;
+    },
+    subItemsFieldsList: function subItemsFieldsList(val) {
+      this.subItemsFields = val;
+    }
+  },
   created: function created() {
     this.updateTotal();
   },
@@ -3315,6 +3343,7 @@ var addProdRef = {
     addPizzaSet: function addPizzaSet() {
       var set = this.clone(pizzaSetRef);
       this.pizza_sets.push(set);
+      this.updateTotal();
     },
     deletePizzaSet: function deletePizzaSet(index) {
       this.removeByIndex(this.pizza_sets, index);
@@ -3323,6 +3352,7 @@ var addProdRef = {
     addProd: function addProd() {
       var prod = this.clone(addProdRef);
       this.products.push(prod);
+      this.updateTotal();
     },
     deleteAddProd: function deleteAddProd(index) {
       this.removeByIndex(this.products, index);
@@ -3344,9 +3374,10 @@ var addProdRef = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
-/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./SelectOrderCustomerModal */ "./resources/js/components/orders/SelectOrderCustomerModal.vue");
-/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
+/* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
+/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
+/* harmony import */ var _SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SelectOrderCustomerModal */ "./resources/js/components/orders/SelectOrderCustomerModal.vue");
+/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
 //
 //
 //
@@ -3968,15 +3999,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 
 
 var OrderRef = {
+  id: 0,
   customer_id: 0,
   customer_data: {},
-  customer_comment: '',
+  comments: [],
   pizza_sets: [],
   products: [],
   cost: 0,
@@ -4000,7 +4043,7 @@ var OrderRef = {
       addProductsList: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"]],
   created: function created() {
     this.initEmptyOrder();
     this.getDataLists();
@@ -4053,10 +4096,12 @@ var OrderRef = {
     },
     closeBox: function closeBox() {
       this.mode = 'list';
+      this.clearErrors();
       this.initEmptyOrder();
     },
     openOrder: function openOrder(id) {
       var toEdit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      this.closeBox();
       var editBox = document.getElementById('edit-order-box');
       axios.get('/orders/get-order-data', {
         params: {
@@ -4077,6 +4122,7 @@ var OrderRef = {
     },
     closeOrder: function closeOrder() {
       this.mode = 'list';
+      this.clearErrors();
       this.orderSelected = {};
     },
     saveOrder: function saveOrder() {
@@ -4086,13 +4132,19 @@ var OrderRef = {
         this.closeOrder();
         this.saving = false;
         this.getList();
-      }.bind(this))["catch"](function () {
+      }.bind(this))["catch"](function (error) {
         this.saving = false;
+
+        if (this.checkValidationErrors(error.response.data)) {
+          this.notifyError('Form validation error.', 1500);
+          return;
+        }
+
         this.notifyError('Save order error.');
       }.bind(this));
     },
     setOrderStatus: function setOrderStatus(status) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
         'modal-data': {
           header: "Change order status",
           text: "Order status will be changed to \"".concat(status, "\"."),
@@ -4163,7 +4215,7 @@ var OrderRef = {
       }.bind(this));
     },
     modalSelectCustomer: function modalSelectCustomer() {
-      this.$modal.show(_SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      this.$modal.show(_SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
         'modal-data': {
           onConfirm: function (item) {
             var copy = this.clone(item, true);
@@ -4173,6 +4225,7 @@ var OrderRef = {
               this.order.customer_id = copy.id;
             } else {
               this.orderSelected.customer = copy;
+              this.orderSelected.customer_id = copy.id;
             }
           }.bind(this)
         }
@@ -4191,13 +4244,19 @@ var OrderRef = {
         this.closeBox();
         this.saving = false;
         this.getList();
-      }.bind(this))["catch"](function () {
+      }.bind(this))["catch"](function (error) {
         this.saving = false;
+
+        if (this.checkValidationErrors(error.response.data)) {
+          this.notifyError('Form validation error.', 1500);
+          return;
+        }
+
         this.notifyError('Add order error.');
       }.bind(this));
     },
     modalDelete: function modalDelete(id) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
         'modal-data': {
           header: "Delete order ID:".concat(id),
           text: 'Order will be deleted.',
@@ -4305,6 +4364,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
 /* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5031,7 +5105,6 @@ var PizzaSetRef = {
         }
       }).then(function (response) {
         this.notifySuccess('Pizza set ID:' + response.data + ' successfully added.');
-        this.clearErrors();
         this.closeBox();
         this.saving = false;
         this.getList();
@@ -28210,7 +28283,23 @@ var render = function() {
                                     )
                                   }),
                                   0
-                                )
+                                ),
+                            _vm._v(" "),
+                            _vm.checkSubItemErr(index, "id", "pizza_sets")
+                              ? _c("span", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "\n                                        " +
+                                      _vm._s(
+                                        _vm.getSubItemErr(
+                                          index,
+                                          "id",
+                                          "pizza_sets"
+                                        )
+                                      ) +
+                                      "\n                                    "
+                                  )
+                                ])
+                              : _vm._e()
                           ])
                         ]
                       ),
@@ -28245,7 +28334,23 @@ var render = function() {
                                 _vm.$set(set, "quantity", $event.target.value)
                               }
                             }
-                          })
+                          }),
+                          _vm._v(" "),
+                          _vm.checkSubItemErr(index, "quantity", "pizza_sets")
+                            ? _c("span", { staticClass: "error" }, [
+                                _vm._v(
+                                  "\n                                        " +
+                                    _vm._s(
+                                      _vm.getSubItemErr(
+                                        index,
+                                        "quantity",
+                                        "pizza_sets"
+                                      )
+                                    ) +
+                                    "\n                                    "
+                                )
+                              ])
+                            : _vm._e()
                         ])
                       ]),
                       _vm._v(" "),
@@ -28285,7 +28390,17 @@ var render = function() {
                     _c("i", { staticClass: "fa fa-plus" }),
                     _vm._v(" Add Pizza Set\n                    ")
                   ]
-                )
+                ),
+                _vm._v(" "),
+                _vm.checkErr("pizza_sets")
+                  ? _c("span", { staticClass: "error" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(_vm.getErr("pizza_sets")) +
+                          "\n                    "
+                      )
+                    ])
+                  : _vm._e()
               ])
             : _vm._e()
         ]),
@@ -28381,7 +28496,23 @@ var render = function() {
                                     )
                                   }),
                                   0
-                                )
+                                ),
+                            _vm._v(" "),
+                            _vm.checkSubItemErr(index, "id", "products")
+                              ? _c("span", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "\n                                        " +
+                                      _vm._s(
+                                        _vm.getSubItemErr(
+                                          index,
+                                          "id",
+                                          "products"
+                                        )
+                                      ) +
+                                      "\n                                    "
+                                  )
+                                ])
+                              : _vm._e()
                           ])
                         ]
                       ),
@@ -28416,7 +28547,23 @@ var render = function() {
                                 _vm.$set(prod, "quantity", $event.target.value)
                               }
                             }
-                          })
+                          }),
+                          _vm._v(" "),
+                          _vm.checkSubItemErr(index, "quantity", "products")
+                            ? _c("span", { staticClass: "error" }, [
+                                _vm._v(
+                                  "\n                                        " +
+                                    _vm._s(
+                                      _vm.getSubItemErr(
+                                        index,
+                                        "quantity",
+                                        "products"
+                                      )
+                                    ) +
+                                    "\n                                    "
+                                )
+                              ])
+                            : _vm._e()
                         ])
                       ]),
                       _vm._v(" "),
@@ -28456,7 +28603,17 @@ var render = function() {
                     _c("i", { staticClass: "fa fa-plus" }),
                     _vm._v(" Add Product\n                    ")
                   ]
-                )
+                ),
+                _vm._v(" "),
+                _vm.checkErr("products")
+                  ? _c("span", { staticClass: "error" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(_vm.getErr("products")) +
+                          "\n                    "
+                      )
+                    ])
+                  : _vm._e()
               ])
             : _vm._e()
         ])
@@ -28876,7 +29033,17 @@ var render = function() {
                             on: { click: _vm.modalSelectCustomer }
                           },
                           [_vm._m(1)]
-                        )
+                        ),
+                        _vm._v(" "),
+                        _vm.checkErr("customer_id")
+                          ? _c("span", { staticClass: "error" }, [
+                              _vm._v(
+                                "\n                    " +
+                                  _vm._s(_vm.getErr("customer_id")) +
+                                  "\n                "
+                              )
+                            ])
+                          : _vm._e()
                       ]
                     )
                   : _vm._e(),
@@ -28926,7 +29093,12 @@ var render = function() {
                     "order-pizza-sets": _vm.orderSelected.pizza_sets,
                     "order-add-prods": _vm.orderSelected.products,
                     "pizza-sets-list": _vm.pizzaSetsList,
-                    "add-prods-list": _vm.addProductsList
+                    "add-prods-list": _vm.addProductsList,
+                    "errors-list": _vm.getSubItemErrLists([
+                      "products",
+                      "pizza_sets"
+                    ]),
+                    "sub-items-fields-list": _vm.subItemsFields
                   },
                   on: { "on-ing-list-change": _vm.setOrderData }
                 })
@@ -28996,7 +29168,17 @@ var render = function() {
                                   )
                                 ])
                           ]
-                        )
+                        ),
+                        _vm._v(" "),
+                        _vm.checkErr("customer_id")
+                          ? _c("span", { staticClass: "error" }, [
+                              _vm._v(
+                                "\n                            " +
+                                  _vm._s(_vm.getErr("customer_id")) +
+                                  "\n                        "
+                              )
+                            ])
+                          : _vm._e()
                       ])
                     ]),
                     _vm._v(" "),
@@ -29010,21 +29192,21 @@ var render = function() {
                                 {
                                   name: "model",
                                   rawName: "v-model",
-                                  value: _vm.order.customer_comment,
-                                  expression: "order.customer_comment"
+                                  value: _vm.order.comments[0],
+                                  expression: "order.comments[0]"
                                 }
                               ],
                               staticClass: "form-control",
                               attrs: { rows: "5" },
-                              domProps: { value: _vm.order.customer_comment },
+                              domProps: { value: _vm.order.comments[0] },
                               on: {
                                 input: function($event) {
                                   if ($event.target.composing) {
                                     return
                                   }
                                   _vm.$set(
-                                    _vm.order,
-                                    "customer_comment",
+                                    _vm.order.comments,
+                                    0,
                                     $event.target.value
                                   )
                                 }
@@ -29045,7 +29227,12 @@ var render = function() {
                         "order-pizza-sets": _vm.order.pizza_sets,
                         "order-add-prods": _vm.order.products,
                         "pizza-sets-list": _vm.pizzaSetsList,
-                        "add-prods-list": _vm.addProductsList
+                        "add-prods-list": _vm.addProductsList,
+                        "errors-list": _vm.getSubItemErrLists([
+                          "products",
+                          "pizza_sets"
+                        ]),
+                        "sub-items-fields-list": _vm.subItemsFields
                       },
                       on: { "on-ing-list-change": _vm.setOrderData }
                     })
@@ -29710,6 +29897,16 @@ var render = function() {
                             attrs: { type: "file", id: "setImage" },
                             on: { change: _vm.handleFileUpload }
                           })
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.checkErr("image_file")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                            " +
+                                _vm._s(_vm.getErr("image_file")) +
+                                "\n                                        "
+                            )
+                          ])
                         : _vm._e()
                     ]),
                     _vm._v(" "),
@@ -29763,7 +29960,17 @@ var render = function() {
                             _vm.$set(_vm.setEdit, "name", $event.target.value)
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("name")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                            " +
+                                _vm._s(_vm.getErr("name")) +
+                                "\n                                        "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ]),
                   _vm._v(" "),
@@ -29823,7 +30030,17 @@ var render = function() {
                               )
                             }),
                             0
-                          )
+                          ),
+                          _vm._v(" "),
+                          _vm.checkErr("base_id")
+                            ? _c("span", { staticClass: "error" }, [
+                                _vm._v(
+                                  "\n                                                    " +
+                                    _vm._s(_vm.getErr("base_id")) +
+                                    "\n                                                "
+                                )
+                              ])
+                            : _vm._e()
                         ])
                       ])
                     ])
@@ -29836,11 +30053,22 @@ var render = function() {
                       _c("ingredients-list", {
                         ref: "ingList",
                         attrs: {
+                          "errors-list": _vm.getErr("ingredients", true),
                           "items-list": _vm.setEdit.ingredients,
                           types: _vm.ingTypesList,
                           "ing-list": _vm.ingList
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("ingredients")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                        " +
+                                _vm._s(_vm.getErr("ingredients")) +
+                                "\n                                    "
+                            )
+                          ])
+                        : _vm._e()
                     ],
                     1
                   )
@@ -45861,11 +46089,24 @@ __webpack_require__.r(__webpack_exports__);
 
       return err;
     },
+    getSubItemErrLists: function getSubItemErrLists(names) {
+      var _this = this;
+
+      var errLists = {};
+      names.forEach(function (name) {
+        errLists[name] = _this.errors[name] || [];
+      });
+      return errLists;
+    },
     checkSubItemErr: function checkSubItemErr(index, name) {
-      return this.errors[index] !== undefined && this.errors[index].hasOwnProperty(name);
+      var alias = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+      var errList = alias !== '' ? this.errors[alias] : this.errors;
+      return errList[index] !== undefined && errList[index].hasOwnProperty(name);
     },
     getSubItemErr: function getSubItemErr(index, name) {
-      return this.errors[index][name][0] || '';
+      var alias = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+      var errList = alias !== '' ? this.errors[alias] : this.errors;
+      return errList[index][name][0] || '';
     },
     clearErrors: function clearErrors() {
       this.errors = {};

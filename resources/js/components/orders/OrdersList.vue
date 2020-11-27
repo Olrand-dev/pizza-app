@@ -191,6 +191,9 @@
                             <i class="fa fa-user-edit"></i> Change Customer
                         </span>
                     </button>
+                    <span v-if="checkErr('customer_id')" class="error">
+                        {{ getErr('customer_id') }}
+                    </span>
 
                 </div>
 
@@ -212,6 +215,8 @@
                                    :order-add-prods="orderSelected.products"
                                    :pizza-sets-list="pizzaSetsList"
                                    :add-prods-list="addProductsList"
+                                   :errors-list="getSubItemErrLists(['products', 'pizza_sets'])"
+                                   :sub-items-fields-list="subItemsFields"
                                    @on-ing-list-change="setOrderData"></order-ingredients>
 
             </div>
@@ -246,6 +251,9 @@
                                     <i class="fa fa-user-edit"></i> Change Customer
                                 </span>
                             </button>
+                            <span v-if="checkErr('customer_id')" class="error">
+                                {{ getErr('customer_id') }}
+                            </span>
 
                         </div>
 
@@ -255,7 +263,7 @@
                         <div class="form-group">
                             <label>Customer comment</label>
                             <textarea rows="5" class="form-control"
-                                      v-model="order.customer_comment"></textarea>
+                                      v-model="order.comments[0]"></textarea>
                         </div>
                     </div>
 
@@ -269,6 +277,8 @@
                                        :order-add-prods="order.products"
                                        :pizza-sets-list="pizzaSetsList"
                                        :add-prods-list="addProductsList"
+                                       :errors-list="getSubItemErrLists(['products', 'pizza_sets'])"
+                                       :sub-items-fields-list="subItemsFields"
                                        @on-ing-list-change="setOrderData"></order-ingredients>
 
                 </div>
@@ -623,14 +633,16 @@
 
     import Utils from '../../mixins/Utils';
     import Notify from '../../mixins/Notify';
+    import Validation from '../../mixins/Validation';
     import Pagination from '../../mixins/Pagination';
     import SelectOrderCustomerModal from "./SelectOrderCustomerModal";
     import DialogModal from "../DialogModal";
 
     const OrderRef = {
+        id: 0,
         customer_id: 0,
         customer_data: {},
-        customer_comment: '',
+        comments: [],
         pizza_sets: [],
         products: [],
         cost: 0,
@@ -662,6 +674,7 @@
         mixins: [
             Utils,
             Notify,
+            Validation,
             Pagination,
         ],
 
@@ -717,10 +730,12 @@
 
             closeBox() {
                 this.mode = 'list';
+                this.clearErrors();
                 this.initEmptyOrder();
             },
 
             openOrder(id, toEdit = false) {
+                this.closeBox();
                 const editBox = document.getElementById('edit-order-box');
 
                 axios.get(
@@ -750,6 +765,7 @@
 
             closeOrder() {
                 this.mode = 'list';
+                this.clearErrors();
                 this.orderSelected = {};
             },
 
@@ -766,9 +782,13 @@
                     this.getList();
 
                 }.bind(this))
-                .catch(function() {
+                .catch(function(error) {
 
                     this.saving = false;
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        return;
+                    }
                     this.notifyError('Save order error.');
 
                 }.bind(this));
@@ -897,6 +917,7 @@
                                     this.order.customer_id = copy.id;
                                 } else {
                                     this.orderSelected.customer = copy;
+                                    this.orderSelected.customer_id = copy.id;
                                 }
                             }.bind(this),
                         }
@@ -926,9 +947,13 @@
                     this.getList();
 
                 }.bind(this))
-                .catch(function() {
+                .catch(function(error) {
 
                     this.saving = false;
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        return;
+                    }
                     this.notifyError('Add order error.');
 
                 }.bind(this));
