@@ -2081,8 +2081,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
-/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
+/* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
+/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
+/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
 //
 //
 //
@@ -2194,11 +2195,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 
 var CustomerRef = {
+  id: 0,
   name: '',
   email: '',
   phone: '',
@@ -2217,7 +2232,7 @@ var CustomerRef = {
       customersList: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"]],
   created: function created() {
     this.initCustomerData();
     this.getList();
@@ -2269,6 +2284,7 @@ var CustomerRef = {
     },
     closeBox: function closeBox() {
       this.mode = 'list';
+      this.clearErrors();
       this.initCustomerData();
     },
     saveUser: function saveUser() {
@@ -2283,13 +2299,20 @@ var CustomerRef = {
         this.initCustomerData();
         this.saving = false;
         this.getList();
-      }.bind(this))["catch"](function () {
-        var errorMsg = (update ? 'Update' : 'Add') + ' customer error.';
+      }.bind(this))["catch"](function (error) {
         this.saving = false;
+
+        if (this.checkValidationErrors(error.response.data)) {
+          this.notifyError('Form validation error.', 1500);
+          return;
+        }
+
+        var errorMsg = (update ? 'Update' : 'Add') + ' customer error.';
         this.notifyError(errorMsg);
       }.bind(this));
     },
     editUser: function editUser(item) {
+      this.closeBox();
       this.scrollToEditBox();
       var customerData = item;
       this.customerEdit = {
@@ -2302,7 +2325,7 @@ var CustomerRef = {
       this.mode = 'update';
     },
     modalDelete: function modalDelete(id) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
         'modal-data': {
           header: "Delete customer ID:".concat(id),
           text: 'Customer will be deleted.',
@@ -2565,8 +2588,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
-/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
+/* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
+/* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
+/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
 //
 //
 //
@@ -2824,11 +2848,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 
 var EmployeeRef = {
+  id: 0,
   name: '',
   role_id: 0,
   email: '',
@@ -2849,7 +2893,7 @@ var EmployeeRef = {
       rolesList: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"]],
   created: function created() {
     this.initEmployeeData();
     this.getRolesList();
@@ -2906,6 +2950,7 @@ var EmployeeRef = {
     },
     closeBox: function closeBox() {
       this.mode = 'list';
+      this.clearErrors();
       this.initEmployeeData();
     },
     saveUser: function saveUser() {
@@ -2920,17 +2965,25 @@ var EmployeeRef = {
         this.initEmployeeData();
         this.saving = false;
         this.getList();
-      }.bind(this))["catch"](function () {
-        var errorMsg = (edit ? 'Update' : 'Add') + ' employee error.';
+      }.bind(this))["catch"](function (error) {
         this.saving = false;
+
+        if (this.checkValidationErrors(error.response.data)) {
+          this.notifyError('Form validation error.', 1500);
+          return;
+        }
+
+        var errorMsg = (edit ? 'Update' : 'Add') + ' employee error.';
         this.notifyError(errorMsg);
       }.bind(this));
     },
     editUser: function editUser(index) {
+      this.closeBox();
       this.scrollToEditBox();
       var employeeData = this.employeesList[index];
       this.employeeEdit = {
         id: employeeData.id,
+        user_id: employeeData.user.id,
         name: employeeData.name,
         role_id: employeeData.role_id,
         email: employeeData.user.email,
@@ -2941,7 +2994,7 @@ var EmployeeRef = {
       this.mode = 'edit';
     },
     modalDelete: function modalDelete(id) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
         'modal-data': {
           header: "Delete employee ID:".concat(id),
           text: 'Employee will be deleted.',
@@ -26810,7 +26863,7 @@ var render = function() {
             _c("div", { staticClass: "row" }, [
               _c("div", { staticClass: "col-md-12" }, [
                 _c("div", { staticClass: "form-group" }, [
-                  _c("label", [_vm._v("Name")]),
+                  _c("label", [_vm._v("Name *")]),
                   _vm._v(" "),
                   _c("input", {
                     directives: [
@@ -26832,7 +26885,17 @@ var render = function() {
                         _vm.$set(_vm.customerEdit, "name", $event.target.value)
                       }
                     }
-                  })
+                  }),
+                  _vm._v(" "),
+                  _vm.checkErr("name")
+                    ? _c("span", { staticClass: "error" }, [
+                        _vm._v(
+                          "\n                                " +
+                            _vm._s(_vm.getErr("name")) +
+                            "\n                            "
+                        )
+                      ])
+                    : _vm._e()
                 ])
               ]),
               _vm._v(" "),
@@ -26866,13 +26929,23 @@ var render = function() {
                             )
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("phone")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                        " +
+                                _vm._s(_vm.getErr("phone")) +
+                                "\n                                    "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-md-6" }, [
                     _c("div", { staticClass: "form-group" }, [
-                      _c("label", [_vm._v("Email")]),
+                      _c("label", [_vm._v("Email *")]),
                       _vm._v(" "),
                       _c("input", {
                         directives: [
@@ -26898,7 +26971,17 @@ var render = function() {
                             )
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("email")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                        " +
+                                _vm._s(_vm.getErr("email")) +
+                                "\n                                    "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ])
                 ])
@@ -26932,7 +27015,17 @@ var render = function() {
                         )
                       }
                     }
-                  })
+                  }),
+                  _vm._v(" "),
+                  _vm.checkErr("address")
+                    ? _c("span", { staticClass: "error" }, [
+                        _vm._v(
+                          "\n                                " +
+                            _vm._s(_vm.getErr("address")) +
+                            "\n                            "
+                        )
+                      ])
+                    : _vm._e()
                 ])
               ]),
               _vm._v(" "),
@@ -27749,7 +27842,7 @@ var render = function() {
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-md-6" }, [
                     _c("div", { staticClass: "form-group" }, [
-                      _c("label", [_vm._v("Name")]),
+                      _c("label", [_vm._v("Name *")]),
                       _vm._v(" "),
                       _c("input", {
                         directives: [
@@ -27775,14 +27868,24 @@ var render = function() {
                             )
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("name")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                        " +
+                                _vm._s(_vm.getErr("name")) +
+                                "\n                                    "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-md-6" }, [
                     _c("div", { staticClass: "form-group" }, [
                       _c("label", { attrs: { for: "roleSelect" } }, [
-                        _vm._v("Role")
+                        _vm._v("Role *")
                       ]),
                       _vm._v(" "),
                       _c(
@@ -27832,7 +27935,17 @@ var render = function() {
                           )
                         }),
                         0
-                      )
+                      ),
+                      _vm._v(" "),
+                      _vm.checkErr("role_id")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                        " +
+                                _vm._s(_vm.getErr("role_id")) +
+                                "\n                                    "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ])
                 ])
@@ -27868,13 +27981,23 @@ var render = function() {
                             )
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("phone")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                        " +
+                                _vm._s(_vm.getErr("phone")) +
+                                "\n                                    "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-md-6" }, [
                     _c("div", { staticClass: "form-group" }, [
-                      _c("label", [_vm._v("Email")]),
+                      _c("label", [_vm._v("Email *")]),
                       _vm._v(" "),
                       _c("input", {
                         directives: [
@@ -27900,7 +28023,17 @@ var render = function() {
                             )
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.checkErr("email")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                                        " +
+                                _vm._s(_vm.getErr("email")) +
+                                "\n                                    "
+                            )
+                          ])
+                        : _vm._e()
                     ])
                   ])
                 ])
@@ -27909,7 +28042,7 @@ var render = function() {
               _c("div", { staticClass: "col-md-12" }, [
                 _c("div", { staticClass: "form-group" }, [
                   _vm.mode === "add_new"
-                    ? _c("label", [_vm._v("Password")])
+                    ? _c("label", [_vm._v("Password *")])
                     : _vm._e(),
                   _vm._v(" "),
                   _vm.mode === "edit"
@@ -27940,7 +28073,17 @@ var render = function() {
                         )
                       }
                     }
-                  })
+                  }),
+                  _vm._v(" "),
+                  _vm.checkErr("password")
+                    ? _c("span", { staticClass: "error" }, [
+                        _vm._v(
+                          "\n                                " +
+                            _vm._s(_vm.getErr("password")) +
+                            "\n                            "
+                        )
+                      ])
+                    : _vm._e()
                 ])
               ]),
               _vm._v(" "),
@@ -27972,7 +28115,17 @@ var render = function() {
                         )
                       }
                     }
-                  })
+                  }),
+                  _vm._v(" "),
+                  _vm.checkErr("address")
+                    ? _c("span", { staticClass: "error" }, [
+                        _vm._v(
+                          "\n                                " +
+                            _vm._s(_vm.getErr("address")) +
+                            "\n                            "
+                        )
+                      ])
+                    : _vm._e()
                 ])
               ]),
               _vm._v(" "),
@@ -28647,7 +28800,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-12 ing-box-label" }, [
-      _c("label", [_vm._v("Pizza Sets")])
+      _c("label", [_vm._v("Pizza Sets *")])
     ])
   },
   function() {
@@ -29129,7 +29282,7 @@ var render = function() {
                   { staticClass: "row new-order-box" },
                   [
                     _c("div", { staticClass: "col-md-12" }, [
-                      _c("h4", [_vm._v("Customer Data")])
+                      _c("h4", [_vm._v("Customer Data *")])
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-md-6" }, [
@@ -29737,7 +29890,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-12" }, [
-      _c("h4", [_vm._v("Customer Data")])
+      _c("h4", [_vm._v("Customer Data *")])
     ])
   },
   function() {
@@ -30363,7 +30516,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-12" }, [
-      _c("label", [_vm._v("Ingredients")])
+      _c("label", [_vm._v("Ingredients *")])
     ])
   }
 ]
@@ -30471,7 +30624,7 @@ var render = function() {
                       _c("div", { staticClass: "row" }, [
                         _c("div", { staticClass: "col-md-12" }, [
                           _c("div", { staticClass: "form-group" }, [
-                            _c("label", [_vm._v("Name")]),
+                            _c("label", [_vm._v("Name *")]),
                             _vm._v(" "),
                             _c("input", {
                               directives: [
@@ -30518,7 +30671,7 @@ var render = function() {
                                 _c(
                                   "label",
                                   { attrs: { for: "pizzaBaseSelect" } },
-                                  [_vm._v("Base")]
+                                  [_vm._v("Base *")]
                                 ),
                                 _vm._v(" "),
                                 _c(
@@ -30997,7 +31150,7 @@ var render = function() {
                 _c("div", { staticClass: "col-md-12 mt-15" }, [
                   _c("div", { staticClass: "col-12" }, [
                     _c("div", { staticClass: "form-group" }, [
-                      _c("label", [_vm._v("Name")]),
+                      _c("label", [_vm._v("Name *")]),
                       _vm._v(" "),
                       _c("input", {
                         directives: [
@@ -31038,7 +31191,7 @@ var render = function() {
                       _c("div", { staticClass: "col-md-8" }, [
                         _c("div", { staticClass: "form-group" }, [
                           _c("label", { attrs: { for: "prodTypesSelect" } }, [
-                            _vm._v("Type")
+                            _vm._v("Type *")
                           ]),
                           _vm._v(" "),
                           _c(
@@ -31109,7 +31262,7 @@ var render = function() {
                     _c("div", { staticClass: "row" }, [
                       _c("div", { staticClass: "col-md-3" }, [
                         _c("div", { staticClass: "form-group" }, [
-                          _c("label", [_vm._v("Cost ($)")]),
+                          _c("label", [_vm._v("Cost ($) *")]),
                           _vm._v(" "),
                           _c("input", {
                             directives: [
@@ -31155,7 +31308,7 @@ var render = function() {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-3" }, [
                         _c("div", { staticClass: "form-group" }, [
-                          _c("label", [_vm._v("Weight (g)")]),
+                          _c("label", [_vm._v("Weight (g) *")]),
                           _vm._v(" "),
                           _c("input", {
                             directives: [
@@ -31495,7 +31648,7 @@ var render = function() {
                       _c("div", { staticClass: "row" }, [
                         _c("div", { staticClass: "col-md-12" }, [
                           _c("div", { staticClass: "form-group" }, [
-                            _c("label", [_vm._v("Name")]),
+                            _c("label", [_vm._v("Name *")]),
                             _vm._v(" "),
                             _c("input", {
                               directives: [
@@ -31542,7 +31695,7 @@ var render = function() {
                                 _c(
                                   "label",
                                   { attrs: { for: "prodTypesSelect" } },
-                                  [_vm._v("Type")]
+                                  [_vm._v("Type *")]
                                 ),
                                 _vm._v(" "),
                                 _c(
@@ -31618,7 +31771,7 @@ var render = function() {
                           _c("div", { staticClass: "row" }, [
                             _c("div", { staticClass: "col-md-3" }, [
                               _c("div", { staticClass: "form-group" }, [
-                                _c("label", [_vm._v("Cost ($)")]),
+                                _c("label", [_vm._v("Cost ($) *")]),
                                 _vm._v(" "),
                                 _c("input", {
                                   directives: [
@@ -31664,7 +31817,7 @@ var render = function() {
                             _vm._v(" "),
                             _c("div", { staticClass: "col-md-3" }, [
                               _c("div", { staticClass: "form-group" }, [
-                                _c("label", [_vm._v("Weight (g)")]),
+                                _c("label", [_vm._v("Weight (g) *")]),
                                 _vm._v(" "),
                                 _c("input", {
                                   directives: [

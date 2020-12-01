@@ -8,6 +8,7 @@ use App\Consts\SystemConst;
 use App\Http\Requests\SaveProduct;
 use App\Models\Product;
 use App\Models\ProductType;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -35,7 +36,7 @@ class ProductsController extends Controller
     }
 
 
-    public function saveProduct(SaveProduct $request, bool $newProduct = false) : int
+    public function saveProduct(FormRequest $request, bool $newProduct = false) : int
     {
         DB::beginTransaction();
         try {

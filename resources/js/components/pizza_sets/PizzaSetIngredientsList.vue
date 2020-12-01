@@ -3,7 +3,7 @@
     <div class="row">
 
         <div class="col-md-12">
-            <label>Ingredients</label>
+            <label>Ingredients *</label>
         </div>
 
         <div v-if="items.length > 0" class="col-md-12">

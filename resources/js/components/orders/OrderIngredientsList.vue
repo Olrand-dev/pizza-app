@@ -9,7 +9,7 @@
                 <div class="row">
 
                     <div class="col-md-12 ing-box-label">
-                        <label>Pizza Sets</label>
+                        <label>Pizza Sets *</label>
                     </div>
 
                     <div v-if="pizza_sets.length > 0" class="col-md-12">

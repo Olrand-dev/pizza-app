@@ -14,6 +14,7 @@ use App\Models\OrderArchived;
 use App\Models\OrderStatus;
 use App\Models\PizzaSet;
 use App\Models\Product;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,7 @@ class OrdersController extends Controller
     }
 
 
-    public function saveOrder(SaveOrder $request, bool $newOrder = false) : int
+    public function saveOrder(FormRequest $request, bool $newOrder = false) : int
     {
         DB::beginTransaction();
         try {

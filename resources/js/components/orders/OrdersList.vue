@@ -176,7 +176,7 @@
                 </div>
 
                 <div class="col-md-12">
-                    <h4>Customer Data</h4>
+                    <h4>Customer Data *</h4>
                 </div>
 
                 <div class="col-md-12">
@@ -229,7 +229,7 @@
                 <div class="row new-order-box">
 
                     <div class="col-md-12">
-                        <h4>Customer Data</h4>
+                        <h4>Customer Data *</h4>
                     </div>
 
                     <div class="col-md-6">

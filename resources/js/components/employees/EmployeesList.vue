@@ -167,20 +167,26 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Name</label>
+                                        <label>Name *</label>
                                         <input type="text" class="form-control" v-model="employeeEdit.name">
+                                        <span v-if="checkErr('name')" class="error">
+                                            {{ getErr('name') }}
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="roleSelect">Role</label>
+                                        <label for="roleSelect">Role *</label>
                                         <select v-model="employeeEdit.role_id" class="form-control" id="roleSelect">
                                             <option v-for="role in rolesList" :key="role.id"
                                                     :value="role.id">
                                                 {{ role.name }}
                                             </option>
                                         </select>
+                                        <span v-if="checkErr('role_id')" class="error">
+                                            {{ getErr('role_id') }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -194,13 +200,19 @@
                                     <div class="form-group">
                                         <label>Phone</label>
                                         <input type="text" class="form-control" v-model="employeeEdit.phone">
+                                        <span v-if="checkErr('phone')" class="error">
+                                            {{ getErr('phone') }}
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Email</label>
+                                        <label>Email *</label>
                                         <input type="text" class="form-control" v-model="employeeEdit.email">
+                                        <span v-if="checkErr('email')" class="error">
+                                            {{ getErr('email') }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -209,9 +221,12 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label v-if="mode === 'add_new'">Password</label>
+                                <label v-if="mode === 'add_new'">Password *</label>
                                 <label v-if="mode === 'edit'">New password</label>
                                 <input type="text" class="form-control" v-model="employeeEdit.password">
+                                <span v-if="checkErr('password')" class="error">
+                                    {{ getErr('password') }}
+                                </span>
                             </div>
                         </div>
 
@@ -219,6 +234,9 @@
                             <div class="form-group">
                                 <label>Address</label>
                                 <textarea rows="5" class="form-control" v-model="employeeEdit.address"></textarea>
+                                <span v-if="checkErr('address')" class="error">
+                                    {{ getErr('address') }}
+                                </span>
                             </div>
                         </div>
 
@@ -250,7 +268,7 @@
 </template>
 
 
-<style scoped lang="scss">
+<style scoped>
 
 </style>
 
@@ -259,10 +277,12 @@
 
     import Utils from '../../mixins/Utils';
     import Notify from '../../mixins/Notify';
+    import Validation from '../../mixins/Validation';
     import Pagination from '../../mixins/Pagination';
     import DialogModal from "../DialogModal";
 
     const EmployeeRef = {
+        id: 0,
         name: '',
         role_id: 0,
         email: '',
@@ -291,6 +311,7 @@
         mixins: [
             Utils,
             Notify,
+            Validation,
             Pagination,
         ],
 
@@ -375,6 +396,7 @@
 
             closeBox() {
                 this.mode = 'list';
+                this.clearErrors();
                 this.initEmployeeData();
             },
 
@@ -400,22 +422,27 @@
                     this.getList();
 
                 }.bind(this))
-                .catch(function() {
-
-                    let errorMsg = ((edit) ? 'Update' : 'Add') + ' employee error.';
+                .catch(function(error) {
 
                     this.saving = false;
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        return;
+                    }
+                    let errorMsg = ((edit) ? 'Update' : 'Add') + ' employee error.';
                     this.notifyError(errorMsg);
 
                 }.bind(this));
             },
 
             editUser(index) {
+                this.closeBox();
                 this.scrollToEditBox();
                 let employeeData = this.employeesList[index];
 
                 this.employeeEdit = {
                     id: employeeData.id,
+                    user_id: employeeData.user.id,
                     name: employeeData.name,
                     role_id: employeeData.role_id,
                     email: employeeData.user.email,

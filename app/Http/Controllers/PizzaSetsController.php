@@ -8,6 +8,7 @@ use App\Consts\SystemConst;
 use App\Http\Requests\SavePizzaSet;
 use App\Models\PizzaSet;
 use App\Models\Product;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -35,7 +36,7 @@ class PizzaSetsController extends Controller
     }
 
 
-    public function saveSet(SavePizzaSet $request, bool $newSet = false) : int
+    public function saveSet(FormRequest $request, bool $newSet = false) : int
     {
         DB::beginTransaction();
         try {

@@ -42,7 +42,7 @@
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label>Name</label>
+                                            <label>Name *</label>
                                             <input type="text" class="form-control" v-model="pizzaSet.name">
                                             <span v-if="checkErr('name')" class="error">
                                                 {{ getErr('name') }}
@@ -55,7 +55,7 @@
 
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="pizzaBaseSelect">Base</label>
+                                                    <label for="pizzaBaseSelect">Base *</label>
                                                     <select v-model="pizzaSet.base_id" class="form-control"
                                                         id="pizzaBaseSelect">
                                                         <option v-for="base in pizzaBasesList" :key="base.id"

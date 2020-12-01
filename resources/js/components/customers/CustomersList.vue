@@ -44,8 +44,11 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>Name</label>
+                                <label>Name *</label>
                                 <input type="text" class="form-control" v-model="customerEdit.name">
+                                <span v-if="checkErr('name')" class="error">
+                                    {{ getErr('name') }}
+                                </span>
                             </div>
                         </div>
 
@@ -56,13 +59,19 @@
                                     <div class="form-group">
                                         <label>Phone</label>
                                         <input type="text" class="form-control" v-model="customerEdit.phone">
+                                        <span v-if="checkErr('phone')" class="error">
+                                            {{ getErr('phone') }}
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Email</label>
+                                        <label>Email *</label>
                                         <input type="text" class="form-control" v-model="customerEdit.email">
+                                        <span v-if="checkErr('email')" class="error">
+                                            {{ getErr('email') }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -73,6 +82,9 @@
                             <div class="form-group">
                                 <label>Address</label>
                                 <textarea rows="5" class="form-control" v-model="customerEdit.address"></textarea>
+                                <span v-if="checkErr('address')" class="error">
+                                    {{ getErr('address') }}
+                                </span>
                             </div>
                         </div>
 
@@ -113,10 +125,12 @@
 
     import Utils from '../../mixins/Utils';
     import Notify from '../../mixins/Notify';
+    import Validation from '../../mixins/Validation';
     import Pagination from '../../mixins/Pagination';
     import DialogModal from "../DialogModal";
 
     const CustomerRef = {
+        id: 0,
         name: '',
         email: '',
         phone: '',
@@ -143,6 +157,7 @@
         mixins: [
             Utils,
             Notify,
+            Validation,
             Pagination,
         ],
 
@@ -215,6 +230,7 @@
 
             closeBox() {
                 this.mode = 'list';
+                this.clearErrors();
                 this.initCustomerData();
             },
 
@@ -240,17 +256,21 @@
                     this.getList();
 
                 }.bind(this))
-                .catch(function() {
-
-                    let errorMsg = ((update) ? 'Update' : 'Add') + ' customer error.';
+                .catch(function(error) {
 
                     this.saving = false;
+                    if (this.checkValidationErrors(error.response.data)) {
+                        this.notifyError('Form validation error.', 1500);
+                        return;
+                    }
+                    let errorMsg = ((update) ? 'Update' : 'Add') + ' customer error.';
                     this.notifyError(errorMsg);
 
                 }.bind(this));
             },
 
             editUser(item) {
+                this.closeBox();
                 this.scrollToEditBox();
                 let customerData = item;
 

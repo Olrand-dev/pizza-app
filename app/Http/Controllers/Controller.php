@@ -224,6 +224,12 @@ class Controller extends BaseController
     }
 
 
+    protected function comparePasswords(string $plainPass, string $hashPass) : bool
+    {
+        return Hash::check($plainPass, $hashPass);
+    }
+
+
     protected function checkCanBeDeleted(Collection $idSet, int $targetId, string $errorMsg) : array
     {
         $check = true;

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateEmployee;
+use App\Http\Requests\SaveEmployee;
 use App\Models\Employee;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,22 +19,36 @@ class EmployeesController extends Controller
     }
 
 
-    public function addNew(Request $request) : int
+    public function addNew(CreateEmployee $request) : int
+    {
+        return $this->saveEmployee($request, true);
+    }
+
+
+    public function save(SaveEmployee $request) : void
+    {
+        $this->saveEmployee($request);
+    }
+
+
+    public function saveEmployee(FormRequest $request, bool $newUser = false) : int
     {
         DB::beginTransaction();
         try {
 
-            $data = $request->input();
+            $data = $request->validated();
+            $employee = ($newUser) ? new Employee() : Employee::find((int) $data['id']);
+            $user = ($newUser) ? new User() : User::find($employee->user->id);
 
-            $user = new User();
             $user->name = $data['name'];
             $user->email = $data['email'];
             $user->save();
 
-            $password = $data['password'] ?? 'temp_pass';
-            $this->makeUserPassword($user->id, $password);
+            $password = $data['password'];
+            if ($newUser or (!$newUser and !empty($password))) {
+                $this->makeUserPassword($user->id, $data['password']);
+            }
 
-            $employee = new Employee();
             $employee->name = $data['name'];
             $employee->phone = $data['phone'];
             $employee->address = $data['address'];
@@ -42,7 +59,7 @@ class EmployeesController extends Controller
             }
             $employee->save();
 
-            $employee->user()->save($user);
+            if ($newUser) $employee->user()->save($user);
 
         } catch(\Throwable $e) {
             DB::rollBack();
@@ -51,44 +68,6 @@ class EmployeesController extends Controller
 
         DB::commit();
         return $employee->id;
-    }
-
-
-    public function save(Request $request) : void
-    {
-        DB::beginTransaction();
-        try {
-
-            $data = $request->input();
-            $employee = Employee::find((int) $data['id']);
-            $user = User::find($employee->user->id);
-
-            $employee->name = $data['name'];
-            $employee->phone = $data['phone'];
-            $employee->address = $data['address'];
-            $employee->save();
-            $user->name = $data['name'];
-            $user->email = $data['email'];
-            $user->save();
-
-            //new password
-            if (!empty($data['password'])) {
-                $this->makeUserPassword($user->id, $data['password']);
-            }
-
-            if ($employee->role_id != $data['role_id']) {
-                $role = Role::find((int) $data['role_id']);
-                if (!empty($role)) {
-                    $employee->role()->associate($role);
-                    $employee->save();
-                }
-            }
-
-        } catch(\Throwable $e) {
-            DB::rollBack();
-            abort(500, $e->getMessage());
-        }
-        DB::commit();
     }
 
 

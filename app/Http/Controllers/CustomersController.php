@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Http\Requests\SaveCustomer;
 use App\Models\Customer;
 use App\Models\User;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class CustomersController extends Controller
 {
@@ -18,26 +18,38 @@ class CustomersController extends Controller
     }
 
 
-    public function addNew(Request $request) : int
+    public function addNew(SaveCustomer $request) : int
+    {
+        return $this->saveCustomer($request, true);
+    }
+
+
+    public function save(SaveCustomer $request) : void
+    {
+        $this->saveCustomer($request);
+    }
+
+
+    public function saveCustomer(FormRequest $request, bool $newUser = false) : int
     {
         DB::beginTransaction();
         try {
 
-            $data = $request->input();
+            $data = $request->validated();
 
-            $user = new User();
+            $customer = ($newUser) ? new Customer() : Customer::find((int) $data['id']);
+            $user = ($newUser) ? new User() : User::find($customer->user->id);
+
             $user->name = $data['name'];
             $user->email = $data['email'];
-            $user->password = Hash::make('temp_pass');
             $user->save();
+            if ($newUser) $this->makeUserPassword($user->id, 'temp_pass');
 
-            $customer = new Customer();
             $customer->name = $data['name'];
             $customer->phone = $data['phone'];
             $customer->address = $data['address'];
             $customer->save();
-
-            $customer->user()->save($user);
+            if ($newUser) $customer->user()->save($user);
 
         } catch(\Throwable $e) {
             DB::rollBack();
@@ -46,31 +58,6 @@ class CustomersController extends Controller
 
         DB::commit();
         return $customer->id;
-    }
-
-
-    public function save(Request $request) : void
-    {
-        DB::beginTransaction();
-        try {
-
-            $data = $request->input();
-            $customer = Customer::find((int) $data['id']);
-            $user = User::find($customer->user->id);
-
-            $customer->name = $data['name'];
-            $customer->phone = $data['phone'];
-            $customer->address = $data['address'];
-            $customer->save();
-            $user->name = $data['name'];
-            $user->email = $data['email'];
-            $user->save();
-
-        } catch(\Throwable $e) {
-            DB::rollBack();
-            abort(500, $e->getMessage());
-        }
-        DB::commit();
     }
 
 

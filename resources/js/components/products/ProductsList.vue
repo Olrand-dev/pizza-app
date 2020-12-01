@@ -42,7 +42,7 @@
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label>Name</label>
+                                            <label>Name *</label>
                                             <input type="text" class="form-control" v-model="product.name">
                                             <span v-if="checkErr('name')" class="error">
                                                 {{ getErr('name') }}
@@ -54,7 +54,7 @@
                                         <div class="row">
                                             <div class="col-md-8">
                                                 <div class="form-group">
-                                                    <label for="prodTypesSelect">Type</label>
+                                                    <label for="prodTypesSelect">Type *</label>
                                                     <select v-model="product.type_id" class="form-control"
                                                             id="prodTypesSelect">
                                                         <option v-for="type in prodTypesList" :key="type.id"
@@ -75,7 +75,7 @@
 
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label>Cost ($)</label>
+                                                    <label>Cost ($) *</label>
                                                     <input type="number" step="0.01" min="0.01"
                                                            class="form-control" v-model="product.cost">
                                                     <span v-if="checkErr('cost')" class="error">
@@ -85,7 +85,7 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label>Weight (g)</label>
+                                                    <label>Weight (g) *</label>
                                                     <input type="number" step="1" min="1"
                                                            class="form-control" v-model="product.weight">
                                                     <span v-if="checkErr('weight')" class="error">
