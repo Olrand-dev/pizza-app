@@ -54,6 +54,7 @@ class SystemConst
     public const USER_ROLE_COOK = 3;
     public const USER_ROLE_CHEF = 4;
     public const USER_ROLE_COURIER = 5;
+    public const USER_ROLE_CUSTOMER = 6;
 
     public const USER_ROLES_MAP = [
         0 => [],
@@ -62,5 +63,6 @@ class SystemConst
         self::USER_ROLE_COOK => ['name' => 'повар', 'slug' => 'cook', 'salary' => 5000],
         self::USER_ROLE_CHEF => ['name' => 'старший повар', 'slug' => 'chef', 'salary' => 10000],
         self::USER_ROLE_COURIER => ['name' => 'курьер', 'slug' => 'courier', 'salary' => 4500],
+        self::USER_ROLE_CUSTOMER => ['name' => 'клиент', 'slug' => 'customer', 'salary' => 0],
     ];
 }

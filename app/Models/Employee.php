@@ -23,12 +23,6 @@ class Employee extends Model
     }
 
 
-    public function role()
-    {
-        return $this->belongsTo('App\Models\Role');
-    }
-
-
     public function getRegisteredAtAttribute()
     {
         return Carbon::parse($this->created_at)->format('d-m-Y, H:i');

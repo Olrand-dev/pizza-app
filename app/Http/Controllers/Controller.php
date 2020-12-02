@@ -189,6 +189,35 @@ class Controller extends BaseController
     }
 
 
+    protected function getUsersIdByRole(Builder $query, int $roleId) : Builder
+    {
+        $query->select('userable_id')
+            ->from('users')
+            ->where('role_id', $roleId);
+        return $query;
+    }
+
+
+    public static function getUserPermissionsMap(
+        int $admin = 1,
+        int $manager = 0,
+        int $cook = 0,
+        int $chef = 0,
+        int $courier = 0,
+        int $customer = 0
+    ) : array
+    {
+        return [
+            'admin' => $admin,
+            'manager' => $manager,
+            'cook' => $cook,
+            'chef' => $chef,
+            'courier' => $courier,
+            'customer' => $customer,
+        ];
+    }
+
+
     protected function calculateOrder(int $id, array $orderElements) : void
     {
         $instance = Order::find($id);

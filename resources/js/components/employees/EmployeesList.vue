@@ -75,7 +75,7 @@
 
                                             <span class="data-line">
                                                 <i class="fas fa-user-cog"></i>
-                                                {{ item.role.name }}
+                                                {{ item.user.role.name }}
                                             </span>
                                             <span class="data-line">
                                                 <i class="fas fa-phone-alt"></i>
@@ -444,7 +444,7 @@
                     id: employeeData.id,
                     user_id: employeeData.user.id,
                     name: employeeData.name,
-                    role_id: employeeData.role_id,
+                    role_id: employeeData.user.role_id,
                     email: employeeData.user.email,
                     phone: employeeData.phone,
                     address: employeeData.address,

@@ -45,10 +45,15 @@ class User extends Authenticatable
     }
 
 
+    public function role()
+    {
+        return $this->belongsTo('App\Models\Role');
+    }
+
+
     private function checkUserRole(int $roleId) : bool
     {
-        if ($this->userable_type !== 'App\Models\Employee') return false;
-        return Employee::find($this->userable_id)->role_id === $roleId;
+        return $this->role_id === $roleId;
     }
 
 

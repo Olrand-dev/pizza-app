@@ -42,6 +42,12 @@ class EmployeesController extends Controller
 
             $user->name = $data['name'];
             $user->email = $data['email'];
+
+            $role = Role::find((int) $data['role_id']);
+            if (!empty($role)) {
+                $user->role()->associate($role);
+            }
+
             $user->save();
 
             $password = $data['password'];
@@ -53,10 +59,6 @@ class EmployeesController extends Controller
             $employee->phone = $data['phone'];
             $employee->address = $data['address'];
 
-            $role = Role::find((int) $data['role_id']);
-            if (!empty($role)) {
-                $employee->role()->associate($role);
-            }
             $employee->save();
 
             if ($newUser) $employee->user()->save($user);
@@ -81,10 +83,12 @@ class EmployeesController extends Controller
         $sortField = $input['sort_field'];
         $sortDirection = $input['sort_dir'];
 
-        $query = Employee::with(['user', 'role']);
+        $query = Employee::with(['user', 'user.role']);
 
         if ($byRole > 0) {
-            $query = $query->where('role_id', $byRole);
+            $query = $query->whereIn('id', function ($query) use ($byRole) {
+                $this->getUsersIdByRole($query, $byRole);
+            });
         }
         $query = $query->orderBy($sortField, $sortDirection);
 

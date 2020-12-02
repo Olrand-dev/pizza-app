@@ -2985,7 +2985,7 @@ var EmployeeRef = {
         id: employeeData.id,
         user_id: employeeData.user.id,
         name: employeeData.name,
-        role_id: employeeData.role_id,
+        role_id: employeeData.user.role_id,
         email: employeeData.user.email,
         phone: employeeData.phone,
         address: employeeData.address,
@@ -27645,7 +27645,7 @@ var render = function() {
                               _c("i", { staticClass: "fas fa-user-cog" }),
                               _vm._v(
                                 "\n                                            " +
-                                  _vm._s(item.role.name) +
+                                  _vm._s(item.user.role.name) +
                                   "\n                                        "
                               )
                             ]),

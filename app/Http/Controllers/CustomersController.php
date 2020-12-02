@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Consts\SystemConst;
 use App\Http\Requests\SaveCustomer;
 use App\Models\Customer;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -42,6 +43,12 @@ class CustomersController extends Controller
 
             $user->name = $data['name'];
             $user->email = $data['email'];
+
+            if ($newUser) {
+                $role = Role::find(SystemConst::USER_ROLE_CUSTOMER);
+                $user->role()->associate($role);
+            }
+
             $user->save();
             if ($newUser) $this->makeUserPassword($user->id, 'temp_pass');
 
@@ -49,6 +56,7 @@ class CustomersController extends Controller
             $customer->phone = $data['phone'];
             $customer->address = $data['address'];
             $customer->save();
+
             if ($newUser) $customer->user()->save($user);
 
         } catch(\Throwable $e) {
