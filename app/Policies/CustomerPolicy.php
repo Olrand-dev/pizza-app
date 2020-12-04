@@ -102,4 +102,9 @@ class CustomerPolicy extends Policy
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
     }
+
+    public function uiButtonDelete(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
+    }
 }

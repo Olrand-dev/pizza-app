@@ -105,7 +105,7 @@ class ProductPolicy extends Policy
 
     public function uiButtonDetails(User $user) : bool
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1));
     }
 
     public function uiButtonDelete(User $user) : bool

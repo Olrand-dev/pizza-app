@@ -122,6 +122,7 @@ class PizzaSetsController extends Controller
                             'quantity' => $product->connection->quantity,
                         ];
                     }
+                    $product->type_name = $product->type->name;
                 }
                 $item->ingredients = $ingredients;
                 $item->image_thumbs = $this->getImageThumbs("pizza_set_{$item->id}", $this->imagesDir);

@@ -51,8 +51,8 @@ class SystemConst
 
     public const USER_ROLE_ADMIN = 1;
     public const USER_ROLE_MANAGER = 2;
-    public const USER_ROLE_COOK = 3;
-    public const USER_ROLE_CHEF = 4;
+    public const USER_ROLE_CHEF = 3;
+    public const USER_ROLE_COOK = 4;
     public const USER_ROLE_COURIER = 5;
     public const USER_ROLE_CUSTOMER = 6;
 
@@ -60,8 +60,8 @@ class SystemConst
         0 => [],
         self::USER_ROLE_ADMIN => ['name' => 'администратор пиццерии', 'slug' => 'admin', 'salary' => 12000],
         self::USER_ROLE_MANAGER => ['name' => 'менеджер', 'slug' => 'manager', 'salary' => 9000],
-        self::USER_ROLE_COOK => ['name' => 'повар', 'slug' => 'cook', 'salary' => 5000],
         self::USER_ROLE_CHEF => ['name' => 'старший повар', 'slug' => 'chef', 'salary' => 10000],
+        self::USER_ROLE_COOK => ['name' => 'повар', 'slug' => 'cook', 'salary' => 5000],
         self::USER_ROLE_COURIER => ['name' => 'курьер', 'slug' => 'courier', 'salary' => 4500],
         self::USER_ROLE_CUSTOMER => ['name' => 'клиент', 'slug' => 'customer', 'salary' => 0],
     ];

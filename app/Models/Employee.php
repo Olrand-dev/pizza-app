@@ -10,6 +10,16 @@ class Employee extends Model
         'registered_at',
     ];
 
+    public $permissionsList = [
+        'viewAny',
+        'create',
+        'update',
+        'forceDelete',
+        'uiButtonAddNew',
+        'uiButtonEdit',
+        'uiButtonDelete',
+    ];
+
 
     public function orders()
     {

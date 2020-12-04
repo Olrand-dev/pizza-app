@@ -170,6 +170,11 @@
                                     <i class="fa fa-edit"></i>
                                 </button>
 
+                                <button class="btn btn-default btn-sm"
+                                        @click="modalDetails(item.id)">
+                                    <i class="fa fa-info"></i>
+                                </button>
+
                                 <button class="btn btn-danger btn-sm"
                                     @click="modalDelete(item.id)">
                                     <i class="fa fa-trash"></i>
@@ -231,6 +236,8 @@
     import Pagination from '../../mixins/Pagination';
     import LightBox from 'vue-image-lightbox';
     import EditSetModal from './EditPizzaSetModal';
+    import PizzaSetDetailsModal from './PizzaSetDetailsModal';
+    import ProductDetailsModal from "../products/ProductDetailsModal";
 
     const PizzaSetRef = {
         id: 0,
@@ -431,6 +438,28 @@
                     {
                         'before-close': event => {
                             this.getList();
+                        }
+                    }
+                );
+            },
+
+            modalDetails(id) {
+
+                let set = this.getItemById(this.setsList, id);
+                console.log(set);
+
+                this.$modal.show(
+                    PizzaSetDetailsModal,
+                    {
+                        'set-data': set
+                    },
+                    {
+                        adaptive: true,
+                        height: 'auto',
+                    },
+                    {
+                        'before-close': event => {
+
                         }
                     }
                 );

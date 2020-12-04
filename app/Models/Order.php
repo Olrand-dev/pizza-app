@@ -11,6 +11,13 @@ class Order extends Model
         'last_updated_at',
     ];
 
+    public $permissionsList = [ //todo: заполнить список
+        'viewAny',
+        'create',
+        'update',
+        'forceDelete',
+    ];
+
 
     public function customer()
     {

@@ -418,6 +418,16 @@
                                         <i class="fas fa-edit"></i>
                                     </button>
 
+                                    <button class="btn btn-success btn-sm order-btn"
+                                            @click="getOrder(item.id)">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+
+                                    <button class="btn btn-warning btn-sm order-btn"
+                                            @click="refuseOrder(item.id)">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+
                                 </div>
 
                             </div>
@@ -734,6 +744,61 @@
                 this.initEmptyOrder();
             },
 
+            getOrder(id) {
+                this.orderEmployeeConnect(id);
+            },
+
+            refuseOrder(id) {
+                this.orderEmployeeConnect(id, true);
+            },
+
+            orderEmployeeConnect(id, refuse = false) {
+
+                let modalText = 'You will ' + ((refuse) ? 'refuse' : 'take') + ' the order.';
+                let url = (refuse) ? '/orders/refuse-order' : '/orders/get-order';
+                let successMsg = (refuse) ? `You successfully took the order ID:${id}.` :
+                    `You refused the order ID:${id}.`;
+
+                this.$modal.show(
+                    DialogModal,
+                    {
+                        'modal-data': {
+                            header: `Order ID:${id} connection action`,
+                            text: modalText,
+                            onConfirm: function () {
+
+                                axios.get(
+                                    url,
+                                    {
+                                        params: {
+                                            id
+                                        },
+                                    }
+                                ).then(function(response) {
+
+                                    this.notifySuccess(successMsg);
+                                    this.getList();
+
+                                }.bind(this))
+                                .catch(function() {
+
+                                    this.notifyError('Action error.');
+
+                                }.bind(this));
+
+                            }.bind(this),
+                        },
+                    },
+                    {
+                        adaptive: true,
+                        height: 'auto',
+                    },
+                    {
+                        'before-close': event => {}
+                    }
+                );
+            },
+
             openOrder(id, toEdit = false) {
                 this.closeBox();
                 const editBox = document.getElementById('edit-order-box');
@@ -748,7 +813,7 @@
                 ).then(function(response) {
 
                     let data = response.data;
-                    console.log(data);
+                    //console.log(data);
                     this.mode = (toEdit) ? 'edit' : 'show';
                     this.orderSelected = data;
 

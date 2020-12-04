@@ -12,6 +12,17 @@ class PizzaSet extends Model
         'image_url',
     ];
 
+    public $permissionsList = [
+        'viewAny',
+        'create',
+        'update',
+        'forceDelete',
+        'uiButtonAddNew',
+        'uiButtonEdit',
+        'uiButtonDetails',
+        'uiButtonDelete',
+    ];
+
 
     public function comments()
     {

@@ -201,8 +201,8 @@ class Controller extends BaseController
     public static function getUserPermissionsMap(
         int $admin = 1,
         int $manager = 0,
-        int $cook = 0,
         int $chef = 0,
+        int $cook = 0,
         int $courier = 0,
         int $customer = 0
     ) : array

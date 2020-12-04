@@ -98,4 +98,156 @@ class OrderPolicy extends Policy
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
     }
+
+
+    /*
+     * Buttons
+     */
+
+    public function uiButtonAddNew(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiButtonEdit(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiButtonDetails(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+    }
+
+    public function uiButtonGetOrder(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(0, 0, 1, 1, 1));
+    }
+
+    public function uiButtonRefuse(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(0, 0, 1, 1, 1));
+    }
+
+    public function uiButtonOrderStatusAccept(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiButtonOrderStatusCooking(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+    }
+
+    public function uiButtonOrderStatusReady(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+    }
+
+    public function uiButtonOrderStatusDelivery(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+    }
+
+    public function uiButtonOrderStatusDelivered(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+    }
+
+    public function uiButtonOrderStatusCompleted(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiButtonOrderStatusArchive(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
+    }
+
+    public function uiButtonOrderStatusDecline(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiButtonDelete(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
+    }
+
+
+    /*
+     * UI Elements
+     */
+
+    public function uiElemFilterByOrderStatus(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+
+    public function uiElemOrderDataId(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1, 1));
+    }
+
+    public function uiElemOrderDataName(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1, 1));
+    }
+
+    public function uiElemOrderDataPhone(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+    }
+
+    public function uiElemOrderDataCreateDate(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1, 1));
+    }
+
+    public function uiElemOrderDataUpdateDate(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiElemOrderDataWeight(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+    }
+
+    public function uiElemOrderDataCost(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiElemOrderDataAddress(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+    }
+
+
+    public function uiElemOrderDetailsCustomerData(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiElemOrderDetailsCustomerComment(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiElemOrderDetailsIngredients(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+    }
+
+    public function uiElemOrderDetailsTotalWeight(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+    }
+
+    public function uiElemOrderDetailsTotalCost(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
 }
