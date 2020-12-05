@@ -416,7 +416,7 @@
                                     " class="btn btn-info btn-sm order-btn open-order-btn"
                                             @click="openOrder(item.id, true)">
                                         <i class="fas fa-edit"></i>
-                                    </button>
+                                    </button> {{item.connect_status}}
 
                                     <button class="btn btn-success btn-sm order-btn"
                                             @click="getOrder(item.id)">
@@ -645,6 +645,7 @@
     import Notify from '../../mixins/Notify';
     import Validation from '../../mixins/Validation';
     import Pagination from '../../mixins/Pagination';
+    import Permissions from '../../mixins/Permissions';
     import SelectOrderCustomerModal from "./SelectOrderCustomerModal";
     import DialogModal from "../DialogModal";
 
@@ -686,12 +687,14 @@
             Notify,
             Validation,
             Pagination,
+            Permissions,
         ],
 
         created() {
             this.initEmptyOrder();
             this.getDataLists();
             this.getList();
+            this.getPermissionsList('order');
         },
 
         methods: {
@@ -755,9 +758,8 @@
             orderEmployeeConnect(id, refuse = false) {
 
                 let modalText = 'You will ' + ((refuse) ? 'refuse' : 'take') + ' the order.';
-                let url = (refuse) ? '/orders/refuse-order' : '/orders/get-order';
-                let successMsg = (refuse) ? `You successfully took the order ID:${id}.` :
-                    `You refused the order ID:${id}.`;
+                let successMsg = (refuse) ? `You refused the order ID:${id}.` :
+                    `You successfully took the order ID:${id}.`;
 
                 this.$modal.show(
                     DialogModal,
@@ -768,10 +770,11 @@
                             onConfirm: function () {
 
                                 axios.get(
-                                    url,
+                                    '/orders/empl-connect',
                                     {
                                         params: {
-                                            id
+                                            id,
+                                            refuse,
                                         },
                                     }
                                 ).then(function(response) {

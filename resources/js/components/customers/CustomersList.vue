@@ -127,6 +127,7 @@
     import Notify from '../../mixins/Notify';
     import Validation from '../../mixins/Validation';
     import Pagination from '../../mixins/Pagination';
+    import Permissions from '../../mixins/Permissions';
     import DialogModal from "../DialogModal";
 
     const CustomerRef = {
@@ -159,11 +160,13 @@
             Notify,
             Validation,
             Pagination,
+            Permissions,
         ],
 
         created() {
             this.initCustomerData();
             this.getList();
+            this.getPermissionsList('customer');
         },
 
         methods: {

@@ -234,10 +234,10 @@
     import Validation from '../../mixins/Validation';
     import Sortable from '../../mixins/Sortable';
     import Pagination from '../../mixins/Pagination';
+    import Permissions from '../../mixins/Permissions';
     import LightBox from 'vue-image-lightbox';
     import EditSetModal from './EditPizzaSetModal';
     import PizzaSetDetailsModal from './PizzaSetDetailsModal';
-    import ProductDetailsModal from "../products/ProductDetailsModal";
 
     const PizzaSetRef = {
         id: 0,
@@ -278,6 +278,7 @@
             Notify,
             Validation,
             Pagination,
+            Permissions,
             Sortable,
         ],
 
@@ -289,6 +290,7 @@
             this.initEmptySet();
             this.getIngredientsList();
             this.getList();
+            this.getPermissionsList('pizza_set'); //todo: расставить проверки в шаблонах, в окне продуктов и контроллерах уже есть
         },
 
         methods: {

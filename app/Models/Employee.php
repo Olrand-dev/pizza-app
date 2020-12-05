@@ -10,7 +10,7 @@ class Employee extends Model
         'registered_at',
     ];
 
-    public $permissionsList = [
+    public static $permissionsList = [
         'viewAny',
         'create',
         'update',

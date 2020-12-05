@@ -29,18 +29,21 @@ class OrdersController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', Order::class);
         return view('app.orders');
     }
 
 
     public function addNew(SaveOrder $request) : int
     {
+        $this->authorize('create', Order::class);
         return $this->saveOrder($request, true);
     }
 
 
     public function save(SaveOrder $request) : void
     {
+        $this->authorize('update', Order::class);
         $this->saveOrder($request);
     }
 
@@ -158,6 +161,21 @@ class OrdersController extends Controller
     }
 
 
+    public function employeeConnect(Request $request) : void
+    {
+        $orderId = (int) $request->input('id');
+        $refuse = $request->input('refuse') === 'true';
+        $employee = Auth::user()->userable;
+
+        $order = Order::find($orderId);
+        if (!empty($order)) {
+
+            if ($refuse) $order->employees()->detach($employee);
+            else $order->employees()->attach($employee);
+        }
+    }
+
+
     public function getDataLists(Request $request) : array
     {
         $pizzaSets = PizzaSet::all()->toArray();
@@ -198,6 +216,7 @@ class OrdersController extends Controller
     public function getList(Request $request) : array
     {
         $input = $request->input();
+        $user = Auth::user();
 
         $page = (int) $input['page'];
         $perPage = (int) $input['per_page'];
@@ -212,6 +231,22 @@ class OrdersController extends Controller
         if ($byStatus > 0) {
             $query = $query->where('status_id', $byStatus);
         }
+
+        if ($user->isChef() or $user->isCook()) {
+            $query = $query->whereIn('status_id', [
+                SystemConst::ORDER_STATUS_ACCEPTED,
+                SystemConst::ORDER_STATUS_COOKING,
+                SystemConst::ORDER_STATUS_READY,
+            ]);
+        }
+        if ($user->isCourier()) {
+            $query = $query->whereIn('status_id', [
+                SystemConst::ORDER_STATUS_READY,
+                SystemConst::ORDER_STATUS_DELIVERY,
+                SystemConst::ORDER_STATUS_DELIVERED,
+            ]);
+        }
+
         if ($findQuery !== '') {
             $query = $query->whereHas(
                 'customer',
@@ -226,7 +261,24 @@ class OrdersController extends Controller
         $results = $query
             ->offset($perPage * ($page - 1))
             ->limit($perPage)
-            ->get();
+            ->get()
+            ->each(function ($item, $key) use ($user) {
+                $connectStatus = 'denied';
+
+                if (
+                    $user->isChef() or
+                    $user->isCook() or
+                    $user->isCourier()
+                ) {
+                    $connectStatus = 'allowed';
+                }
+                foreach ($item->employees as $index => $employee) {
+                   if ($employee->id === $user->userable->id) {
+                       $connectStatus = 'taken';
+                   }
+                }
+                $item->connect_status = $connectStatus;
+            });
 
         $pagesCount = (int) ceil($allResultsCount / $perPage);
 
@@ -239,6 +291,8 @@ class OrdersController extends Controller
 
     public function delete(Request $request) : void
     {
+        $this->authorize('forceDelete', Order::class);
+
         DB::beginTransaction();
         try {
 

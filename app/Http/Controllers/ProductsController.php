@@ -20,18 +20,21 @@ class ProductsController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', Product::class);
         return view('app.products');
     }
 
 
     public function addNew(SaveProduct $request) : int
     {
+        $this->authorize('create', Product::class);
         return $this->saveProduct($request, true);
     }
 
 
     public function save(SaveProduct $request) : void
     {
+        $this->authorize('update', Product::class);
         $this->saveProduct($request);
     }
 
@@ -142,6 +145,8 @@ class ProductsController extends Controller
 
     public function delete(Request $request)
     {
+        $this->authorize('forceDelete', Product::class);
+
         $id = (int) $request->input('id');
         $check = $this->checkProductCanBeDeleted($id);
         if (!$check['result']) {

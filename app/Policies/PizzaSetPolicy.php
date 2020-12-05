@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Http\Controllers\Controller;
-use App\Models\PizzaSet;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -26,10 +25,9 @@ class PizzaSetPolicy extends Policy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PizzaSet  $pizzaSet
      * @return mixed
      */
-    public function view(User $user, PizzaSet $pizzaSet)
+    public function view(User $user)
     {
         return false;
     }
@@ -49,10 +47,9 @@ class PizzaSetPolicy extends Policy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PizzaSet  $pizzaSet
      * @return mixed
      */
-    public function update(User $user, PizzaSet $pizzaSet)
+    public function update(User $user)
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
     }
@@ -61,10 +58,9 @@ class PizzaSetPolicy extends Policy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PizzaSet  $pizzaSet
      * @return mixed
      */
-    public function delete(User $user, PizzaSet $pizzaSet)
+    public function delete(User $user)
     {
         return false;
     }
@@ -73,10 +69,9 @@ class PizzaSetPolicy extends Policy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PizzaSet  $pizzaSet
      * @return mixed
      */
-    public function restore(User $user, PizzaSet $pizzaSet)
+    public function restore(User $user)
     {
         return false;
     }
@@ -85,13 +80,13 @@ class PizzaSetPolicy extends Policy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PizzaSet  $pizzaSet
      * @return mixed
      */
-    public function forceDelete(User $user, PizzaSet $pizzaSet)
+    public function forceDelete(User $user)
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
     }
+
 
     public function uiButtonAddNew(User $user) : bool
     {

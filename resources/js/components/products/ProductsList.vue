@@ -8,7 +8,7 @@
                 <div class="row">
                     <div class="col-md-12">
 
-                        <div v-if="mode === 'list'">
+                        <div v-if="p('uiButtonAddNew') && mode === 'list'">
                             <button class="btn btn-info btn-fill btn-icon"
                                     @click="openBox">
                                 <i class="fa fa-plus"></i> Add New
@@ -205,17 +205,17 @@
 
                         <td class="text-center">
 
-                            <button class="btn btn-info btn-sm"
+                            <button v-if="p('uiButtonEdit')" class="btn btn-info btn-sm"
                                     @click="modalEdit(item.id)">
                                 <i class="fa fa-edit"></i>
                             </button>
 
-                            <button v-if="item.description !== ''" class="btn btn-default btn-sm"
+                            <button v-if="p('uiButtonDetails') && item.description !== ''" class="btn btn-default btn-sm"
                                     @click="modalDetails(item.id)">
                                 <i class="fa fa-info"></i>
                             </button>
 
-                            <button class="btn btn-danger btn-sm"
+                            <button v-if="p('uiButtonDelete')" class="btn btn-danger btn-sm"
                                     @click="modalDelete(item.id)">
                                 <i class="fa fa-trash"></i>
                             </button>
@@ -269,6 +269,7 @@
     import Notify from '../../mixins/Notify';
     import Validation from '../../mixins/Validation';
     import Pagination from '../../mixins/Pagination';
+    import Permissions from '../../mixins/Permissions';
     import Sortable from '../../mixins/Sortable';
     import LightBox from 'vue-image-lightbox';
     import ProductDetailsModal from './ProductDetailsModal';
@@ -314,6 +315,7 @@
             Notify,
             Validation,
             Pagination,
+            Permissions,
             Sortable,
         ],
 
@@ -325,6 +327,7 @@
             this.initProdData();
             this.getProdTypesList();
             this.getList();
+            this.getPermissionsList('product');
         },
 
         methods: {

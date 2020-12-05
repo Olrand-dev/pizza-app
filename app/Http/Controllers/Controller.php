@@ -5,17 +5,22 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Consts\SystemConst;
+use App\Models\Customer;
+use App\Models\Employee;
 use App\Models\Model;
 use App\Models\Order;
 use App\Models\PizzaSet;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -215,6 +220,33 @@ class Controller extends BaseController
             'courier' => $courier,
             'customer' => $customer,
         ];
+    }
+
+
+    public function getPermissionsList(Request $request) : array
+    {
+        $modelsMap = [
+            'order' => Order::class,
+            'product' => Product::class,
+            'pizza_set' => PizzaSet::class,
+            'customer' => Customer::class,
+            'employee' => Employee::class,
+        ];
+
+        $modelSlug = $request->input('model');
+        $modelClass = $modelsMap[$modelSlug] ?? '';
+        if (empty($modelClass)) return [];
+
+        $user = Auth::user();
+        $list = $modelClass::$permissionsList ?? [];
+        if (empty($list)) return [];
+
+        $permissions = [];
+
+        foreach ($list as $slug) {
+            $permissions[$slug] = $user->can($slug, $modelClass);
+        }
+        return $permissions;
     }
 
 

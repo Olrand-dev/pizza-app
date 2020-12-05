@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -32,10 +31,9 @@ class OrderPolicy extends Policy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
      * @return mixed
      */
-    public function view(User $user, Order $order)
+    public function view(User $user)
     {
         return false;
     }
@@ -55,10 +53,9 @@ class OrderPolicy extends Policy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
      * @return mixed
      */
-    public function update(User $user, Order $order)
+    public function update(User $user)
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
     }
@@ -67,10 +64,9 @@ class OrderPolicy extends Policy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
      * @return mixed
      */
-    public function delete(User $user, Order $order)
+    public function delete(User $user)
     {
         return false;
     }
@@ -79,10 +75,9 @@ class OrderPolicy extends Policy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
      * @return mixed
      */
-    public function restore(User $user, Order $order)
+    public function restore(User $user)
     {
         return false;
     }
@@ -91,10 +86,9 @@ class OrderPolicy extends Policy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
      * @return mixed
      */
-    public function forceDelete(User $user, Order $order)
+    public function forceDelete(User $user)
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
     }
@@ -221,6 +215,27 @@ class OrderPolicy extends Policy
     }
 
     public function uiElemOrderDataAddress(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+    }
+
+
+    public function uiElemOrderDataEmplConnectManager(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
+    }
+
+    public function uiElemOrderDataEmplConnectChef(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+    }
+
+    public function uiElemOrderDataEmplConnectCook(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+    }
+
+    public function uiElemOrderDataEmplConnectCourier(User $user) : bool
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
     }

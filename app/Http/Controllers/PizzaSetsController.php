@@ -20,18 +20,21 @@ class PizzaSetsController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', PizzaSet::class);
         return view('app.pizza-sets');
     }
 
 
     public function addNew(SavePizzaSet $request) : int
     {
+        $this->authorize('create', PizzaSet::class);
         return $this->saveSet($request, true);
     }
 
 
     public function save(SavePizzaSet $request) : void
     {
+        $this->authorize('update', PizzaSet::class);
         $this->saveSet($request);
     }
 
@@ -175,6 +178,8 @@ class PizzaSetsController extends Controller
 
     public function delete(Request $request)
     {
+        $this->authorize('forceDelete', PizzaSet::class);
+
         DB::beginTransaction();
         try {
 

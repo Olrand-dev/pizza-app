@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 
 class Model extends BaseModel
 {
-
-
     public function getImageUrlAttribute()
     {
         return (!empty($this->image)) ?

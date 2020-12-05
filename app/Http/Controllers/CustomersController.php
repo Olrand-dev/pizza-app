@@ -15,18 +15,21 @@ class CustomersController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Customer::class);
         return view('app.customers');
     }
 
 
     public function addNew(SaveCustomer $request) : int
     {
+        $this->authorize('create', Customer::class);
         return $this->saveCustomer($request, true);
     }
 
 
     public function save(SaveCustomer $request) : void
     {
+        $this->authorize('update', Customer::class);
         $this->saveCustomer($request);
     }
 
@@ -104,6 +107,8 @@ class CustomersController extends Controller
 
     public function delete(Request $request)
     {
+        $this->authorize('forceDelete', Customer::class);
+
         $id = (int) $request->input('id');
         $check = $this->checkCustomerCanBeDeleted($id);
         if (!$check['result']) {

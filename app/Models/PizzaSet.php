@@ -12,7 +12,7 @@ class PizzaSet extends Model
         'image_url',
     ];
 
-    public $permissionsList = [
+    public static $permissionsList = [
         'viewAny',
         'create',
         'update',

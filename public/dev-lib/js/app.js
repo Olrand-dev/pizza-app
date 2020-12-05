@@ -2083,7 +2083,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
 /* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
 /* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
+/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
 //
 //
 //
@@ -2207,6 +2208,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 
@@ -2232,10 +2234,11 @@ var CustomerRef = {
       customersList: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__["default"]],
   created: function created() {
     this.initCustomerData();
     this.getList();
+    this.getPermissionsList('customer');
   },
   methods: {
     initCustomerData: function initCustomerData() {
@@ -2325,7 +2328,7 @@ var CustomerRef = {
       this.mode = 'update';
     },
     modalDelete: function modalDelete(id) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
         'modal-data': {
           header: "Delete customer ID:".concat(id),
           text: 'Customer will be deleted.',
@@ -2590,7 +2593,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
 /* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
 /* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
+/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
 //
 //
 //
@@ -2866,6 +2870,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 
@@ -2893,11 +2898,12 @@ var EmployeeRef = {
       rolesList: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__["default"]],
   created: function created() {
     this.initEmployeeData();
     this.getRolesList();
     this.getList();
+    this.getPermissionsList('employee');
   },
   methods: {
     initEmployeeData: function initEmployeeData() {
@@ -2994,7 +3000,7 @@ var EmployeeRef = {
       this.mode = 'edit';
     },
     modalDelete: function modalDelete(id) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
         'modal-data': {
           header: "Delete employee ID:".concat(id),
           text: 'Employee will be deleted.',
@@ -3429,8 +3435,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
 /* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
 /* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SelectOrderCustomerModal */ "./resources/js/components/orders/SelectOrderCustomerModal.vue");
-/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
+/* harmony import */ var _SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./SelectOrderCustomerModal */ "./resources/js/components/orders/SelectOrderCustomerModal.vue");
+/* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
 //
 //
 //
@@ -4072,6 +4079,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 
@@ -4106,11 +4114,12 @@ var OrderRef = {
       addProductsList: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__["default"]],
   created: function created() {
     this.initEmptyOrder();
     this.getDataLists();
     this.getList();
+    this.getPermissionsList('order');
   },
   methods: {
     initEmptyOrder: function initEmptyOrder() {
@@ -4171,16 +4180,16 @@ var OrderRef = {
     orderEmployeeConnect: function orderEmployeeConnect(id) {
       var refuse = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var modalText = 'You will ' + (refuse ? 'refuse' : 'take') + ' the order.';
-      var url = refuse ? '/orders/refuse-order' : '/orders/get-order';
-      var successMsg = refuse ? "You successfully took the order ID:".concat(id, ".") : "You refused the order ID:".concat(id, ".");
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      var successMsg = refuse ? "You refused the order ID:".concat(id, ".") : "You successfully took the order ID:".concat(id, ".");
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
         'modal-data': {
           header: "Order ID:".concat(id, " connection action"),
           text: modalText,
           onConfirm: function () {
-            axios.get(url, {
+            axios.get('/orders/empl-connect', {
               params: {
-                id: id
+                id: id,
+                refuse: refuse
               }
             }).then(function (response) {
               this.notifySuccess(successMsg);
@@ -4242,7 +4251,7 @@ var OrderRef = {
       }.bind(this));
     },
     setOrderStatus: function setOrderStatus(status) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
         'modal-data': {
           header: "Change order status",
           text: "Order status will be changed to \"".concat(status, "\"."),
@@ -4313,7 +4322,7 @@ var OrderRef = {
       }.bind(this));
     },
     modalSelectCustomer: function modalSelectCustomer() {
-      this.$modal.show(_SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      this.$modal.show(_SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
         'modal-data': {
           onConfirm: function (item) {
             var copy = this.clone(item, true);
@@ -4354,7 +4363,7 @@ var OrderRef = {
       }.bind(this));
     },
     modalDelete: function modalDelete(id) {
-      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
         'modal-data': {
           header: "Delete order ID:".concat(id),
           text: 'Order will be deleted.',
@@ -4957,11 +4966,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
 /* harmony import */ var _mixins_Sortable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Sortable */ "./resources/js/mixins/Sortable.js");
 /* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue-image-lightbox */ "./node_modules/vue-image-lightbox/dist/vue-image-lightbox.min.js");
-/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _EditPizzaSetModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EditPizzaSetModal */ "./resources/js/components/pizza_sets/EditPizzaSetModal.vue");
-/* harmony import */ var _PizzaSetDetailsModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./PizzaSetDetailsModal */ "./resources/js/components/pizza_sets/PizzaSetDetailsModal.vue");
-/* harmony import */ var _products_ProductDetailsModal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../products/ProductDetailsModal */ "./resources/js/components/products/ProductDetailsModal.vue");
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
+/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-image-lightbox */ "./node_modules/vue-image-lightbox/dist/vue-image-lightbox.min.js");
+/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _EditPizzaSetModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EditPizzaSetModal */ "./resources/js/components/pizza_sets/EditPizzaSetModal.vue");
+/* harmony import */ var _PizzaSetDetailsModal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PizzaSetDetailsModal */ "./resources/js/components/pizza_sets/PizzaSetDetailsModal.vue");
 //
 //
 //
@@ -5230,14 +5239,15 @@ var PizzaSetRef = {
       lbData: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_4__["default"], _mixins_Sortable__WEBPACK_IMPORTED_MODULE_3__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_4__["default"], _mixins_Permissions__WEBPACK_IMPORTED_MODULE_5__["default"], _mixins_Sortable__WEBPACK_IMPORTED_MODULE_3__["default"]],
   components: {
-    LightBox: vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5___default.a
+    LightBox: vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6___default.a
   },
   created: function created() {
     this.initEmptySet();
     this.getIngredientsList();
     this.getList();
+    this.getPermissionsList('pizza_set'); //todo: расставить проверки в шаблонах, в окне продуктов и контроллерах уже есть
   },
   methods: {
     initEmptySet: function initEmptySet() {
@@ -5339,7 +5349,7 @@ var PizzaSetRef = {
       var _this = this;
 
       var set = this.getItemById(this.setsList, id);
-      this.$modal.show(_EditPizzaSetModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      this.$modal.show(_EditPizzaSetModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
         'set-data': set,
         'bases-list': this.pizzaBasesList,
         'ing-types-list': this.pizzaIngTypesList,
@@ -5356,7 +5366,7 @@ var PizzaSetRef = {
     modalDetails: function modalDetails(id) {
       var set = this.getItemById(this.setsList, id);
       console.log(set);
-      this.$modal.show(_PizzaSetDetailsModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      this.$modal.show(_PizzaSetDetailsModal__WEBPACK_IMPORTED_MODULE_8__["default"], {
         'set-data': set
       }, {
         adaptive: true,
@@ -5775,11 +5785,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Notify */ "./resources/js/mixins/Notify.js");
 /* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
 /* harmony import */ var _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/Pagination */ "./resources/js/mixins/Pagination.js");
-/* harmony import */ var _mixins_Sortable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/Sortable */ "./resources/js/mixins/Sortable.js");
-/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue-image-lightbox */ "./node_modules/vue-image-lightbox/dist/vue-image-lightbox.min.js");
-/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _ProductDetailsModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ProductDetailsModal */ "./resources/js/components/products/ProductDetailsModal.vue");
-/* harmony import */ var _EditProductModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EditProductModal */ "./resources/js/components/products/EditProductModal.vue");
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
+/* harmony import */ var _mixins_Sortable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../mixins/Sortable */ "./resources/js/mixins/Sortable.js");
+/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-image-lightbox */ "./node_modules/vue-image-lightbox/dist/vue-image-lightbox.min.js");
+/* harmony import */ var vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _ProductDetailsModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ProductDetailsModal */ "./resources/js/components/products/ProductDetailsModal.vue");
+/* harmony import */ var _EditProductModal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EditProductModal */ "./resources/js/components/products/EditProductModal.vue");
 //
 //
 //
@@ -6045,6 +6056,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 
@@ -6084,14 +6096,15 @@ var ProductRef = {
       lbData: []
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_Sortable__WEBPACK_IMPORTED_MODULE_4__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_2__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__["default"], _mixins_Sortable__WEBPACK_IMPORTED_MODULE_5__["default"]],
   components: {
-    LightBox: vue_image_lightbox__WEBPACK_IMPORTED_MODULE_5___default.a
+    LightBox: vue_image_lightbox__WEBPACK_IMPORTED_MODULE_6___default.a
   },
   created: function created() {
     this.initProdData();
     this.getProdTypesList();
     this.getList();
+    this.getPermissionsList('product');
   },
   methods: {
     initProdData: function initProdData() {
@@ -6181,7 +6194,7 @@ var ProductRef = {
       var _this = this;
 
       var prod = this.getItemById(this.prodsList, id);
-      this.$modal.show(_EditProductModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      this.$modal.show(_EditProductModal__WEBPACK_IMPORTED_MODULE_8__["default"], {
         'prod-data': prod,
         'prod-types-list': this.prodTypesList
       }, {
@@ -6195,7 +6208,7 @@ var ProductRef = {
     },
     modalDetails: function modalDetails(id) {
       var prod = this.getItemById(this.prodsList, id);
-      this.$modal.show(_ProductDetailsModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      this.$modal.show(_ProductDetailsModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
         'prod-data': prod
       }, {
         adaptive: true,
@@ -29984,7 +29997,11 @@ var render = function() {
                                     [_c("i", { staticClass: "fas fa-edit" })]
                                   )
                                 : _vm._e(),
-                              _vm._v(" "),
+                              _vm._v(
+                                " " +
+                                  _vm._s(item.connect_status) +
+                                  "\n\n                                "
+                              ),
                               _c(
                                 "button",
                                 {
@@ -31969,7 +31986,7 @@ var render = function() {
           [
             _c("div", { staticClass: "row" }, [
               _c("div", { staticClass: "col-md-12" }, [
-                _vm.mode === "list"
+                _vm.p("uiButtonAddNew") && _vm.mode === "list"
                   ? _c("div", [
                       _c(
                         "button",
@@ -32540,20 +32557,22 @@ var render = function() {
                           _c("td", [_vm._v(_vm._s(item.weight) + " g.")]),
                           _vm._v(" "),
                           _c("td", { staticClass: "text-center" }, [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-info btn-sm",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.modalEdit(item.id)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "fa fa-edit" })]
-                            ),
+                            _vm.p("uiButtonEdit")
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-info btn-sm",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.modalEdit(item.id)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-edit" })]
+                                )
+                              : _vm._e(),
                             _vm._v(" "),
-                            item.description !== ""
+                            _vm.p("uiButtonDetails") && item.description !== ""
                               ? _c(
                                   "button",
                                   {
@@ -32568,18 +32587,20 @@ var render = function() {
                                 )
                               : _vm._e(),
                             _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-danger btn-sm",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.modalDelete(item.id)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "fa fa-trash" })]
-                            )
+                            _vm.p("uiButtonDelete")
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-danger btn-sm",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.modalDelete(item.id)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-trash" })]
+                                )
+                              : _vm._e()
                           ])
                         ])
                       }),
@@ -46532,6 +46553,43 @@ __webpack_require__.r(__webpack_exports__);
       pagesCount: 1,
       perPage: 10
     };
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/mixins/Permissions.js":
+/*!********************************************!*\
+  !*** ./resources/js/mixins/Permissions.js ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * User authorization permissions mixin
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      permissions: {}
+    };
+  },
+  methods: {
+    p: function p(pSlug) {
+      return this.permissions[pSlug];
+    },
+    getPermissionsList: function getPermissionsList(model) {
+      axios.post('/get-permissions-list', {
+        model: model
+      }).then(function (response) {
+        console.log(response.data);
+        this.permissions = response.data;
+      }.bind(this))["catch"](function () {
+        this.notifyError('Get permissions list error.');
+      }.bind(this));
+    }
   }
 });
 

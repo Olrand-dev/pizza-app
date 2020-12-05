@@ -20,7 +20,7 @@ class Product extends Model
     ];
 
 
-    public $permissionsList = [
+    public static $permissionsList = [
         'viewAny',
         'create',
         'update',

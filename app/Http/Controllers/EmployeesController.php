@@ -15,18 +15,21 @@ class EmployeesController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Employee::class);
         return view('app.employees');
     }
 
 
     public function addNew(CreateEmployee $request) : int
     {
+        $this->authorize('create', Employee::class);
         return $this->saveEmployee($request, true);
     }
 
 
     public function save(SaveEmployee $request) : void
     {
+        $this->authorize('update', Employee::class);
         $this->saveEmployee($request);
     }
 
@@ -115,6 +118,8 @@ class EmployeesController extends Controller
 
     public function delete(Request $request)
     {
+        $this->authorize('forceDelete', Employee::class);
+
         $id = (int) $request->input('id');
         $check = $this->checkEmployeeCanBeDeleted($id);
         if (!$check['result']) {

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+use \App\Http\Controllers\Controller;
 use \App\Http\Controllers\DashboardController;
 use \App\Http\Controllers\ProductsController;
 use \App\Http\Controllers\PizzaSetsController;
@@ -24,6 +25,8 @@ use \App\Http\Controllers\Auth\LoginController;
 
 //Route::get('/', [DashboardController::class, 'index']);
 Route::redirect('/', '/products');
+
+Route::post('get-permissions-list', [Controller::class, 'getPermissionsList']);
 
 
 Route::prefix('products')->group(function() {
@@ -51,6 +54,7 @@ Route::prefix('orders')->group(function() {
     Route::post('add-new', [OrdersController::class, 'addNew']);
     Route::post('save', [OrdersController::class, 'save']);
     Route::post('set-status', [OrdersController::class, 'setStatus']);
+    Route::get('empl-connect', [OrdersController::class, 'employeeConnect']);
     Route::get('get-order-data', [OrdersController::class, 'getOrderFullData']);
     Route::get('get-list', [OrdersController::class, 'getList']);
     Route::get('get-data-lists', [OrdersController::class, 'getDataLists']);

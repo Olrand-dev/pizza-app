@@ -67,9 +67,9 @@ class User extends Authenticatable
         return $this->checkUserRole(SystemConst::USER_ROLE_MANAGER);
     }
 
-    public function isCourier() : bool
+    public function isChef() : bool
     {
-        return $this->checkUserRole(SystemConst::USER_ROLE_COURIER);
+        return $this->checkUserRole(SystemConst::USER_ROLE_CHEF);
     }
 
     public function isCook() : bool
@@ -77,8 +77,8 @@ class User extends Authenticatable
         return $this->checkUserRole(SystemConst::USER_ROLE_COOK);
     }
 
-    public function isChef() : bool
+    public function isCourier() : bool
     {
-        return $this->checkUserRole(SystemConst::USER_ROLE_CHEF);
+        return $this->checkUserRole(SystemConst::USER_ROLE_COURIER);
     }
 }
