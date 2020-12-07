@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="col-md-12">
 
-                            <button class="btn btn-info btn-fill btn-sm new-user-btn"
+                            <button v-if="p('uiButtonAddNew')" class="btn btn-info btn-fill btn-sm new-user-btn"
                                     @click="openBox">
                                 <i class="fas fa-user-plus"></i> Add New
                             </button>
@@ -93,7 +93,7 @@
                                         </div>
 
                                         <div class="col-md-2 text-right">
-                                            <button class="btn btn-info btn-sm" @click="editUser(index)">
+                                            <button v-if="p('uiButtonEdit')" class="btn btn-info btn-sm" @click="editUser(index)">
                                                 <i class="fa fa-edit"></i>
                                             </button>
                                         </div>
@@ -252,7 +252,7 @@
                                 <i class="fa fa-ban"></i> Cancel
                             </button>
 
-                            <button v-if="mode === 'edit'" class="btn btn-danger btn-fill btn-icon pull-right"
+                            <button v-if="p('uiButtonDelete') && mode === 'edit'" class="btn btn-danger btn-fill btn-icon pull-right"
                                     @click="modalDelete(employeeEdit.id)">
                                 <i class="fa fa-trash"></i> Delete user
                             </button>

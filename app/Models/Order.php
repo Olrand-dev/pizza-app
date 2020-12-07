@@ -11,49 +11,6 @@ class Order extends Model
         'last_updated_at',
     ];
 
-    public static $permissionsList = [
-        'viewAny',
-        'create',
-        'update',
-        'forceDelete',
-
-        'uiButtonAddNew',
-        'uiButtonEdit',
-        'uiButtonDetails',
-        'uiButtonGetOrder',
-        'uiButtonRefuse',
-        'uiButtonOrderStatusAccept',
-        'uiButtonOrderStatusCooking',
-        'uiButtonOrderStatusReady',
-        'uiButtonOrderStatusDelivery',
-        'uiButtonOrderStatusDelivered',
-        'uiButtonOrderStatusCompleted',
-        'uiButtonOrderStatusArchive',
-        'uiButtonOrderStatusDecline',
-        'uiButtonDelete',
-
-        'uiElemFilterByOrderStatus',
-
-        'uiElemOrderDataId',
-        'uiElemOrderDataName',
-        'uiElemOrderDataPhone',
-        'uiElemOrderDataCreateDate',
-        'uiElemOrderDataUpdateDate',
-        'uiElemOrderDataWeight',
-        'uiElemOrderDataCost',
-        'uiElemOrderDataAddress',
-        'uiElemOrderDataEmplConnectManager',
-        'uiElemOrderDataEmplConnectChef',
-        'uiElemOrderDataEmplConnectCook',
-        'uiElemOrderDataEmplConnectCourier',
-
-        'uiElemOrderDetailsCustomerData',
-        'uiElemOrderDetailsCustomerComment',
-        'uiElemOrderDetailsIngredients',
-        'uiElemOrderDetailsTotalWeight',
-        'uiElemOrderDetailsTotalCost',
-    ];
-
 
     public function customer()
     {

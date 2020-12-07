@@ -20,18 +20,6 @@ class Product extends Model
     ];
 
 
-    public static $permissionsList = [
-        'viewAny',
-        'create',
-        'update',
-        'forceDelete',
-        'uiButtonAddNew',
-        'uiButtonEdit',
-        'uiButtonDetails',
-        'uiButtonDelete',
-    ];
-
-
     public function type()
     {
         return $this->belongsTo('App\Models\ProductType');

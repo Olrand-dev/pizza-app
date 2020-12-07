@@ -9,7 +9,7 @@
 
                     <div class="btn-box" v-if="mode === 'list'">
 
-                        <button class="btn btn-info btn-fill btn-icon"
+                        <button v-if="p('uiButtonAddNew')" class="btn btn-info btn-fill btn-icon"
                                 @click="openBox">
                             <i class="fa fa-plus"></i> New Order
                         </button>
@@ -41,6 +41,7 @@
                         </div>
 
                         <div v-if="
+                            p('uiButtonEdit') &&
                             orderSelected.status &&
                             !inArray(orderSelected.status.slug, [
                                 'delivery', 'delivered', 'completed', 'archived', 'declined'
@@ -59,6 +60,7 @@
                     <div class="btn-box" v-if="orderSelected.status && mode === 'show'">
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusAccept') &&
                             orderSelected.status.slug === 'new'
                         ">
 
@@ -70,6 +72,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusCooking') &&
                             orderSelected.status.slug === 'accepted'
                         ">
 
@@ -81,6 +84,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusReady') &&
                             orderSelected.status.slug === 'cooking'
                         ">
 
@@ -92,6 +96,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusDelivery') &&
                             orderSelected.status.slug === 'ready'
                         ">
 
@@ -103,6 +108,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusDelivered') &&
                             orderSelected.status.slug === 'delivery'
                         ">
 
@@ -114,6 +120,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusCompleted') &&
                             orderSelected.status.slug === 'delivered'
                         ">
 
@@ -125,6 +132,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusArchive') &&
                             orderSelected.status.slug === 'completed'
                         ">
 
@@ -136,6 +144,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonOrderStatusDecline') &&
                             !inArray(orderSelected.status.slug, [
                                 'new', 'declined', 'archived'
                             ])
@@ -149,6 +158,7 @@
                         </div>
 
                         <div class="btn-box" v-if="
+                            p('uiButtonDelete') &&
                             orderSelected.status.slug === 'declined'
                         ">
 
@@ -175,12 +185,14 @@
                     <h3 v-if="mode === 'edit'">Order ID:{{ orderSelected.id }} edit</h3>
                 </div>
 
-                <div class="col-md-12">
-                    <h4>Customer Data *</h4>
-                </div>
+                <div v-if="p('uiElemOrderDetailsCustomerData')">
+                    <div class="col-md-12">
+                        <h4>Customer Data *</h4>
+                    </div>
 
-                <div class="col-md-12">
-                    <order-customer-data :data="orderSelected.customer"></order-customer-data>
+                    <div class="col-md-12">
+                        <order-customer-data :data="orderSelected.customer"></order-customer-data>
+                    </div>
                 </div>
 
                 <div v-if="mode === 'edit'" class="col-md-12 mb-20 customer-change">
@@ -197,7 +209,8 @@
 
                 </div>
 
-                <div v-if="orderSelected.comments[0]" class="col-md-12">
+                <div v-if="p('uiElemOrderDetailsCustomerComment') && orderSelected.comments[0]"
+                     class="col-md-12">
                     <div class="form-group">
                         <label>Customer comment</label>
                         <textarea rows="5" class="form-control" :readonly="mode === 'show'"
@@ -205,19 +218,22 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 ing-header">
-                    <h4>Ingredients</h4>
-                </div>
+                <div v-if="p('uiElemOrderDetailsIngredients')">
+                    <div class="col-md-12 ing-header">
+                        <h4>Ingredients</h4>
+                    </div>
 
-                <order-ingredients ref="orderIngEdit"
-                                   :mode="mode"
-                                   :order-pizza-sets="orderSelected.pizza_sets"
-                                   :order-add-prods="orderSelected.products"
-                                   :pizza-sets-list="pizzaSetsList"
-                                   :add-prods-list="addProductsList"
-                                   :errors-list="getSubItemErrLists(['products', 'pizza_sets'])"
-                                   :sub-items-fields-list="subItemsFields"
-                                   @on-ing-list-change="setOrderData"></order-ingredients>
+                    <order-ingredients ref="orderIngEdit"
+                                       :mode="mode"
+                                       :order-pizza-sets="orderSelected.pizza_sets"
+                                       :order-add-prods="orderSelected.products"
+                                       :pizza-sets-list="pizzaSetsList"
+                                       :add-prods-list="addProductsList"
+                                       :errors-list="getSubItemErrLists(['products', 'pizza_sets'])"
+                                       :sub-items-fields-list="subItemsFields"
+                                       :permissions-list="permissions"
+                                       @on-ing-list-change="setOrderData"></order-ingredients>
+                </div>
 
             </div>
         </div>
@@ -279,6 +295,7 @@
                                        :add-prods-list="addProductsList"
                                        :errors-list="getSubItemErrLists(['products', 'pizza_sets'])"
                                        :sub-items-fields-list="subItemsFields"
+                                       :permissions-list="permissions"
                                        @on-ing-list-change="setOrderData"></order-ingredients>
 
                 </div>
@@ -292,7 +309,7 @@
 
             <div class="row orders-navigate">
 
-                <div class="col-md-3">
+                <div v-if="p('uiElemFilterByOrderStatus')" class="col-md-3">
                     <div class="form-group">
                         <label for="roleFilter">Show by status</label>
                         <select v-model="byStatus" class="form-control" id="roleFilter">
@@ -355,10 +372,10 @@
 
                                 <div class="col-md-4 name-block">
 
-                                    <span class="text-muted order-id">
+                                    <span v-if="p('uiElemOrderDataId')" class="text-muted order-id">
                                         #{{ item.id }}
                                     </span>
-                                    <span class="data-line customer-name">
+                                    <span v-if="p('uiElemOrderDataName')" class="data-line customer-name">
                                         <i class="fas fa-user"></i>
                                         {{ item.customer.name }}
                                     </span>
@@ -367,15 +384,18 @@
 
                                 <div class="col-md-3 data-block">
 
-                                    <span class="data-line">
+                                    <span v-if="p('uiElemOrderDataPhone')" class="data-line">
                                         <i class="fas fa-phone-alt"></i>
                                         {{ item.customer.phone }}
                                     </span>
-                                    <span class="data-line">
+                                    <span v-if="p('uiElemOrderDataCreateDate')" class="data-line">
                                         <i class="fas fa-table"></i>
                                         {{ item.ordered_at }}
                                     </span>
-                                    <span v-if="item.last_updated_at !== item.ordered_at" class="data-line">
+                                    <span v-if="
+                                        p('uiElemOrderDataUpdateDate') &&
+                                        item.last_updated_at !== item.ordered_at
+                                    " class="data-line">
                                         <i class="fas fa-edit"></i>
                                         {{ item.last_updated_at }}
                                     </span>
@@ -384,11 +404,11 @@
 
                                 <div class="col-md-2 add-block">
 
-                                    <span class="data-line">
+                                    <span v-if="p('uiElemOrderDataWeight')" class="data-line">
                                         <i class="fas fa-weight-hanging"></i>
                                         {{ item.weight }} g.
                                     </span>
-                                    <span class="data-line">
+                                    <span v-if="p('uiElemOrderDataCost')" class="data-line">
                                         <i class="fas fa-dollar-sign"></i>
                                         {{ item.cost }}
                                     </span>
@@ -403,12 +423,14 @@
 
                                 <div class="col-md-2 text-right">
 
-                                    <button class="btn btn-primary btn-sm order-btn open-order-btn"
+                                    <button v-if="p('uiButtonDetails')"
+                                            class="btn btn-primary btn-sm order-btn open-order-btn"
                                             @click="openOrder(item.id)">
                                         <i class="fas fa-eye"></i>
                                     </button>
 
                                     <button v-if="
+                                        p('uiButtonEdit') &&
                                         item.status &&
                                         !inArray(item.status.slug, [
                                             'delivery', 'delivered', 'completed', 'archived', 'declined'
@@ -416,14 +438,16 @@
                                     " class="btn btn-info btn-sm order-btn open-order-btn"
                                             @click="openOrder(item.id, true)">
                                         <i class="fas fa-edit"></i>
-                                    </button> {{item.connect_status}}
+                                    </button>
 
-                                    <button class="btn btn-success btn-sm order-btn"
+                                    <button v-if="p('uiButtonGetOrder') && item.connect_status === 'allowed'"
+                                            class="btn btn-success btn-sm order-btn"
                                             @click="getOrder(item.id)">
                                         <i class="fas fa-check"></i>
                                     </button>
 
-                                    <button class="btn btn-warning btn-sm order-btn"
+                                    <button v-if="p('uiButtonRefuse') && item.connect_status === 'taken'"
+                                            class="btn btn-warning btn-sm order-btn"
                                             @click="refuseOrder(item.id)">
                                         <i class="fas fa-ban"></i>
                                     </button>
@@ -432,11 +456,27 @@
 
                             </div>
 
-                            <div class="col-md-12 address-block">
-                                    <span class="data-line customer-address">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ item.customer.address }}
+                            <div v-if="item.employees.length > 0" class="col-md-12 employees-block">
+
+                                <div v-for="employee in item.employees" class="col-md-2 employee-box"
+                                     v-if="p('uiElemOrderDataEmplConnect' + capitalize(employee.role_name))"
+                                     :class="employee.role_slug" :key="employee.id">
+
+                                    <span class="data-line employee-name">
+                                        {{ employee.name }}
                                     </span>
+                                    <span class="data-line employee-role">
+                                        {{ employee.role_name }}
+                                    </span>
+
+                                </div>
+                            </div>
+
+                            <div v-if="p('uiElemOrderDataAddress')" class="col-md-12 address-block">
+                                <span class="data-line customer-address">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ item.customer.address }}
+                                </span>
                             </div>
 
                         </div>
@@ -556,10 +596,67 @@
             }
         }
 
+        .employees-block {
+
+            margin-bottom: 10px;
+
+            .employees-block-icon {
+
+                padding-left: 0;
+                width: 40px;
+
+                i {
+                    position: relative;
+                    left: 0;
+                    top: 12px;
+                    font-size: 16px;
+                    color: $s-dark-gray;
+                }
+
+                @include maxw(990) {
+                    display: none;
+                }
+            }
+
+            .employee-box {
+                border: 2px solid;
+                border-radius: 8px;
+                padding: 3px 6px;
+
+                .employee-name {
+                    font-weight: bold;
+                }
+                .employee-role {
+                    font-size: 12px;
+                }
+
+                &.manager {
+                    border-color: $purple;
+                }
+                &.chef {
+                    border-color: $orange;
+                }
+                &.cook {
+                    border-color: $green;
+                }
+                &.courier {
+                    border-color: $blue;
+                }
+
+                @include maxw(990) {
+                    max-width: 200px;
+                }
+            }
+
+            @include maxw(990) {
+                margin-top: 45px;
+            }
+        }
+
         .address-block {
 
             @include maxw(990) {
-                margin-top: 40px;
+                margin-top: 20px;
             }
         }
 
@@ -958,7 +1055,7 @@
                     let data = response.data;
 
                     this.ordersList = JSON.parse(data.items);
-                    //console.log(this.ordersList);
+                    console.log(this.ordersList);
                     this.pagesCount = data.pages_count;
 
                     this.listUpdating = false;

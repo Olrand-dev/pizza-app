@@ -148,8 +148,8 @@
                     </div>
 
                     <div class="col-md-12 box data">
-                        <span><b>Cost:</b> ${{orderCost}}</span>
-                        <span><b>Weight:</b> {{orderWeight}} g.</span>
+                        <span v-if="p('uiElemOrderDetailsTotalCost')"><b>Cost:</b> ${{orderCost}}</span>
+                        <span v-if="p('uiElemOrderDetailsTotalWeight')"><b>Weight:</b> {{orderWeight}} g.</span>
                     </div>
 
                 </div>
@@ -224,6 +224,7 @@
 
     import Utils from "../../mixins/Utils";
     import Validation from "../../mixins/Validation";
+    import Permissions from "../../mixins/Permissions";
 
     const pizzaSetRef = {
         id: 0,
@@ -243,12 +244,14 @@
                 products: this.orderAddProds,
                 orderCost: 0,
                 orderWeight: 0,
+                permissions: this.permissionsList,
             }
         },
 
         mixins: [
             Utils,
             Validation,
+            Permissions,
         ],
 
         props: [
@@ -259,6 +262,7 @@
             'add-prods-list',
             'errors-list',
             'sub-items-fields-list',
+            'permissions-list',
         ],
 
         watch: {
@@ -269,6 +273,10 @@
 
             subItemsFieldsList(val) {
                 this.subItemsFields = val;
+            },
+
+            permissionsList(val) {
+                this.permissions = val;
             }
         },
 

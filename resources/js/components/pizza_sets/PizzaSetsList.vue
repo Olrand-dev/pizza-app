@@ -8,7 +8,7 @@
                 <div class="row">
                     <div class="col-md-12">
 
-                        <div v-if="mode === 'list'">
+                        <div v-if="p('uiButtonAddNew') && mode === 'list'">
                             <button class="btn btn-info btn-fill btn-icon"
                                     @click="openBox">
                                 <i class="fa fa-plus"></i> Add New
@@ -165,17 +165,17 @@
 
                             <td class="text-center">
 
-                                <button class="btn btn-info btn-sm"
+                                <button v-if="p('uiButtonEdit')" class="btn btn-info btn-sm"
                                     @click="modalEdit(item.id)">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                                <button class="btn btn-default btn-sm"
+                                <button v-if="p('uiButtonDetails')" class="btn btn-default btn-sm"
                                         @click="modalDetails(item.id)">
                                     <i class="fa fa-info"></i>
                                 </button>
 
-                                <button class="btn btn-danger btn-sm"
+                                <button v-if="p('uiButtonDelete')" class="btn btn-danger btn-sm"
                                     @click="modalDelete(item.id)">
                                     <i class="fa fa-trash"></i>
                                 </button>
@@ -290,7 +290,7 @@
             this.initEmptySet();
             this.getIngredientsList();
             this.getList();
-            this.getPermissionsList('pizza_set'); //todo: расставить проверки в шаблонах, в окне продуктов и контроллерах уже есть
+            this.getPermissionsList('pizza_set');
         },
 
         methods: {

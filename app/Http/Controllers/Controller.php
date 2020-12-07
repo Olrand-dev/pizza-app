@@ -12,6 +12,11 @@ use App\Models\Order;
 use App\Models\PizzaSet;
 use App\Models\Product;
 use App\Models\User;
+use App\Policies\CustomerPolicy;
+use App\Policies\EmployeePolicy;
+use App\Policies\OrderPolicy;
+use App\Policies\PizzaSetPolicy;
+use App\Policies\ProductPolicy;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -226,19 +231,20 @@ class Controller extends BaseController
     public function getPermissionsList(Request $request) : array
     {
         $modelsMap = [
-            'order' => Order::class,
-            'product' => Product::class,
-            'pizza_set' => PizzaSet::class,
-            'customer' => Customer::class,
-            'employee' => Employee::class,
+            'order' => [OrderPolicy::class, Order::class],
+            'product' => [ProductPolicy::class, Product::class],
+            'pizza_set' => [PizzaSetPolicy::class, PizzaSet::class],
+            'customer' => [CustomerPolicy::class, Customer::class],
+            'employee' => [EmployeePolicy::class, Employee::class],
         ];
 
         $modelSlug = $request->input('model');
-        $modelClass = $modelsMap[$modelSlug] ?? '';
-        if (empty($modelClass)) return [];
+        $policyClass = $modelsMap[$modelSlug][0] ?? '';
+        if (empty($policyClass)) return [];
+        $modelClass = $modelsMap[$modelSlug][1];
 
         $user = Auth::user();
-        $list = $modelClass::$permissionsList ?? [];
+        $list = get_class_methods($policyClass);
         if (empty($list)) return [];
 
         $permissions = [];

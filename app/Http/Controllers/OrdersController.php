@@ -14,6 +14,7 @@ use App\Models\OrderArchived;
 use App\Models\OrderStatus;
 use App\Models\PizzaSet;
 use App\Models\Product;
+use App\Policies\OrderPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -273,9 +274,12 @@ class OrdersController extends Controller
                     $connectStatus = 'allowed';
                 }
                 foreach ($item->employees as $index => $employee) {
-                   if ($employee->id === $user->userable->id) {
+                    $employee->role_name = $employee->user->role->name;
+                    $employee->role_slug = $employee->user->role->slug;
+
+                    if ($employee->id === $user->userable->id) {
                        $connectStatus = 'taken';
-                   }
+                    }
                 }
                 $item->connect_status = $connectStatus;
             });

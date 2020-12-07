@@ -79,7 +79,8 @@
                             </div>
 
                             <div class="col-md-2 text-right">
-                                <button class="btn btn-sm" :class="btnClass" @click="onButtonClick(index)">
+                                <button v-if="btnPermission" class="btn btn-sm"
+                                        :class="btnClass" @click="onButtonClick(index)">
                                     <i :class="btnIconClass"></i>
                                 </button>
                             </div>
@@ -165,11 +166,12 @@
             Pagination,
         ],
 
-        props: [
-            'btn-class',
-            'btn-icon-class',
-            'custom-list-class',
-        ],
+        props: {
+            'btn-class': {type: String, required: true},
+            'btn-icon-class': {type: String, required: true},
+            'custom-list-class': {type: String, required: true},
+            'btn-permission': {type: Boolean, required: false, default: true},
+        },
 
         created() {
             this.getList();

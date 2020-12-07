@@ -5,6 +5,11 @@ export default {
 
     methods: {
 
+        capitalize(s) {
+            if (typeof s !== 'string') return '';
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        },
+
         inArray(needle, haystack, strict = true) {
 
             let found = false;

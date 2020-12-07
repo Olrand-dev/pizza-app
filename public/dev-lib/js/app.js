@@ -2208,6 +2208,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -2521,6 +2523,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
@@ -2535,7 +2538,25 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Notify__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Pagination__WEBPACK_IMPORTED_MODULE_2__["default"]],
-  props: ['btn-class', 'btn-icon-class', 'custom-list-class'],
+  props: {
+    'btn-class': {
+      type: String,
+      required: true
+    },
+    'btn-icon-class': {
+      type: String,
+      required: true
+    },
+    'custom-list-class': {
+      type: String,
+      required: true
+    },
+    'btn-permission': {
+      type: Boolean,
+      required: false,
+      "default": true
+    }
+  },
   created: function created() {
     this.getList();
   },
@@ -3112,6 +3133,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
 /* harmony import */ var _mixins_Validation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Validation */ "./resources/js/mixins/Validation.js");
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
 //
 //
 //
@@ -3334,6 +3356,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 var pizzaSetRef = {
@@ -3350,17 +3373,21 @@ var addProdRef = {
       pizza_sets: this.orderPizzaSets,
       products: this.orderAddProds,
       orderCost: 0,
-      orderWeight: 0
+      orderWeight: 0,
+      permissions: this.permissionsList
     };
   },
-  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_1__["default"]],
-  props: ['mode', 'order-pizza-sets', 'order-add-prods', 'pizza-sets-list', 'add-prods-list', 'errors-list', 'sub-items-fields-list'],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Validation__WEBPACK_IMPORTED_MODULE_1__["default"], _mixins_Permissions__WEBPACK_IMPORTED_MODULE_2__["default"]],
+  props: ['mode', 'order-pizza-sets', 'order-add-prods', 'pizza-sets-list', 'add-prods-list', 'errors-list', 'sub-items-fields-list', 'permissions-list'],
   watch: {
     errorsList: function errorsList(val) {
       this.errors = val;
     },
     subItemsFieldsList: function subItemsFieldsList(val) {
       this.subItemsFields = val;
+    },
+    permissionsList: function permissionsList(val) {
+      this.permissions = val;
     }
   },
   created: function created() {
@@ -3438,6 +3465,103 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
 /* harmony import */ var _SelectOrderCustomerModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./SelectOrderCustomerModal */ "./resources/js/components/orders/SelectOrderCustomerModal.vue");
 /* harmony import */ var _DialogModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../DialogModal */ "./resources/js/components/DialogModal.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4313,8 +4437,8 @@ var OrderRef = {
         }
       }).then(function (response) {
         var data = response.data;
-        this.ordersList = JSON.parse(data.items); //console.log(this.ordersList);
-
+        this.ordersList = JSON.parse(data.items);
+        console.log(this.ordersList);
         this.pagesCount = data.pages_count;
         this.listUpdating = false;
       }.bind(this))["catch"](function () {
@@ -5247,7 +5371,7 @@ var PizzaSetRef = {
     this.initEmptySet();
     this.getIngredientsList();
     this.getList();
-    this.getPermissionsList('pizza_set'); //todo: расставить проверки в шаблонах, в окне продуктов и контроллерах уже есть
+    this.getPermissionsList('pizza_set');
   },
   methods: {
     initEmptySet: function initEmptySet() {
@@ -6318,7 +6442,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".new-order-box h4[data-v-1782e572] {\n  margin-top: 15px;\n}\n.new-order-box .ing-header[data-v-1782e572] {\n  margin-bottom: 0;\n  margin-top: 30px;\n}\n.btn-box[data-v-1782e572] {\n  margin-top: 3px;\n}\n.order-status-btn.btn-fill[data-v-1782e572] {\n  background-color: #9561e2;\n  border-color: #9561e2;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:hover {\n  background-color: #8948d4;\n  border-color: #8948d4;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:active:focus {\n  border-color: #704d9d;\n}\n@media (max-width: 990px) {\n.customer-change[data-v-1782e572] {\n    margin-bottom: 15px;\n}\n}\n.orders-list[data-v-1782e572] {\n  margin-top: 20px;\n}\n@media (max-width: 990px) {\n.orders-list .name-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n.orders-list .name-block .customer-name[data-v-1782e572] {\n    font-size: 18px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .data-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .add-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .address-block[data-v-1782e572] {\n    margin-top: 40px;\n}\n}\n.orders-list .update-list-btn[data-v-1782e572] {\n  position: relative;\n  top: 28px;\n}\n@media (max-width: 990px) {\n.orders-list .update-list-btn[data-v-1782e572] {\n    top: 0;\n}\n}\n.orders-list .order-btn[data-v-1782e572] {\n  position: relative;\n  top: 4px;\n}\n@media (max-width: 990px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 30px;\n}\n}\n@media (min-width: 991px) and (max-width: 1200px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 57px;\n}\n}\n.orders-list .customer-name[data-v-1782e572] {\n  display: inline-block !important;\n  font-size: 16px;\n}\n.orders-list .customer-address[data-v-1782e572] {\n  font-size: 15px;\n}\n.orders-list .order-id[data-v-1782e572] {\n  display: inline-block;\n  margin-right: 5px;\n}\n.orders-list .order-status-label[data-v-1782e572] {\n  color: white;\n  background-color: #9A9A9A;\n  padding: 8px 14px;\n  border-radius: 6px;\n  position: relative;\n  top: 10px;\n}\n.orders-list .order-status-label.status-new[data-v-1782e572] {\n  background-color: #3490dc;\n}\n.orders-list .order-status-label.status-accepted[data-v-1782e572] {\n  background-color: #6cb2eb;\n}\n.orders-list .order-status-label.status-cooking[data-v-1782e572] {\n  background-color: #9561e2;\n}\n.orders-list .order-status-label.status-ready[data-v-1782e572] {\n  background-color: #e3342f;\n}\n.orders-list .order-status-label.status-delivery[data-v-1782e572] {\n  background-color: #f6993f;\n}\n.orders-list .order-status-label.status-delivered[data-v-1782e572] {\n  background-color: #ffed4a;\n  color: #666;\n}\n.orders-list .order-status-label.status-declined[data-v-1782e572] {\n  background-color: #f66d9b;\n}\n.orders-list .order-status-label.status-completed[data-v-1782e572] {\n  background-color: #38c172;\n}\n.orders-list .order-status-label.status-archived[data-v-1782e572] {\n  background-color: #9A9A9A;\n}", ""]);
+exports.push([module.i, ".new-order-box h4[data-v-1782e572] {\n  margin-top: 15px;\n}\n.new-order-box .ing-header[data-v-1782e572] {\n  margin-bottom: 0;\n  margin-top: 30px;\n}\n.btn-box[data-v-1782e572] {\n  margin-top: 3px;\n}\n.order-status-btn.btn-fill[data-v-1782e572] {\n  background-color: #9561e2;\n  border-color: #9561e2;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:hover {\n  background-color: #8948d4;\n  border-color: #8948d4;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:active:focus {\n  border-color: #704d9d;\n}\n@media (max-width: 990px) {\n.customer-change[data-v-1782e572] {\n    margin-bottom: 15px;\n}\n}\n.orders-list[data-v-1782e572] {\n  margin-top: 20px;\n}\n@media (max-width: 990px) {\n.orders-list .name-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n.orders-list .name-block .customer-name[data-v-1782e572] {\n    font-size: 18px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .data-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .add-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n.orders-list .employees-block[data-v-1782e572] {\n  margin-bottom: 10px;\n}\n.orders-list .employees-block .employees-block-icon[data-v-1782e572] {\n  padding-left: 0;\n  width: 40px;\n}\n.orders-list .employees-block .employees-block-icon i[data-v-1782e572] {\n  position: relative;\n  left: 0;\n  top: 12px;\n  font-size: 16px;\n  color: #666;\n}\n@media (max-width: 990px) {\n.orders-list .employees-block .employees-block-icon[data-v-1782e572] {\n    display: none;\n}\n}\n.orders-list .employees-block .employee-box[data-v-1782e572] {\n  border: 2px solid;\n  border-radius: 8px;\n  padding: 3px 6px;\n}\n.orders-list .employees-block .employee-box .employee-name[data-v-1782e572] {\n  font-weight: bold;\n}\n.orders-list .employees-block .employee-box .employee-role[data-v-1782e572] {\n  font-size: 12px;\n}\n.orders-list .employees-block .employee-box.manager[data-v-1782e572] {\n  border-color: #9561e2;\n}\n.orders-list .employees-block .employee-box.chef[data-v-1782e572] {\n  border-color: #f6993f;\n}\n.orders-list .employees-block .employee-box.cook[data-v-1782e572] {\n  border-color: #38c172;\n}\n.orders-list .employees-block .employee-box.courier[data-v-1782e572] {\n  border-color: #3490dc;\n}\n@media (max-width: 990px) {\n.orders-list .employees-block .employee-box[data-v-1782e572] {\n    max-width: 200px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .employees-block[data-v-1782e572] {\n    margin-top: 45px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .address-block[data-v-1782e572] {\n    margin-top: 20px;\n}\n}\n.orders-list .update-list-btn[data-v-1782e572] {\n  position: relative;\n  top: 28px;\n}\n@media (max-width: 990px) {\n.orders-list .update-list-btn[data-v-1782e572] {\n    top: 0;\n}\n}\n.orders-list .order-btn[data-v-1782e572] {\n  position: relative;\n  top: 4px;\n}\n@media (max-width: 990px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 30px;\n}\n}\n@media (min-width: 991px) and (max-width: 1200px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 57px;\n}\n}\n.orders-list .customer-name[data-v-1782e572] {\n  display: inline-block !important;\n  font-size: 16px;\n}\n.orders-list .customer-address[data-v-1782e572] {\n  font-size: 15px;\n}\n.orders-list .order-id[data-v-1782e572] {\n  display: inline-block;\n  margin-right: 5px;\n}\n.orders-list .order-status-label[data-v-1782e572] {\n  color: white;\n  background-color: #9A9A9A;\n  padding: 8px 14px;\n  border-radius: 6px;\n  position: relative;\n  top: 10px;\n}\n.orders-list .order-status-label.status-new[data-v-1782e572] {\n  background-color: #3490dc;\n}\n.orders-list .order-status-label.status-accepted[data-v-1782e572] {\n  background-color: #6cb2eb;\n}\n.orders-list .order-status-label.status-cooking[data-v-1782e572] {\n  background-color: #9561e2;\n}\n.orders-list .order-status-label.status-ready[data-v-1782e572] {\n  background-color: #e3342f;\n}\n.orders-list .order-status-label.status-delivery[data-v-1782e572] {\n  background-color: #f6993f;\n}\n.orders-list .order-status-label.status-delivered[data-v-1782e572] {\n  background-color: #ffed4a;\n  color: #666;\n}\n.orders-list .order-status-label.status-declined[data-v-1782e572] {\n  background-color: #f66d9b;\n}\n.orders-list .order-status-label.status-completed[data-v-1782e572] {\n  background-color: #38c172;\n}\n.orders-list .order-status-label.status-archived[data-v-1782e572] {\n  background-color: #9A9A9A;\n}", ""]);
 
 // exports
 
@@ -27039,17 +27163,20 @@ var render = function() {
           [
             _c("div", { staticClass: "row" }, [
               _c("div", { staticClass: "col-md-12" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-info btn-fill btn-sm new-user-btn",
-                    on: { click: _vm.openBox }
-                  },
-                  [
-                    _c("i", { staticClass: "fas fa-user-plus" }),
-                    _vm._v(" Add New\n                        ")
-                  ]
-                )
+                _vm.p("uiButtonAddNew")
+                  ? _c(
+                      "button",
+                      {
+                        staticClass:
+                          "btn btn-info btn-fill btn-sm new-user-btn",
+                        on: { click: _vm.openBox }
+                      },
+                      [
+                        _c("i", { staticClass: "fas fa-user-plus" }),
+                        _vm._v(" Add New\n                        ")
+                      ]
+                    )
+                  : _vm._e()
               ])
             ]),
             _vm._v(" "),
@@ -27057,7 +27184,8 @@ var render = function() {
               attrs: {
                 "btn-class": "btn-info",
                 "btn-icon-class": "fa fa-edit",
-                "custom-list-class": "customers"
+                "custom-list-class": "customers",
+                "btn-permission": _vm.permissions.uiButtonEdit
               },
               on: { "on-button-click": _vm.editUser }
             })
@@ -27295,7 +27423,7 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _vm.mode === "update"
+                _vm.p("uiButtonDelete") && _vm.mode === "update"
                   ? _c(
                       "button",
                       {
@@ -27554,19 +27682,21 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-md-2 text-right" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-sm",
-                          class: _vm.btnClass,
-                          on: {
-                            click: function($event) {
-                              return _vm.onButtonClick(index)
-                            }
-                          }
-                        },
-                        [_c("i", { class: _vm.btnIconClass })]
-                      )
+                      _vm.btnPermission
+                        ? _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-sm",
+                              class: _vm.btnClass,
+                              on: {
+                                click: function($event) {
+                                  return _vm.onButtonClick(index)
+                                }
+                              }
+                            },
+                            [_c("i", { class: _vm.btnIconClass })]
+                          )
+                        : _vm._e()
                     ])
                   ]),
                   _vm._v(" "),
@@ -27702,17 +27832,20 @@ var render = function() {
           _c("div", { staticClass: "content" }, [
             _c("div", { staticClass: "row" }, [
               _c("div", { staticClass: "col-md-12" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-info btn-fill btn-sm new-user-btn",
-                    on: { click: _vm.openBox }
-                  },
-                  [
-                    _c("i", { staticClass: "fas fa-user-plus" }),
-                    _vm._v(" Add New\n                        ")
-                  ]
-                )
+                _vm.p("uiButtonAddNew")
+                  ? _c(
+                      "button",
+                      {
+                        staticClass:
+                          "btn btn-info btn-fill btn-sm new-user-btn",
+                        on: { click: _vm.openBox }
+                      },
+                      [
+                        _c("i", { staticClass: "fas fa-user-plus" }),
+                        _vm._v(" Add New\n                        ")
+                      ]
+                    )
+                  : _vm._e()
               ])
             ]),
             _vm._v(" "),
@@ -27916,18 +28049,20 @@ var render = function() {
                           ]),
                           _vm._v(" "),
                           _c("div", { staticClass: "col-md-2 text-right" }, [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-info btn-sm",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.editUser(index)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "fa fa-edit" })]
-                            )
+                            _vm.p("uiButtonEdit")
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-info btn-sm",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.editUser(index)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-edit" })]
+                                )
+                              : _vm._e()
                           ])
                         ]),
                         _vm._v(" "),
@@ -28395,7 +28530,7 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _vm.mode === "edit"
+                _vm.p("uiButtonDelete") && _vm.mode === "edit"
                   ? _c(
                       "button",
                       {
@@ -29014,15 +29149,19 @@ var render = function() {
           _vm._m(2),
           _vm._v(" "),
           _c("div", { staticClass: "col-md-12 box data" }, [
-            _c("span", [
-              _c("b", [_vm._v("Cost:")]),
-              _vm._v(" $" + _vm._s(_vm.orderCost))
-            ]),
+            _vm.p("uiElemOrderDetailsTotalCost")
+              ? _c("span", [
+                  _c("b", [_vm._v("Cost:")]),
+                  _vm._v(" $" + _vm._s(_vm.orderCost))
+                ])
+              : _vm._e(),
             _vm._v(" "),
-            _c("span", [
-              _c("b", [_vm._v("Weight:")]),
-              _vm._v(" " + _vm._s(_vm.orderWeight) + " g.")
-            ])
+            _vm.p("uiElemOrderDetailsTotalWeight")
+              ? _c("span", [
+                  _c("b", [_vm._v("Weight:")]),
+                  _vm._v(" " + _vm._s(_vm.orderWeight) + " g.")
+                ])
+              : _vm._e()
           ])
         ])
       ]),
@@ -29093,17 +29232,19 @@ var render = function() {
           _c("div", { staticClass: "col-md-12" }, [
             _vm.mode === "list"
               ? _c("div", { staticClass: "btn-box" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-info btn-fill btn-icon",
-                      on: { click: _vm.openBox }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-plus" }),
-                      _vm._v(" New Order\n                    ")
-                    ]
-                  )
+                  _vm.p("uiButtonAddNew")
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-info btn-fill btn-icon",
+                          on: { click: _vm.openBox }
+                        },
+                        [
+                          _c("i", { staticClass: "fa fa-plus" }),
+                          _vm._v(" New Order\n                    ")
+                        ]
+                      )
+                    : _vm._e()
                 ])
               : _vm._e(),
             _vm._v(" "),
@@ -29155,6 +29296,7 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
+                  _vm.p("uiButtonEdit") &&
                   _vm.orderSelected.status &&
                   !_vm.inArray(_vm.orderSelected.status.slug, [
                     "delivery",
@@ -29182,6 +29324,7 @@ var render = function() {
             _vm._v(" "),
             _vm.orderSelected.status && _vm.mode === "show"
               ? _c("div", { staticClass: "btn-box" }, [
+                  _vm.p("uiButtonOrderStatusAccept") &&
                   _vm.orderSelected.status.slug === "new"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29203,6 +29346,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonOrderStatusCooking") &&
                   _vm.orderSelected.status.slug === "accepted"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29224,6 +29368,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonOrderStatusReady") &&
                   _vm.orderSelected.status.slug === "cooking"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29245,6 +29390,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonOrderStatusDelivery") &&
                   _vm.orderSelected.status.slug === "ready"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29266,6 +29412,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonOrderStatusDelivered") &&
                   _vm.orderSelected.status.slug === "delivery"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29287,6 +29434,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonOrderStatusCompleted") &&
                   _vm.orderSelected.status.slug === "delivered"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29307,6 +29455,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonOrderStatusArchive") &&
                   _vm.orderSelected.status.slug === "completed"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29327,6 +29476,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonOrderStatusDecline") &&
                   !_vm.inArray(_vm.orderSelected.status.slug, [
                     "new",
                     "declined",
@@ -29351,6 +29501,7 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
+                  _vm.p("uiButtonDelete") &&
                   _vm.orderSelected.status.slug === "declined"
                     ? _c("div", { staticClass: "btn-box" }, [
                         _c(
@@ -29378,123 +29529,132 @@ var render = function() {
       _vm._v(" "),
       _c("div", { attrs: { id: "edit-order-box" } }, [
         _vm.mode === "show" || _vm.mode === "edit"
-          ? _c(
-              "div",
-              { staticClass: "col-md-12 mt-10" },
-              [
-                _c("div", { staticClass: "col-md-12" }, [
-                  _vm.mode === "show"
-                    ? _c("h3", [
-                        _vm._v("Order ID:" + _vm._s(_vm.orderSelected.id))
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.mode === "edit"
-                    ? _c("h3", [
-                        _vm._v(
-                          "Order ID:" + _vm._s(_vm.orderSelected.id) + " edit"
-                        )
-                      ])
-                    : _vm._e()
-                ]),
-                _vm._v(" "),
-                _vm._m(0),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "col-md-12" },
-                  [
-                    _c("order-customer-data", {
-                      attrs: { data: _vm.orderSelected.customer }
-                    })
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _vm.mode === "edit"
-                  ? _c(
-                      "div",
-                      { staticClass: "col-md-12 mb-20 customer-change" },
-                      [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-default btn-icon",
-                            on: { click: _vm.modalSelectCustomer }
-                          },
-                          [_vm._m(1)]
-                        ),
-                        _vm._v(" "),
-                        _vm.checkErr("customer_id")
-                          ? _c("span", { staticClass: "error" }, [
-                              _vm._v(
-                                "\n                    " +
-                                  _vm._s(_vm.getErr("customer_id")) +
-                                  "\n                "
-                              )
-                            ])
-                          : _vm._e()
-                      ]
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.orderSelected.comments[0]
-                  ? _c("div", { staticClass: "col-md-12" }, [
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Customer comment")]),
-                        _vm._v(" "),
-                        _c("textarea", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.orderSelected.comments[0].content,
-                              expression: "orderSelected.comments[0].content"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { rows: "5", readonly: _vm.mode === "show" },
-                          domProps: {
-                            value: _vm.orderSelected.comments[0].content
-                          },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(
-                                _vm.orderSelected.comments[0],
-                                "content",
-                                $event.target.value
-                              )
-                            }
-                          }
-                        })
-                      ])
+          ? _c("div", { staticClass: "col-md-12 mt-10" }, [
+              _c("div", { staticClass: "col-md-12" }, [
+                _vm.mode === "show"
+                  ? _c("h3", [
+                      _vm._v("Order ID:" + _vm._s(_vm.orderSelected.id))
                     ])
                   : _vm._e(),
                 _vm._v(" "),
-                _vm._m(2),
-                _vm._v(" "),
-                _c("order-ingredients", {
-                  ref: "orderIngEdit",
-                  attrs: {
-                    mode: _vm.mode,
-                    "order-pizza-sets": _vm.orderSelected.pizza_sets,
-                    "order-add-prods": _vm.orderSelected.products,
-                    "pizza-sets-list": _vm.pizzaSetsList,
-                    "add-prods-list": _vm.addProductsList,
-                    "errors-list": _vm.getSubItemErrLists([
-                      "products",
-                      "pizza_sets"
-                    ]),
-                    "sub-items-fields-list": _vm.subItemsFields
-                  },
-                  on: { "on-ing-list-change": _vm.setOrderData }
-                })
-              ],
-              1
-            )
+                _vm.mode === "edit"
+                  ? _c("h3", [
+                      _vm._v(
+                        "Order ID:" + _vm._s(_vm.orderSelected.id) + " edit"
+                      )
+                    ])
+                  : _vm._e()
+              ]),
+              _vm._v(" "),
+              _vm.p("uiElemOrderDetailsCustomerData")
+                ? _c("div", [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-md-12" },
+                      [
+                        _c("order-customer-data", {
+                          attrs: { data: _vm.orderSelected.customer }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.mode === "edit"
+                ? _c(
+                    "div",
+                    { staticClass: "col-md-12 mb-20 customer-change" },
+                    [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-default btn-icon",
+                          on: { click: _vm.modalSelectCustomer }
+                        },
+                        [_vm._m(1)]
+                      ),
+                      _vm._v(" "),
+                      _vm.checkErr("customer_id")
+                        ? _c("span", { staticClass: "error" }, [
+                            _vm._v(
+                              "\n                    " +
+                                _vm._s(_vm.getErr("customer_id")) +
+                                "\n                "
+                            )
+                          ])
+                        : _vm._e()
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.p("uiElemOrderDetailsCustomerComment") &&
+              _vm.orderSelected.comments[0]
+                ? _c("div", { staticClass: "col-md-12" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Customer comment")]),
+                      _vm._v(" "),
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.orderSelected.comments[0].content,
+                            expression: "orderSelected.comments[0].content"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { rows: "5", readonly: _vm.mode === "show" },
+                        domProps: {
+                          value: _vm.orderSelected.comments[0].content
+                        },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.orderSelected.comments[0],
+                              "content",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ])
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.p("uiElemOrderDetailsIngredients")
+                ? _c(
+                    "div",
+                    [
+                      _vm._m(2),
+                      _vm._v(" "),
+                      _c("order-ingredients", {
+                        ref: "orderIngEdit",
+                        attrs: {
+                          mode: _vm.mode,
+                          "order-pizza-sets": _vm.orderSelected.pizza_sets,
+                          "order-add-prods": _vm.orderSelected.products,
+                          "pizza-sets-list": _vm.pizzaSetsList,
+                          "add-prods-list": _vm.addProductsList,
+                          "errors-list": _vm.getSubItemErrLists([
+                            "products",
+                            "pizza_sets"
+                          ]),
+                          "sub-items-fields-list": _vm.subItemsFields,
+                          "permissions-list": _vm.permissions
+                        },
+                        on: { "on-ing-list-change": _vm.setOrderData }
+                      })
+                    ],
+                    1
+                  )
+                : _vm._e()
+            ])
           : _vm._e()
       ]),
       _vm._v(" "),
@@ -29622,7 +29782,8 @@ var render = function() {
                           "products",
                           "pizza_sets"
                         ]),
-                        "sub-items-fields-list": _vm.subItemsFields
+                        "sub-items-fields-list": _vm.subItemsFields,
+                        "permissions-list": _vm.permissions
                       },
                       on: { "on-ing-list-change": _vm.setOrderData }
                     })
@@ -29637,62 +29798,69 @@ var render = function() {
       _vm.mode === "list" || _vm.mode === "add_new"
         ? _c("div", { staticClass: "col-md-12 orders-list" }, [
             _c("div", { staticClass: "row orders-navigate" }, [
-              _c("div", { staticClass: "col-md-3" }, [
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", { attrs: { for: "roleFilter" } }, [
-                    _vm._v("Show by status")
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "select",
-                    {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.byStatus,
-                          expression: "byStatus"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: { id: "roleFilter" },
-                      on: {
-                        change: function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.byStatus = $event.target.multiple
-                            ? $$selectedVal
-                            : $$selectedVal[0]
-                        }
-                      }
-                    },
-                    [
-                      _c("option", { attrs: { value: "0" } }, [_vm._v("All")]),
+              _vm.p("uiElemFilterByOrderStatus")
+                ? _c("div", { staticClass: "col-md-3" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "roleFilter" } }, [
+                        _vm._v("Show by status")
+                      ]),
                       _vm._v(" "),
-                      _vm._l(_vm.orderStatusesList, function(status) {
-                        return _c(
-                          "option",
-                          { key: status.id, domProps: { value: status.id } },
-                          [
-                            _vm._v(
-                              "\n                            " +
-                                _vm._s(status.name) +
-                                "\n                        "
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.byStatus,
+                              expression: "byStatus"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { id: "roleFilter" },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.byStatus = $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { attrs: { value: "0" } }, [
+                            _vm._v("All")
+                          ]),
+                          _vm._v(" "),
+                          _vm._l(_vm.orderStatusesList, function(status) {
+                            return _c(
+                              "option",
+                              {
+                                key: status.id,
+                                domProps: { value: status.id }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                            " +
+                                    _vm._s(status.name) +
+                                    "\n                        "
+                                )
+                              ]
                             )
-                          ]
-                        )
-                      })
-                    ],
-                    2
-                  )
-                ])
-              ]),
+                          })
+                        ],
+                        2
+                      )
+                    ])
+                  ])
+                : _vm._e(),
               _vm._v(" "),
               _c("div", { staticClass: "col-md-2" }, [
                 _c("div", { staticClass: "form-group" }, [
@@ -29864,51 +30032,62 @@ var render = function() {
                         [
                           _c("div", { staticClass: "col-md-12 data-top" }, [
                             _c("div", { staticClass: "col-md-4 name-block" }, [
-                              _c(
-                                "span",
-                                { staticClass: "text-muted order-id" },
-                                [
-                                  _vm._v(
-                                    "\n                                    #" +
-                                      _vm._s(item.id) +
-                                      "\n                                "
+                              _vm.p("uiElemOrderDataId")
+                                ? _c(
+                                    "span",
+                                    { staticClass: "text-muted order-id" },
+                                    [
+                                      _vm._v(
+                                        "\n                                    #" +
+                                          _vm._s(item.id) +
+                                          "\n                                "
+                                      )
+                                    ]
                                   )
-                                ]
-                              ),
+                                : _vm._e(),
                               _vm._v(" "),
-                              _c(
-                                "span",
-                                { staticClass: "data-line customer-name" },
-                                [
-                                  _c("i", { staticClass: "fas fa-user" }),
-                                  _vm._v(
-                                    "\n                                    " +
-                                      _vm._s(item.customer.name) +
-                                      "\n                                "
+                              _vm.p("uiElemOrderDataName")
+                                ? _c(
+                                    "span",
+                                    { staticClass: "data-line customer-name" },
+                                    [
+                                      _c("i", { staticClass: "fas fa-user" }),
+                                      _vm._v(
+                                        "\n                                    " +
+                                          _vm._s(item.customer.name) +
+                                          "\n                                "
+                                      )
+                                    ]
                                   )
-                                ]
-                              )
+                                : _vm._e()
                             ]),
                             _vm._v(" "),
                             _c("div", { staticClass: "col-md-3 data-block" }, [
-                              _c("span", { staticClass: "data-line" }, [
-                                _c("i", { staticClass: "fas fa-phone-alt" }),
-                                _vm._v(
-                                  "\n                                    " +
-                                    _vm._s(item.customer.phone) +
-                                    "\n                                "
-                                )
-                              ]),
+                              _vm.p("uiElemOrderDataPhone")
+                                ? _c("span", { staticClass: "data-line" }, [
+                                    _c("i", {
+                                      staticClass: "fas fa-phone-alt"
+                                    }),
+                                    _vm._v(
+                                      "\n                                    " +
+                                        _vm._s(item.customer.phone) +
+                                        "\n                                "
+                                    )
+                                  ])
+                                : _vm._e(),
                               _vm._v(" "),
-                              _c("span", { staticClass: "data-line" }, [
-                                _c("i", { staticClass: "fas fa-table" }),
-                                _vm._v(
-                                  "\n                                    " +
-                                    _vm._s(item.ordered_at) +
-                                    "\n                                "
-                                )
-                              ]),
+                              _vm.p("uiElemOrderDataCreateDate")
+                                ? _c("span", { staticClass: "data-line" }, [
+                                    _c("i", { staticClass: "fas fa-table" }),
+                                    _vm._v(
+                                      "\n                                    " +
+                                        _vm._s(item.ordered_at) +
+                                        "\n                                "
+                                    )
+                                  ])
+                                : _vm._e(),
                               _vm._v(" "),
+                              _vm.p("uiElemOrderDataUpdateDate") &&
                               item.last_updated_at !== item.ordered_at
                                 ? _c("span", { staticClass: "data-line" }, [
                                     _c("i", { staticClass: "fas fa-edit" }),
@@ -29922,25 +30101,31 @@ var render = function() {
                             ]),
                             _vm._v(" "),
                             _c("div", { staticClass: "col-md-2 add-block" }, [
-                              _c("span", { staticClass: "data-line" }, [
-                                _c("i", {
-                                  staticClass: "fas fa-weight-hanging"
-                                }),
-                                _vm._v(
-                                  "\n                                    " +
-                                    _vm._s(item.weight) +
-                                    " g.\n                                "
-                                )
-                              ]),
+                              _vm.p("uiElemOrderDataWeight")
+                                ? _c("span", { staticClass: "data-line" }, [
+                                    _c("i", {
+                                      staticClass: "fas fa-weight-hanging"
+                                    }),
+                                    _vm._v(
+                                      "\n                                    " +
+                                        _vm._s(item.weight) +
+                                        " g.\n                                "
+                                    )
+                                  ])
+                                : _vm._e(),
                               _vm._v(" "),
-                              _c("span", { staticClass: "data-line" }, [
-                                _c("i", { staticClass: "fas fa-dollar-sign" }),
-                                _vm._v(
-                                  "\n                                    " +
-                                    _vm._s(item.cost) +
-                                    "\n                                "
-                                )
-                              ])
+                              _vm.p("uiElemOrderDataCost")
+                                ? _c("span", { staticClass: "data-line" }, [
+                                    _c("i", {
+                                      staticClass: "fas fa-dollar-sign"
+                                    }),
+                                    _vm._v(
+                                      "\n                                    " +
+                                        _vm._s(item.cost) +
+                                        "\n                                "
+                                    )
+                                  ])
+                                : _vm._e()
                             ]),
                             _vm._v(" "),
                             _c("div", { staticClass: "col-md-1 text-center" }, [
@@ -29961,20 +30146,23 @@ var render = function() {
                             ]),
                             _vm._v(" "),
                             _c("div", { staticClass: "col-md-2 text-right" }, [
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "btn btn-primary btn-sm order-btn open-order-btn",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.openOrder(item.id)
-                                    }
-                                  }
-                                },
-                                [_c("i", { staticClass: "fas fa-eye" })]
-                              ),
+                              _vm.p("uiButtonDetails")
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "btn btn-primary btn-sm order-btn open-order-btn",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.openOrder(item.id)
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "fas fa-eye" })]
+                                  )
+                                : _vm._e(),
                               _vm._v(" "),
+                              _vm.p("uiButtonEdit") &&
                               item.status &&
                               !_vm.inArray(item.status.slug, [
                                 "delivery",
@@ -29997,61 +30185,121 @@ var render = function() {
                                     [_c("i", { staticClass: "fas fa-edit" })]
                                   )
                                 : _vm._e(),
-                              _vm._v(
-                                " " +
-                                  _vm._s(item.connect_status) +
-                                  "\n\n                                "
-                              ),
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "btn btn-success btn-sm order-btn",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.getOrder(item.id)
-                                    }
-                                  }
-                                },
-                                [_c("i", { staticClass: "fas fa-check" })]
-                              ),
                               _vm._v(" "),
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "btn btn-warning btn-sm order-btn",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.refuseOrder(item.id)
-                                    }
-                                  }
-                                },
-                                [_c("i", { staticClass: "fas fa-ban" })]
-                              )
+                              _vm.p("uiButtonGetOrder") &&
+                              item.connect_status === "allowed"
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "btn btn-success btn-sm order-btn",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.getOrder(item.id)
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "fas fa-check" })]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _vm.p("uiButtonRefuse") &&
+                              item.connect_status === "taken"
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "btn btn-warning btn-sm order-btn",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.refuseOrder(item.id)
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "fas fa-ban" })]
+                                  )
+                                : _vm._e()
                             ])
                           ]),
                           _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col-md-12 address-block" },
-                            [
-                              _c(
-                                "span",
-                                { staticClass: "data-line customer-address" },
+                          item.employees.length > 0
+                            ? _c(
+                                "div",
+                                { staticClass: "col-md-12 employees-block" },
+                                _vm._l(item.employees, function(employee) {
+                                  return _vm.p(
+                                    "uiElemOrderDataEmplConnect" +
+                                      _vm.capitalize(employee.role_name)
+                                  )
+                                    ? _c(
+                                        "div",
+                                        {
+                                          key: employee.id,
+                                          staticClass: "col-md-2 employee-box",
+                                          class: employee.role_slug
+                                        },
+                                        [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "data-line employee-name"
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                    " +
+                                                  _vm._s(employee.name) +
+                                                  "\n                                "
+                                              )
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "data-line employee-role"
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                    " +
+                                                  _vm._s(employee.role_name) +
+                                                  "\n                                "
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    : _vm._e()
+                                }),
+                                0
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.p("uiElemOrderDataAddress")
+                            ? _c(
+                                "div",
+                                { staticClass: "col-md-12 address-block" },
                                 [
-                                  _c("i", {
-                                    staticClass: "fas fa-map-marker-alt"
-                                  }),
-                                  _vm._v(
-                                    "\n                                    " +
-                                      _vm._s(item.customer.address) +
-                                      "\n                                "
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "data-line customer-address"
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "fas fa-map-marker-alt"
+                                      }),
+                                      _vm._v(
+                                        "\n                                " +
+                                          _vm._s(item.customer.address) +
+                                          "\n                            "
+                                      )
+                                    ]
                                   )
                                 ]
                               )
-                            ]
-                          )
+                            : _vm._e()
                         ]
                       )
                     }),
@@ -30949,7 +31197,7 @@ var render = function() {
           [
             _c("div", { staticClass: "row" }, [
               _c("div", { staticClass: "col-md-12" }, [
-                _vm.mode === "list"
+                _vm.p("uiButtonAddNew") && _vm.mode === "list"
                   ? _c("div", [
                       _c(
                         "button",
@@ -31346,44 +31594,50 @@ var render = function() {
                           _c("td", [_vm._v(_vm._s(item.weight) + " g.")]),
                           _vm._v(" "),
                           _c("td", { staticClass: "text-center" }, [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-info btn-sm",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.modalEdit(item.id)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "fa fa-edit" })]
-                            ),
+                            _vm.p("uiButtonEdit")
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-info btn-sm",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.modalEdit(item.id)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-edit" })]
+                                )
+                              : _vm._e(),
                             _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-default btn-sm",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.modalDetails(item.id)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "fa fa-info" })]
-                            ),
+                            _vm.p("uiButtonDetails")
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-default btn-sm",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.modalDetails(item.id)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-info" })]
+                                )
+                              : _vm._e(),
                             _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-danger btn-sm",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.modalDelete(item.id)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "fa fa-trash" })]
-                            )
+                            _vm.p("uiButtonDelete")
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-danger btn-sm",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.modalDelete(item.id)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-trash" })]
+                                )
+                              : _vm._e()
                           ])
                         ])
                       }),
@@ -46656,6 +46910,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   methods: {
+    capitalize: function capitalize(s) {
+      if (typeof s !== 'string') return '';
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    },
     inArray: function inArray(needle, haystack) {
       var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
       var found = false;

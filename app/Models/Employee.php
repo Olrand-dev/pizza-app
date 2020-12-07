@@ -10,16 +10,6 @@ class Employee extends Model
         'registered_at',
     ];
 
-    public static $permissionsList = [
-        'viewAny',
-        'create',
-        'update',
-        'forceDelete',
-        'uiButtonAddNew',
-        'uiButtonEdit',
-        'uiButtonDelete',
-    ];
-
 
     public function orders()
     {
