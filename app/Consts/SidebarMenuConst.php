@@ -34,7 +34,7 @@ class SidebarMenuConst
                 'slug' => 'pizza-sets',
                 'icon' => 'pe-7s-graph',
                 'url' => url('/pizza-sets'),
-                'permissions' => Controller::getUserPermissionsMap(1, 1),
+                'permissions' => Controller::getUserPermissionsMap(1, 1, 1, 1),
             ],
             [
                 'name' => 'Orders',

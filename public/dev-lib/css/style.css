@@ -138,6 +138,10 @@
   padding: 0 !important;
 }
 
+.main-panel-full > .content {
+  min-height: calc(100vh - 152px);
+}
+
 .vm--modal {
   margin-top: 1vh;
   max-height: 90vh !important;

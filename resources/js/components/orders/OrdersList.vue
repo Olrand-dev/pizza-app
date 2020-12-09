@@ -446,20 +446,29 @@
                                         <i class="fas fa-check"></i>
                                     </button>
 
-                                    <button v-if="p('uiButtonRefuse') && item.connect_status === 'taken'"
+                                    <button v-if="
+                                        p('uiButtonRefuse') &&
+                                        (item.connect_status === 'taken' || item.connect_status === 'courier_taken')
+                                    "
                                             class="btn btn-warning btn-sm order-btn"
                                             @click="refuseOrder(item.id)">
                                         <i class="fas fa-ban"></i>
+                                    </button>
+
+                                    <button v-if="p('uiButtonOrderDelivered') && item.connect_status === 'courier_taken'"
+                                            class="btn btn-primary btn-sm order-btn"
+                                            @click="orderDelivered(item.id)">
+                                        <i class="fas fa-truck"></i>
                                     </button>
 
                                 </div>
 
                             </div>
 
-                            <div v-if="item.employees.length > 0" class="col-md-12 employees-block">
+                            <div class="col-md-12 employees-block">
 
                                 <div v-for="employee in item.employees" class="col-md-2 employee-box"
-                                     v-if="p('uiElemOrderDataEmplConnect' + capitalize(employee.role_name))"
+                                     v-if="p('uiElemOrderDataEmplConnect' + capitalize(employee.role_slug))"
                                      :class="employee.role_slug" :key="employee.id">
 
                                     <span class="data-line employee-name">
@@ -622,6 +631,8 @@
                 border: 2px solid;
                 border-radius: 8px;
                 padding: 3px 6px;
+                margin-left: 5px;
+                margin-top: 3px;
 
                 .employee-name {
                     font-weight: bold;
@@ -850,6 +861,47 @@
 
             refuseOrder(id) {
                 this.orderEmployeeConnect(id, true);
+            },
+
+            orderDelivered(id) {
+
+                this.$modal.show(
+                    DialogModal,
+                    {
+                        'modal-data': {
+                            header: `Order ID:${id} delivery confirmation`,
+                            text: 'Confirm order delivery.',
+                            onConfirm: function () {
+                                axios.get(
+                                    '/orders/order-delivered',
+                                    {
+                                        params: {
+                                            id
+                                        },
+                                    }
+                                ).then(function() {
+
+                                    this.notifySuccess(`You delivered order ID:${id}.`);
+                                    this.getList();
+
+                                }.bind(this))
+                                .catch(function() {
+
+                                    this.notifyError('Action error.');
+
+                                }.bind(this));
+
+                            }.bind(this),
+                        },
+                    },
+                    {
+                        adaptive: true,
+                        height: 'auto',
+                    },
+                    {
+                        'before-close': event => {}
+                    }
+                );
             },
 
             orderEmployeeConnect(id, refuse = false) {

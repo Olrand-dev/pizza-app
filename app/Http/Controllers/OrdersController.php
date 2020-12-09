@@ -134,26 +134,7 @@ class OrdersController extends Controller
             $orderId = (int) $request->input('order_id');
             $statusSlug = $request->input('status');
 
-            $order = Order::find($orderId);
-            $status = OrderStatus::where('slug', 'like', $statusSlug)->first();
-
-            if (!empty($order) and !empty($status)) {
-                $order->status()->associate($status);
-            }
-            $order->save();
-
-            if (in_array($status->id, [
-                SystemConst::ORDER_STATUS_DECLINED,
-                SystemConst::ORDER_STATUS_ARCHIVED,
-            ])) {
-                $orderId = $order->id;
-                $orderData = $this->getOrderFullData($request, $orderId);
-
-                $archived = new OrderArchived();
-                $archived->order_id = $orderId;
-                $archived->data = json_encode($orderData);
-                $archived->save();
-            }
+            $this->setOrderStatus($orderId, $statusSlug);
 
         } catch(\Throwable $e) {
 
@@ -162,11 +143,44 @@ class OrdersController extends Controller
     }
 
 
+    private function setOrderStatus(int $orderId, string $statusSlug) : void
+    {
+        $order = Order::find($orderId);
+        $status = OrderStatus::where('slug', 'like', $statusSlug)->first();
+
+        if (!empty($order) and !empty($status)) {
+            $order->status()->associate($status);
+        }
+        $order->save();
+
+        if (in_array($status->id, [
+            SystemConst::ORDER_STATUS_DECLINED,
+            SystemConst::ORDER_STATUS_ARCHIVED,
+        ])) {
+            $orderData = $this->getOrderFullData(null, $orderId);
+
+            $archived = new OrderArchived();
+            $archived->order_id = $orderId;
+            $archived->data = json_encode($orderData);
+            $archived->save();
+        }
+    }
+
+
     public function employeeConnect(Request $request) : void
     {
         $orderId = (int) $request->input('id');
         $refuse = $request->input('refuse') === 'true';
-        $employee = Auth::user()->userable;
+        $user = Auth::user();
+        $employee = $user->userable;
+
+        if ($user->isCourier()) {
+            $statusId = ($refuse) ? SystemConst::ORDER_STATUS_READY : SystemConst::ORDER_STATUS_DELIVERY;
+            $this->setOrderStatus(
+                $orderId,
+                $this->getStatusSlug($statusId)
+            );
+        }
 
         $order = Order::find($orderId);
         if (!empty($order)) {
@@ -174,6 +188,22 @@ class OrdersController extends Controller
             if ($refuse) $order->employees()->detach($employee);
             else $order->employees()->attach($employee);
         }
+    }
+
+
+    public function orderDelivered(Request $request) : void
+    {
+        $orderId = (int) $request->input('id');
+        $this->setOrderStatus(
+            $orderId,
+            $this->getStatusSlug(SystemConst::ORDER_STATUS_DELIVERED)
+        );
+    }
+
+
+    private function getStatusSlug(int $statusId) : string
+    {
+        return SystemConst::ORDER_STATUSES_MAP[$statusId]['slug'];
     }
 
 
@@ -194,9 +224,9 @@ class OrdersController extends Controller
     }
 
 
-    public function getOrderFullData(Request $request, int $id = 0) : array
+    public function getOrderFullData(Request $request = null, int $id = 0) : array
     {
-        if (empty($id)) $id = (int) $request->input('id', 0);
+        if (empty($id) and !empty($request)) $id = (int) $request->input('id', 0);
         if (empty($id)) return [];
 
         $data = Order::with(['products', 'pizzaSets', 'status', 'customer.user', 'comments'])
@@ -227,7 +257,7 @@ class OrdersController extends Controller
         $sortField = $input['sort_field'];
         $sortDirection = $input['sort_dir'];
 
-        $query = Order::with(['status', 'customer']);
+        $query = Order::with(['status', 'customer', 'employees']);
 
         if ($byStatus > 0) {
             $query = $query->where('status_id', $byStatus);
@@ -267,6 +297,14 @@ class OrdersController extends Controller
                 $connectStatus = 'denied';
 
                 if (
+                    (($user->isChef() or  $user->isCook()) and
+                    $item->status->id === SystemConst::ORDER_STATUS_READY) or
+                    ($user->isCourier() and $item->status->id === SystemConst::ORDER_STATUS_DELIVERED)
+                ) {
+                    return;
+                }
+
+                if (
                     $user->isChef() or
                     $user->isCook() or
                     $user->isCourier()
@@ -278,7 +316,7 @@ class OrdersController extends Controller
                     $employee->role_slug = $employee->user->role->slug;
 
                     if ($employee->id === $user->userable->id) {
-                       $connectStatus = 'taken';
+                       $connectStatus = ($user->isCourier()) ? 'courier_taken' : 'taken';
                     }
                 }
                 $item->connect_status = $connectStatus;

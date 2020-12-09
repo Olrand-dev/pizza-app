@@ -7,23 +7,21 @@
 @section('layout_content')
 <div id="app" class="wrapper">
 
-    <div class="sidebar" data-color="orange" data-image="">
+    @can('show-sidebar')
+        <div class="sidebar" data-color="orange" data-image="">
 
-        <div class="sidebar-wrapper">
+            <div class="sidebar-wrapper">
 
-            <div class="logo">
-                <a href="{{ url('/') }}" class="simple-text">
-                    Pizza App
-                </a>
+                <x-site-logo></x-site-logo>
+
+                <x-sidebar-menu></x-sidebar-menu>
+
             </div>
-
-            <x-sidebar-menu></x-sidebar-menu>
-
         </div>
-    </div>
+    @endcan
 
 
-    <div class="main-panel">
+    <div class="{{ Auth::user()->can('show-sidebar') ? 'main-panel' : 'main-panel-full' }}">
 
         <nav class="navbar navbar-default navbar-fixed">
 

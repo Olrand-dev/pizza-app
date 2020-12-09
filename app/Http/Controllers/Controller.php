@@ -228,6 +228,13 @@ class Controller extends BaseController
     }
 
 
+    public static function checkPermission(User $user, array $permissionsMap) : bool
+    {
+        $permission = $permissionsMap[$user->role->slug] ?? null;
+        return !empty($permission) and $permission === 1;
+    }
+
+
     public function getPermissionsList(Request $request) : array
     {
         $modelsMap = [

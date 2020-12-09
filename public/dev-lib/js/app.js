@@ -4203,6 +4203,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -4300,6 +4311,31 @@ var OrderRef = {
     },
     refuseOrder: function refuseOrder(id) {
       this.orderEmployeeConnect(id, true);
+    },
+    orderDelivered: function orderDelivered(id) {
+      this.$modal.show(_DialogModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        'modal-data': {
+          header: "Order ID:".concat(id, " delivery confirmation"),
+          text: 'Confirm order delivery.',
+          onConfirm: function () {
+            axios.get('/orders/order-delivered', {
+              params: {
+                id: id
+              }
+            }).then(function () {
+              this.notifySuccess("You delivered order ID:".concat(id, "."));
+              this.getList();
+            }.bind(this))["catch"](function () {
+              this.notifyError('Action error.');
+            }.bind(this));
+          }.bind(this)
+        }
+      }, {
+        adaptive: true,
+        height: 'auto'
+      }, {
+        'before-close': function beforeClose(event) {}
+      });
     },
     orderEmployeeConnect: function orderEmployeeConnect(id) {
       var refuse = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -4824,6 +4860,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
 //
 //
 //
@@ -4918,8 +4955,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['set-data']
+  data: function data() {
+    return {
+      permissions: this.permissionsList
+    };
+  },
+  props: ['set-data', 'permissions-list'],
+  mixins: [_mixins_Permissions__WEBPACK_IMPORTED_MODULE_0__["default"]],
+  watch: {
+    permissionsList: function permissionsList(val) {
+      this.permissions = val;
+    }
+  }
 });
 
 /***/ }),
@@ -5340,21 +5389,47 @@ var PizzaSetRef = {
   ingredients: [],
   image_file: ''
 };
+var TableHeadersConf = [{
+  name: 'ID',
+  permission: '',
+  model: 'id',
+  sortable: true,
+  selected: false
+}, {
+  name: 'Image',
+  permission: '',
+  model: '',
+  sortable: false,
+  selected: false
+}, {
+  name: 'Name',
+  permission: '',
+  model: 'name',
+  sortable: true,
+  selected: true
+}, {
+  name: 'Cost',
+  permission: 'uiElemPizzaSetDataCost',
+  model: 'cost',
+  sortable: true,
+  selected: false
+}, {
+  name: 'Weight',
+  permission: '',
+  model: 'weight',
+  sortable: true,
+  selected: false
+}];
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       mode: 'list',
       listUpdating: true,
       saving: false,
-      tableHeaders: ['ID', 'Image', 'Name', 'Cost', 'Weight'],
-      sortableHeaders: {
-        'ID': 'id',
-        'Name': 'name',
-        'Cost': 'cost',
-        'Weight': 'weight'
-      },
-      selectedSortableHeader: 'Name',
-      sortField: 'name',
+      tableHeaders: [],
+      sortableHeaders: {},
+      selectedSortableHeader: '',
+      sortField: '',
       pizzaSet: {},
       pizzaBasesList: [],
       pizzaIngTypesList: [],
@@ -5369,6 +5444,7 @@ var PizzaSetRef = {
   },
   created: function created() {
     this.initEmptySet();
+    this.defineTableHeaders();
     this.getIngredientsList();
     this.getList();
     this.getPermissionsList('pizza_set');
@@ -5376,6 +5452,28 @@ var PizzaSetRef = {
   methods: {
     initEmptySet: function initEmptySet() {
       this.pizzaSet = this.clone(PizzaSetRef, true);
+    },
+    defineTableHeaders: function defineTableHeaders() {
+      var _this = this;
+
+      TableHeadersConf.forEach(function (confData) {
+        var name = confData.name;
+        var permission = confData.permission;
+        var model = confData.model;
+
+        if (permission === '' || permission !== '' && _this.p(permission)) {
+          _this.tableHeaders.push(name);
+
+          if (confData.sortable) {
+            _this.sortableHeaders[name] = model;
+          }
+        }
+
+        if (confData.selected) {
+          _this.selectedSortableHeader = name;
+          _this.sortField = model;
+        }
+      }, this);
     },
     updateIngList: function updateIngList(list) {
       this.pizzaSet.ingredients = this.clone(list, true);
@@ -5470,7 +5568,7 @@ var PizzaSetRef = {
       }.bind(this));
     },
     modalEdit: function modalEdit(id) {
-      var _this = this;
+      var _this2 = this;
 
       var set = this.getItemById(this.setsList, id);
       this.$modal.show(_EditPizzaSetModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
@@ -5483,7 +5581,7 @@ var PizzaSetRef = {
         height: 'auto'
       }, {
         'before-close': function beforeClose(event) {
-          _this.getList();
+          _this2.getList();
         }
       });
     },
@@ -5491,7 +5589,8 @@ var PizzaSetRef = {
       var set = this.getItemById(this.setsList, id);
       console.log(set);
       this.$modal.show(_PizzaSetDetailsModal__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        'set-data': set
+        'set-data': set,
+        'permissions-list': this.permissions
       }, {
         adaptive: true,
         height: 'auto'
@@ -5500,7 +5599,7 @@ var PizzaSetRef = {
       });
     },
     modalDelete: function modalDelete(id) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.$modal.show('dialog', {
         title: 'Delete pizza set',
@@ -5508,12 +5607,12 @@ var PizzaSetRef = {
         buttons: [{
           title: 'Ok',
           handler: function handler() {
-            _this2.deleteItem(id);
+            _this3.deleteItem(id);
           }
         }, {
           title: 'Cancel',
           handler: function handler() {
-            _this2.$modal.hide('dialog');
+            _this3.$modal.hide('dialog');
           }
         }]
       });
@@ -6442,7 +6541,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".new-order-box h4[data-v-1782e572] {\n  margin-top: 15px;\n}\n.new-order-box .ing-header[data-v-1782e572] {\n  margin-bottom: 0;\n  margin-top: 30px;\n}\n.btn-box[data-v-1782e572] {\n  margin-top: 3px;\n}\n.order-status-btn.btn-fill[data-v-1782e572] {\n  background-color: #9561e2;\n  border-color: #9561e2;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:hover {\n  background-color: #8948d4;\n  border-color: #8948d4;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:active:focus {\n  border-color: #704d9d;\n}\n@media (max-width: 990px) {\n.customer-change[data-v-1782e572] {\n    margin-bottom: 15px;\n}\n}\n.orders-list[data-v-1782e572] {\n  margin-top: 20px;\n}\n@media (max-width: 990px) {\n.orders-list .name-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n.orders-list .name-block .customer-name[data-v-1782e572] {\n    font-size: 18px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .data-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .add-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n.orders-list .employees-block[data-v-1782e572] {\n  margin-bottom: 10px;\n}\n.orders-list .employees-block .employees-block-icon[data-v-1782e572] {\n  padding-left: 0;\n  width: 40px;\n}\n.orders-list .employees-block .employees-block-icon i[data-v-1782e572] {\n  position: relative;\n  left: 0;\n  top: 12px;\n  font-size: 16px;\n  color: #666;\n}\n@media (max-width: 990px) {\n.orders-list .employees-block .employees-block-icon[data-v-1782e572] {\n    display: none;\n}\n}\n.orders-list .employees-block .employee-box[data-v-1782e572] {\n  border: 2px solid;\n  border-radius: 8px;\n  padding: 3px 6px;\n}\n.orders-list .employees-block .employee-box .employee-name[data-v-1782e572] {\n  font-weight: bold;\n}\n.orders-list .employees-block .employee-box .employee-role[data-v-1782e572] {\n  font-size: 12px;\n}\n.orders-list .employees-block .employee-box.manager[data-v-1782e572] {\n  border-color: #9561e2;\n}\n.orders-list .employees-block .employee-box.chef[data-v-1782e572] {\n  border-color: #f6993f;\n}\n.orders-list .employees-block .employee-box.cook[data-v-1782e572] {\n  border-color: #38c172;\n}\n.orders-list .employees-block .employee-box.courier[data-v-1782e572] {\n  border-color: #3490dc;\n}\n@media (max-width: 990px) {\n.orders-list .employees-block .employee-box[data-v-1782e572] {\n    max-width: 200px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .employees-block[data-v-1782e572] {\n    margin-top: 45px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .address-block[data-v-1782e572] {\n    margin-top: 20px;\n}\n}\n.orders-list .update-list-btn[data-v-1782e572] {\n  position: relative;\n  top: 28px;\n}\n@media (max-width: 990px) {\n.orders-list .update-list-btn[data-v-1782e572] {\n    top: 0;\n}\n}\n.orders-list .order-btn[data-v-1782e572] {\n  position: relative;\n  top: 4px;\n}\n@media (max-width: 990px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 30px;\n}\n}\n@media (min-width: 991px) and (max-width: 1200px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 57px;\n}\n}\n.orders-list .customer-name[data-v-1782e572] {\n  display: inline-block !important;\n  font-size: 16px;\n}\n.orders-list .customer-address[data-v-1782e572] {\n  font-size: 15px;\n}\n.orders-list .order-id[data-v-1782e572] {\n  display: inline-block;\n  margin-right: 5px;\n}\n.orders-list .order-status-label[data-v-1782e572] {\n  color: white;\n  background-color: #9A9A9A;\n  padding: 8px 14px;\n  border-radius: 6px;\n  position: relative;\n  top: 10px;\n}\n.orders-list .order-status-label.status-new[data-v-1782e572] {\n  background-color: #3490dc;\n}\n.orders-list .order-status-label.status-accepted[data-v-1782e572] {\n  background-color: #6cb2eb;\n}\n.orders-list .order-status-label.status-cooking[data-v-1782e572] {\n  background-color: #9561e2;\n}\n.orders-list .order-status-label.status-ready[data-v-1782e572] {\n  background-color: #e3342f;\n}\n.orders-list .order-status-label.status-delivery[data-v-1782e572] {\n  background-color: #f6993f;\n}\n.orders-list .order-status-label.status-delivered[data-v-1782e572] {\n  background-color: #ffed4a;\n  color: #666;\n}\n.orders-list .order-status-label.status-declined[data-v-1782e572] {\n  background-color: #f66d9b;\n}\n.orders-list .order-status-label.status-completed[data-v-1782e572] {\n  background-color: #38c172;\n}\n.orders-list .order-status-label.status-archived[data-v-1782e572] {\n  background-color: #9A9A9A;\n}", ""]);
+exports.push([module.i, ".new-order-box h4[data-v-1782e572] {\n  margin-top: 15px;\n}\n.new-order-box .ing-header[data-v-1782e572] {\n  margin-bottom: 0;\n  margin-top: 30px;\n}\n.btn-box[data-v-1782e572] {\n  margin-top: 3px;\n}\n.order-status-btn.btn-fill[data-v-1782e572] {\n  background-color: #9561e2;\n  border-color: #9561e2;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:hover {\n  background-color: #8948d4;\n  border-color: #8948d4;\n}\n.order-status-btn.btn-fill[data-v-1782e572]:active:focus {\n  border-color: #704d9d;\n}\n@media (max-width: 990px) {\n.customer-change[data-v-1782e572] {\n    margin-bottom: 15px;\n}\n}\n.orders-list[data-v-1782e572] {\n  margin-top: 20px;\n}\n@media (max-width: 990px) {\n.orders-list .name-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n.orders-list .name-block .customer-name[data-v-1782e572] {\n    font-size: 18px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .data-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .add-block[data-v-1782e572] {\n    margin-bottom: 12px;\n}\n}\n.orders-list .employees-block[data-v-1782e572] {\n  margin-bottom: 10px;\n}\n.orders-list .employees-block .employees-block-icon[data-v-1782e572] {\n  padding-left: 0;\n  width: 40px;\n}\n.orders-list .employees-block .employees-block-icon i[data-v-1782e572] {\n  position: relative;\n  left: 0;\n  top: 12px;\n  font-size: 16px;\n  color: #666;\n}\n@media (max-width: 990px) {\n.orders-list .employees-block .employees-block-icon[data-v-1782e572] {\n    display: none;\n}\n}\n.orders-list .employees-block .employee-box[data-v-1782e572] {\n  border: 2px solid;\n  border-radius: 8px;\n  padding: 3px 6px;\n  margin-left: 5px;\n  margin-top: 3px;\n}\n.orders-list .employees-block .employee-box .employee-name[data-v-1782e572] {\n  font-weight: bold;\n}\n.orders-list .employees-block .employee-box .employee-role[data-v-1782e572] {\n  font-size: 12px;\n}\n.orders-list .employees-block .employee-box.manager[data-v-1782e572] {\n  border-color: #9561e2;\n}\n.orders-list .employees-block .employee-box.chef[data-v-1782e572] {\n  border-color: #f6993f;\n}\n.orders-list .employees-block .employee-box.cook[data-v-1782e572] {\n  border-color: #38c172;\n}\n.orders-list .employees-block .employee-box.courier[data-v-1782e572] {\n  border-color: #3490dc;\n}\n@media (max-width: 990px) {\n.orders-list .employees-block .employee-box[data-v-1782e572] {\n    max-width: 200px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .employees-block[data-v-1782e572] {\n    margin-top: 45px;\n}\n}\n@media (max-width: 990px) {\n.orders-list .address-block[data-v-1782e572] {\n    margin-top: 20px;\n}\n}\n.orders-list .update-list-btn[data-v-1782e572] {\n  position: relative;\n  top: 28px;\n}\n@media (max-width: 990px) {\n.orders-list .update-list-btn[data-v-1782e572] {\n    top: 0;\n}\n}\n.orders-list .order-btn[data-v-1782e572] {\n  position: relative;\n  top: 4px;\n}\n@media (max-width: 990px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 30px;\n}\n}\n@media (min-width: 991px) and (max-width: 1200px) {\n.orders-list .order-btn[data-v-1782e572] {\n    top: 57px;\n}\n}\n.orders-list .customer-name[data-v-1782e572] {\n  display: inline-block !important;\n  font-size: 16px;\n}\n.orders-list .customer-address[data-v-1782e572] {\n  font-size: 15px;\n}\n.orders-list .order-id[data-v-1782e572] {\n  display: inline-block;\n  margin-right: 5px;\n}\n.orders-list .order-status-label[data-v-1782e572] {\n  color: white;\n  background-color: #9A9A9A;\n  padding: 8px 14px;\n  border-radius: 6px;\n  position: relative;\n  top: 10px;\n}\n.orders-list .order-status-label.status-new[data-v-1782e572] {\n  background-color: #3490dc;\n}\n.orders-list .order-status-label.status-accepted[data-v-1782e572] {\n  background-color: #6cb2eb;\n}\n.orders-list .order-status-label.status-cooking[data-v-1782e572] {\n  background-color: #9561e2;\n}\n.orders-list .order-status-label.status-ready[data-v-1782e572] {\n  background-color: #e3342f;\n}\n.orders-list .order-status-label.status-delivery[data-v-1782e572] {\n  background-color: #f6993f;\n}\n.orders-list .order-status-label.status-delivered[data-v-1782e572] {\n  background-color: #ffed4a;\n  color: #666;\n}\n.orders-list .order-status-label.status-declined[data-v-1782e572] {\n  background-color: #f66d9b;\n}\n.orders-list .order-status-label.status-completed[data-v-1782e572] {\n  background-color: #38c172;\n}\n.orders-list .order-status-label.status-archived[data-v-1782e572] {\n  background-color: #9A9A9A;\n}", ""]);
 
 // exports
 
@@ -30204,7 +30303,8 @@ var render = function() {
                                 : _vm._e(),
                               _vm._v(" "),
                               _vm.p("uiButtonRefuse") &&
-                              item.connect_status === "taken"
+                              (item.connect_status === "taken" ||
+                                item.connect_status === "courier_taken")
                                 ? _c(
                                     "button",
                                     {
@@ -30218,63 +30318,76 @@ var render = function() {
                                     },
                                     [_c("i", { staticClass: "fas fa-ban" })]
                                   )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _vm.p("uiButtonOrderDelivered") &&
+                              item.connect_status === "courier_taken"
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "btn btn-primary btn-sm order-btn",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.orderDelivered(item.id)
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "fas fa-truck" })]
+                                  )
                                 : _vm._e()
                             ])
                           ]),
                           _vm._v(" "),
-                          item.employees.length > 0
-                            ? _c(
-                                "div",
-                                { staticClass: "col-md-12 employees-block" },
-                                _vm._l(item.employees, function(employee) {
-                                  return _vm.p(
-                                    "uiElemOrderDataEmplConnect" +
-                                      _vm.capitalize(employee.role_name)
-                                  )
-                                    ? _c(
-                                        "div",
+                          _c(
+                            "div",
+                            { staticClass: "col-md-12 employees-block" },
+                            _vm._l(item.employees, function(employee) {
+                              return _vm.p(
+                                "uiElemOrderDataEmplConnect" +
+                                  _vm.capitalize(employee.role_slug)
+                              )
+                                ? _c(
+                                    "div",
+                                    {
+                                      key: employee.id,
+                                      staticClass: "col-md-2 employee-box",
+                                      class: employee.role_slug
+                                    },
+                                    [
+                                      _c(
+                                        "span",
                                         {
-                                          key: employee.id,
-                                          staticClass: "col-md-2 employee-box",
-                                          class: employee.role_slug
+                                          staticClass: "data-line employee-name"
                                         },
                                         [
-                                          _c(
-                                            "span",
-                                            {
-                                              staticClass:
-                                                "data-line employee-name"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                    " +
-                                                  _vm._s(employee.name) +
-                                                  "\n                                "
-                                              )
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "span",
-                                            {
-                                              staticClass:
-                                                "data-line employee-role"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                    " +
-                                                  _vm._s(employee.role_name) +
-                                                  "\n                                "
-                                              )
-                                            ]
+                                          _vm._v(
+                                            "\n                                    " +
+                                              _vm._s(employee.name) +
+                                              "\n                                "
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass: "data-line employee-role"
+                                        },
+                                        [
+                                          _vm._v(
+                                            "\n                                    " +
+                                              _vm._s(employee.role_name) +
+                                              "\n                                "
                                           )
                                         ]
                                       )
-                                    : _vm._e()
-                                }),
-                                0
-                              )
-                            : _vm._e(),
+                                    ]
+                                  )
+                                : _vm._e()
+                            }),
+                            0
+                          ),
                           _vm._v(" "),
                           _vm.p("uiElemOrderDataAddress")
                             ? _c(
@@ -30856,11 +30969,13 @@ var render = function() {
                         _c("td", [_vm._v(_vm._s(_vm.setData.name))])
                       ]),
                       _vm._v(" "),
-                      _c("tr", [
-                        _c("th", [_vm._v("Cost")]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v("$" + _vm._s(_vm.setData.cost))])
-                      ]),
+                      _vm.p("uiElemPizzaSetDataCost")
+                        ? _c("tr", [
+                            _c("th", [_vm._v("Cost")]),
+                            _vm._v(" "),
+                            _c("td", [_vm._v("$" + _vm._s(_vm.setData.cost))])
+                          ])
+                        : _vm._e(),
                       _vm._v(" "),
                       _c("tr", [
                         _c("th", [_vm._v("Weight")]),
@@ -31589,7 +31704,9 @@ var render = function() {
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(item.name))]),
                           _vm._v(" "),
-                          _c("td", [_vm._v("$" + _vm._s(item.cost))]),
+                          _vm.p("uiElemPizzaSetDataCost")
+                            ? _c("td", [_vm._v("$" + _vm._s(item.cost))])
+                            : _vm._e(),
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(item.weight) + " g.")]),
                           _vm._v(" "),

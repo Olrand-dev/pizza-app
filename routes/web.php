@@ -24,7 +24,7 @@ use \App\Http\Controllers\Auth\LoginController;
 */
 
 //Route::get('/', [DashboardController::class, 'index']);
-Route::redirect('/', '/products');
+Route::redirect('/', '/orders');
 
 Route::post('get-permissions-list', [Controller::class, 'getPermissionsList']);
 
@@ -54,6 +54,7 @@ Route::prefix('orders')->group(function() {
     Route::post('add-new', [OrdersController::class, 'addNew']);
     Route::post('save', [OrdersController::class, 'save']);
     Route::post('set-status', [OrdersController::class, 'setStatus']);
+    Route::get('order-delivered', [OrdersController::class, 'orderDelivered']);
     Route::get('empl-connect', [OrdersController::class, 'employeeConnect']);
     Route::get('get-order-data', [OrdersController::class, 'getOrderFullData']);
     Route::get('get-list', [OrdersController::class, 'getList']);

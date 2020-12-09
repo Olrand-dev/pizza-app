@@ -118,6 +118,11 @@ class OrderPolicy extends Policy
         return $this->checkPermission($user, Controller::getUserPermissionsMap(0, 0, 1, 1, 1));
     }
 
+    public function uiButtonOrderDelivered(User $user) : bool
+    {
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(0, 0, 0, 0, 1));
+    }
+
     public function uiButtonRefuse(User $user) : bool
     {
         return $this->checkPermission($user, Controller::getUserPermissionsMap(0, 0, 1, 1, 1));
@@ -130,22 +135,22 @@ class OrderPolicy extends Policy
 
     public function uiButtonOrderStatusCooking(User $user) : bool
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 0, 1, 1));
     }
 
     public function uiButtonOrderStatusReady(User $user) : bool
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 1, 1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 0, 1, 1));
     }
 
     public function uiButtonOrderStatusDelivery(User $user) : bool
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 0, 0, 0, 1));
     }
 
     public function uiButtonOrderStatusDelivered(User $user) : bool
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1, 0, 0, 1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 0, 0, 0, 1));
     }
 
     public function uiButtonOrderStatusCompleted(User $user) : bool

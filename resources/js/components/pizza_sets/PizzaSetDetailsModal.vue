@@ -33,7 +33,7 @@
                                             <th>Name</th>
                                             <td>{{ setData.name }}</td>
                                         </tr>
-                                        <tr>
+                                        <tr v-if="p('uiElemPizzaSetDataCost')">
                                             <th>Cost</th>
                                             <td>${{ setData.cost }}</td>
                                         </tr>
@@ -94,11 +94,31 @@
 
 <script>
 
+    import Permissions from '../../mixins/Permissions';
+
     export default {
 
+        data() {
+            return {
+                permissions: this.permissionsList,
+            }
+        },
+
         props: [
-            'set-data'
+            'set-data',
+            'permissions-list',
         ],
+
+        mixins: [
+            Permissions,
+        ],
+
+        watch: {
+
+            permissionsList(val) {
+                this.permissions = val;
+            }
+        }
     }
 
 </script>

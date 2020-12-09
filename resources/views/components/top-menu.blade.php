@@ -9,7 +9,11 @@
             <span class="icon-bar"></span>
         </button>
 
-        <span class="page-name">{{ $pageName }}</span>
+        @can('show-sidebar')
+            <span class="page-name">{{ $pageName }}</span>
+        @else
+            {{--<x-site-logo></x-site-logo>--}}
+        @endcan
 
         <div class="top-user-mobile">
             <x-top-user :user="$user"/>

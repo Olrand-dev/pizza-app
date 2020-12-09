@@ -160,7 +160,7 @@
                                     alt="pizza set image" @click="openGallery(index)">
                             </td>
                             <td>{{ item.name }}</td>
-                            <td>${{ item.cost }}</td>
+                            <td v-if="p('uiElemPizzaSetDataCost')">${{ item.cost }}</td>
                             <td>{{ item.weight }} g.</td>
 
                             <td class="text-center">
@@ -247,6 +247,44 @@
         image_file: '',
     };
 
+    const TableHeadersConf = [
+        {
+            name: 'ID',
+            permission: '',
+            model: 'id',
+            sortable: true,
+            selected: false,
+        },
+        {
+            name: 'Image',
+            permission: '',
+            model: '',
+            sortable: false,
+            selected: false,
+        },
+        {
+            name: 'Name',
+            permission: '',
+            model: 'name',
+            sortable: true,
+            selected: true,
+        },
+        {
+            name: 'Cost',
+            permission: 'uiElemPizzaSetDataCost',
+            model: 'cost',
+            sortable: true,
+            selected: false,
+        },
+        {
+            name: 'Weight',
+            permission: '',
+            model: 'weight',
+            sortable: true,
+            selected: false,
+        }
+    ];
+
     export default {
 
         data() {
@@ -255,14 +293,10 @@
                 listUpdating: true,
                 saving: false,
 
-                tableHeaders: [
-                    'ID', 'Image', 'Name', 'Cost', 'Weight',
-                ],
-                sortableHeaders: {
-                    'ID': 'id', 'Name': 'name', 'Cost': 'cost', 'Weight': 'weight',
-                },
-                selectedSortableHeader: 'Name',
-                sortField: 'name',
+                tableHeaders: [],
+                sortableHeaders: {},
+                selectedSortableHeader: '',
+                sortField: '',
 
                 pizzaSet: {},
                 pizzaBasesList: [],
@@ -288,6 +322,7 @@
 
         created() {
             this.initEmptySet();
+            this.defineTableHeaders();
             this.getIngredientsList();
             this.getList();
             this.getPermissionsList('pizza_set');
@@ -297,6 +332,25 @@
 
             initEmptySet() {
                 this.pizzaSet = this.clone(PizzaSetRef, true);
+            },
+
+            defineTableHeaders() {
+                TableHeadersConf.forEach(confData => {
+                    let name = confData.name;
+                    let permission = confData.permission;
+                    let model = confData.model;
+
+                    if (permission === '' || (permission !== '' && this.p(permission))) {
+                        this.tableHeaders.push(name);
+                        if (confData.sortable) {
+                            this.sortableHeaders[name] = model;
+                        }
+                    }
+                    if (confData.selected) {
+                        this.selectedSortableHeader = name;
+                        this.sortField = model;
+                    }
+                }, this);
             },
 
             updateIngList(list) {
@@ -453,7 +507,8 @@
                 this.$modal.show(
                     PizzaSetDetailsModal,
                     {
-                        'set-data': set
+                        'set-data': set,
+                        'permissions-list': this.permissions,
                     },
                     {
                         adaptive: true,
