@@ -56,7 +56,7 @@ Route::prefix('orders')->group(function() {
     Route::post('set-status', [OrdersController::class, 'setStatus']);
     Route::get('order-delivered', [OrdersController::class, 'orderDelivered']);
     Route::get('empl-connect', [OrdersController::class, 'employeeConnect']);
-    Route::get('get-order-data', [OrdersController::class, 'getOrderFullData']);
+    Route::get('get-order-data', [OrdersController::class, 'getOrderData']);
     Route::get('get-list', [OrdersController::class, 'getList']);
     Route::get('get-data-lists', [OrdersController::class, 'getDataLists']);
     Route::get('delete', [OrdersController::class, 'delete']);

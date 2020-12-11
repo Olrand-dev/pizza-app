@@ -144,10 +144,11 @@
 
                     <thead>
                         <th v-for="(header,index) in tableHeaders" :key="index"
-                            :class="{ 'sortable': hop(sortableHeaders, header) }" @click="onTableHeaderClick(header)">
-                            {{ header }}
-                            <i v-if="header === selectedSortableHeader && sortDirection === 'desc'" class="fa fa-sort-down"></i>
-                            <i v-if="header === selectedSortableHeader && sortDirection === 'asc'" class="fa fa-sort-up"></i>
+                            v-if="header.permission === '' || (header.permission !== '' && p(header.permission))"
+                            :class="{ 'sortable': hop(sortableHeaders, header.name) }" @click="onTableHeaderClick(header.name)">
+                            {{ header.name }}
+                            <i v-if="header.name === selectedSortableHeader && sortDirection === 'desc'" class="fa fa-sort-down"></i>
+                            <i v-if="header.name === selectedSortableHeader && sortDirection === 'asc'" class="fa fa-sort-up"></i>
                         </th>
                         <th class="text-center">Actions</th>
                     </thead>
@@ -247,44 +248,6 @@
         image_file: '',
     };
 
-    const TableHeadersConf = [
-        {
-            name: 'ID',
-            permission: '',
-            model: 'id',
-            sortable: true,
-            selected: false,
-        },
-        {
-            name: 'Image',
-            permission: '',
-            model: '',
-            sortable: false,
-            selected: false,
-        },
-        {
-            name: 'Name',
-            permission: '',
-            model: 'name',
-            sortable: true,
-            selected: true,
-        },
-        {
-            name: 'Cost',
-            permission: 'uiElemPizzaSetDataCost',
-            model: 'cost',
-            sortable: true,
-            selected: false,
-        },
-        {
-            name: 'Weight',
-            permission: '',
-            model: 'weight',
-            sortable: true,
-            selected: false,
-        }
-    ];
-
     export default {
 
         data() {
@@ -293,10 +256,18 @@
                 listUpdating: true,
                 saving: false,
 
-                tableHeaders: [],
-                sortableHeaders: {},
-                selectedSortableHeader: '',
-                sortField: '',
+                tableHeaders: [
+                    { name: 'ID', permission: '' },
+                    { name: 'Image', permission: '' },
+                    { name: 'Name', permission: '' },
+                    { name: 'Cost', permission: 'uiElemPizzaSetDataCost' },
+                    { name: 'Weight', permission: '' },
+                ],
+                sortableHeaders: {
+                    'ID': 'id', 'Name': 'name', 'Cost': 'cost', 'Weight': 'weight',
+                },
+                selectedSortableHeader: 'Name',
+                sortField: 'name',
 
                 pizzaSet: {},
                 pizzaBasesList: [],
@@ -322,7 +293,6 @@
 
         created() {
             this.initEmptySet();
-            this.defineTableHeaders();
             this.getIngredientsList();
             this.getList();
             this.getPermissionsList('pizza_set');
@@ -332,25 +302,6 @@
 
             initEmptySet() {
                 this.pizzaSet = this.clone(PizzaSetRef, true);
-            },
-
-            defineTableHeaders() {
-                TableHeadersConf.forEach(confData => {
-                    let name = confData.name;
-                    let permission = confData.permission;
-                    let model = confData.model;
-
-                    if (permission === '' || (permission !== '' && this.p(permission))) {
-                        this.tableHeaders.push(name);
-                        if (confData.sortable) {
-                            this.sortableHeaders[name] = model;
-                        }
-                    }
-                    if (confData.selected) {
-                        this.selectedSortableHeader = name;
-                        this.sortField = model;
-                    }
-                }, this);
             },
 
             updateIngList(list) {

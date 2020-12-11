@@ -965,7 +965,7 @@
                 ).then(function(response) {
 
                     let data = response.data;
-                    //console.log(data);
+                    console.log(data);
                     this.mode = (toEdit) ? 'edit' : 'show';
                     this.orderSelected = data;
 

@@ -4375,8 +4375,8 @@ var OrderRef = {
           id: id
         }
       }).then(function (response) {
-        var data = response.data; //console.log(data);
-
+        var data = response.data;
+        console.log(data);
         this.mode = toEdit ? 'edit' : 'show';
         this.orderSelected = data;
         this.$smoothScroll({
@@ -5373,6 +5373,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
@@ -5389,47 +5390,36 @@ var PizzaSetRef = {
   ingredients: [],
   image_file: ''
 };
-var TableHeadersConf = [{
-  name: 'ID',
-  permission: '',
-  model: 'id',
-  sortable: true,
-  selected: false
-}, {
-  name: 'Image',
-  permission: '',
-  model: '',
-  sortable: false,
-  selected: false
-}, {
-  name: 'Name',
-  permission: '',
-  model: 'name',
-  sortable: true,
-  selected: true
-}, {
-  name: 'Cost',
-  permission: 'uiElemPizzaSetDataCost',
-  model: 'cost',
-  sortable: true,
-  selected: false
-}, {
-  name: 'Weight',
-  permission: '',
-  model: 'weight',
-  sortable: true,
-  selected: false
-}];
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       mode: 'list',
       listUpdating: true,
       saving: false,
-      tableHeaders: [],
-      sortableHeaders: {},
-      selectedSortableHeader: '',
-      sortField: '',
+      tableHeaders: [{
+        name: 'ID',
+        permission: ''
+      }, {
+        name: 'Image',
+        permission: ''
+      }, {
+        name: 'Name',
+        permission: ''
+      }, {
+        name: 'Cost',
+        permission: 'uiElemPizzaSetDataCost'
+      }, {
+        name: 'Weight',
+        permission: ''
+      }],
+      sortableHeaders: {
+        'ID': 'id',
+        'Name': 'name',
+        'Cost': 'cost',
+        'Weight': 'weight'
+      },
+      selectedSortableHeader: 'Name',
+      sortField: 'name',
       pizzaSet: {},
       pizzaBasesList: [],
       pizzaIngTypesList: [],
@@ -5444,7 +5434,6 @@ var TableHeadersConf = [{
   },
   created: function created() {
     this.initEmptySet();
-    this.defineTableHeaders();
     this.getIngredientsList();
     this.getList();
     this.getPermissionsList('pizza_set');
@@ -5452,28 +5441,6 @@ var TableHeadersConf = [{
   methods: {
     initEmptySet: function initEmptySet() {
       this.pizzaSet = this.clone(PizzaSetRef, true);
-    },
-    defineTableHeaders: function defineTableHeaders() {
-      var _this = this;
-
-      TableHeadersConf.forEach(function (confData) {
-        var name = confData.name;
-        var permission = confData.permission;
-        var model = confData.model;
-
-        if (permission === '' || permission !== '' && _this.p(permission)) {
-          _this.tableHeaders.push(name);
-
-          if (confData.sortable) {
-            _this.sortableHeaders[name] = model;
-          }
-        }
-
-        if (confData.selected) {
-          _this.selectedSortableHeader = name;
-          _this.sortField = model;
-        }
-      }, this);
     },
     updateIngList: function updateIngList(list) {
       this.pizzaSet.ingredients = this.clone(list, true);
@@ -5568,7 +5535,7 @@ var TableHeadersConf = [{
       }.bind(this));
     },
     modalEdit: function modalEdit(id) {
-      var _this2 = this;
+      var _this = this;
 
       var set = this.getItemById(this.setsList, id);
       this.$modal.show(_EditPizzaSetModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
@@ -5581,7 +5548,7 @@ var TableHeadersConf = [{
         height: 'auto'
       }, {
         'before-close': function beforeClose(event) {
-          _this2.getList();
+          _this.getList();
         }
       });
     },
@@ -5599,7 +5566,7 @@ var TableHeadersConf = [{
       });
     },
     modalDelete: function modalDelete(id) {
-      var _this3 = this;
+      var _this2 = this;
 
       this.$modal.show('dialog', {
         title: 'Delete pizza set',
@@ -5607,12 +5574,12 @@ var TableHeadersConf = [{
         buttons: [{
           title: 'Ok',
           handler: function handler() {
-            _this3.deleteItem(id);
+            _this2.deleteItem(id);
           }
         }, {
           title: 'Cancel',
           handler: function handler() {
-            _this3.$modal.hide('dialog');
+            _this2.$modal.hide('dialog');
           }
         }]
       });
@@ -31642,36 +31609,45 @@ var render = function() {
                       "thead",
                       [
                         _vm._l(_vm.tableHeaders, function(header, index) {
-                          return _c(
-                            "th",
-                            {
-                              key: index,
-                              class: {
-                                sortable: _vm.hop(_vm.sortableHeaders, header)
-                              },
-                              on: {
-                                click: function($event) {
-                                  return _vm.onTableHeaderClick(header)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n                        " +
-                                  _vm._s(header) +
-                                  "\n                        "
-                              ),
-                              header === _vm.selectedSortableHeader &&
-                              _vm.sortDirection === "desc"
-                                ? _c("i", { staticClass: "fa fa-sort-down" })
-                                : _vm._e(),
-                              _vm._v(" "),
-                              header === _vm.selectedSortableHeader &&
-                              _vm.sortDirection === "asc"
-                                ? _c("i", { staticClass: "fa fa-sort-up" })
-                                : _vm._e()
-                            ]
-                          )
+                          return header.permission === "" ||
+                            (header.permission !== "" &&
+                              _vm.p(header.permission))
+                            ? _c(
+                                "th",
+                                {
+                                  key: index,
+                                  class: {
+                                    sortable: _vm.hop(
+                                      _vm.sortableHeaders,
+                                      header.name
+                                    )
+                                  },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.onTableHeaderClick(header.name)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                        " +
+                                      _vm._s(header.name) +
+                                      "\n                        "
+                                  ),
+                                  header.name === _vm.selectedSortableHeader &&
+                                  _vm.sortDirection === "desc"
+                                    ? _c("i", {
+                                        staticClass: "fa fa-sort-down"
+                                      })
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  header.name === _vm.selectedSortableHeader &&
+                                  _vm.sortDirection === "asc"
+                                    ? _c("i", { staticClass: "fa fa-sort-up" })
+                                    : _vm._e()
+                                ]
+                              )
+                            : _vm._e()
                         }),
                         _vm._v(" "),
                         _c("th", { staticClass: "text-center" }, [

@@ -14,7 +14,6 @@ use App\Models\OrderArchived;
 use App\Models\OrderStatus;
 use App\Models\PizzaSet;
 use App\Models\Product;
-use App\Policies\OrderPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -157,7 +156,7 @@ class OrdersController extends Controller
             SystemConst::ORDER_STATUS_DECLINED,
             SystemConst::ORDER_STATUS_ARCHIVED,
         ])) {
-            $orderData = $this->getOrderFullData(null, $orderId);
+            $orderData = $this->getOrderFullData($orderId);
 
             $archived = new OrderArchived();
             $archived->order_id = $orderId;
@@ -224,11 +223,8 @@ class OrdersController extends Controller
     }
 
 
-    public function getOrderFullData(Request $request = null, int $id = 0) : array
+    private function getOrderFullData(int $id) : array
     {
-        if (empty($id) and !empty($request)) $id = (int) $request->input('id', 0);
-        if (empty($id)) return [];
-
         $data = Order::with(['products', 'pizzaSets', 'status', 'customer.user', 'comments'])
             ->where('id', $id)
             ->first();
@@ -241,6 +237,13 @@ class OrdersController extends Controller
         }
 
         return $data->toArray();
+    }
+
+
+    public function getOrderData(Request $request) : array
+    {
+        $id = (int) $request->input('id');
+        return $this->getOrderFullData($id);
     }
 
 
