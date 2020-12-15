@@ -22,7 +22,8 @@
                             <div class="col-12">
 
                                 <div class="col-md-6">
-                                    <img class="set-details-image" :src="setData.image_thumbs.w_600" alt="prod image">
+                                    <img class="set-details-image"
+                                         :src="getImageThumb(setData.image_thumbs)" alt="prod image">
                                 </div>
 
                                 <div class="col-md-6">
@@ -94,6 +95,7 @@
 
 <script>
 
+    import Utils from '../../mixins/Utils';
     import Permissions from '../../mixins/Permissions';
 
     export default {
@@ -110,6 +112,7 @@
         ],
 
         mixins: [
+            Utils,
             Permissions,
         ],
 

@@ -330,11 +330,6 @@
                 this.employeeEdit = this.clone(EmployeeRef, true);
             },
 
-            paginate(page) {
-                this.page = page;
-                this.getList();
-            },
-
             getRolesList() {
 
                 axios.get(

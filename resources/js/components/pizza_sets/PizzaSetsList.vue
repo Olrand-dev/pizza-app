@@ -312,11 +312,6 @@
                 this.getList();
             },
 
-            paginate(page) {
-                this.page = page;
-                this.getList();
-            },
-
             getIngredientsList() {
 
                 axios.get(

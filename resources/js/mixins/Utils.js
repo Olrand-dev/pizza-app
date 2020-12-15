@@ -60,6 +60,25 @@ export default {
                 case 'object': return typeof val === type;
                 case 'array': return Array.isArray(val);
             }
+        },
+
+        getImageThumb(images) {
+            //console.log(images);
+            const sizes = [300, 600];
+            let thumb = '';
+            let noPhotoThumb = '';
+
+            sizes.forEach(size => {
+                let thumbName = `w_${size}`;
+                if (images.hasOwnProperty(thumbName)) {
+                    if (images[thumbName].includes('no_photo_sm')) {
+                        noPhotoThumb = images[thumbName];
+                    } else {
+                        thumb = images[thumbName];
+                    }
+                }
+            });
+            return (thumb !== '') ? thumb : noPhotoThumb;
         }
     }
 };

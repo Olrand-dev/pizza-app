@@ -55,7 +55,7 @@ class EmployeesController extends Controller
 
             $password = $data['password'];
             if ($newUser or (!$newUser and !empty($password))) {
-                $this->makeUserPassword($user->id, $data['password']);
+                self::makeUserPassword($user->id, $data['password']);
             }
 
             $employee->name = $data['name'];

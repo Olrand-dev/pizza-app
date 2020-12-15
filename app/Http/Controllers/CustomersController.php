@@ -53,7 +53,7 @@ class CustomersController extends Controller
             }
 
             $user->save();
-            if ($newUser) $this->makeUserPassword($user->id, 'temp_pass');
+            if ($newUser) self::makeUserPassword($user->id, 'temp_pass');
 
             $customer->name = $data['name'];
             $customer->phone = $data['phone'];

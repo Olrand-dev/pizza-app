@@ -74,8 +74,7 @@ class OrdersController extends Controller
             $order->save();
 
             //todo: временное решение, сделать механику комментариев
-            $customerComment = $orderData['comments'][0];
-            if (empty($customerComment)) $customerComment = '';
+            $customerComment = $orderData['comments'][0] ?? '';
             $comment = ($newOrder) ? new Comment() : Comment::find($customerComment['id']);
             $comment->content = ($newOrder) ? $customerComment : $customerComment['content'];
             if ($newOrder) $comment->commentable()->associate($order);
@@ -115,6 +114,8 @@ class OrdersController extends Controller
         $modelClass = $options[0];
         $relationName = $options[1];
         $elements = $newOrderData[$elementsSlug];
+
+        if (count($elements) === 0) return;
 
         foreach ($elements as $element) {
             $instance = $modelClass::find($element['id']);

@@ -26,7 +26,7 @@
 
                                         <div class="col-md-12">
                                             <img v-if="!prodImageChanged" class="prod-details-image"
-                                                 :src="prodData.image_thumbs.w_600" alt="prod image">
+                                                 :src="getImageThumb(prodData.image_thumbs)" alt="prod image">
                                             <input v-if="prodImageChanged" type="file" id="productImage"
                                                    ref="prodImageFile"
                                                    @change="handleFileUpload">

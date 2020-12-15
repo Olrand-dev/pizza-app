@@ -105,7 +105,7 @@ class ProductsController extends Controller
 
     public function getList(Request $request) : array
     {
-        $input = $request->input();
+        $input = $request->input(); //dd($input);
 
         $page = (int) $input['page'];
         $perPage = (int) $input['per_page'];

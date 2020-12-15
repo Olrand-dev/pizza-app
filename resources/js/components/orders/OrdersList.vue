@@ -814,11 +814,6 @@
                 }
             },
 
-            paginate(page) {
-                this.page = page;
-                this.getList();
-            },
-
             onSave() {
                 switch (this.mode) {
                     case 'add_new': {

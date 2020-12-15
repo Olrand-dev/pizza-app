@@ -40,7 +40,7 @@ class CustomerPolicy extends Policy
      */
     public function create(User $user)
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
     }
 
     /**
@@ -51,7 +51,7 @@ class CustomerPolicy extends Policy
      */
     public function update(User $user)
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
     }
 
     /**
@@ -90,12 +90,12 @@ class CustomerPolicy extends Policy
 
     public function uiButtonAddNew(User $user) : bool
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
     }
 
     public function uiButtonEdit(User $user) : bool
     {
-        return $this->checkPermission($user, Controller::getUserPermissionsMap(1));
+        return $this->checkPermission($user, Controller::getUserPermissionsMap(1, 1));
     }
 
     public function uiButtonDelete(User $user) : bool

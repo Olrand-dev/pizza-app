@@ -351,11 +351,6 @@
                 }.bind(this));
             },
 
-            paginate(page) {
-                this.page = page;
-                this.getList();
-            },
-
             getList(resetPage = false) {
                 this.listUpdating = true;
                 if (resetPage) this.page = 1;

@@ -179,11 +179,6 @@
 
         methods: {
 
-            paginate(page) {
-                this.page = page;
-                this.getList();
-            },
-
             onButtonClick(index) {
                 let item = this.list[index];
                 this.$emit('on-button-click', item);

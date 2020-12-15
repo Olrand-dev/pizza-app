@@ -17,11 +17,11 @@ class SystemConst
 
     public const PRODUCT_TYPES_MAP = [
         0 => [],
-        self::PRODUCT_TYPE_PIZZA_BASE => ['name' => 'pizza base', 'description' => 'круглая основа для пиццы'],
-        self::PRODUCT_TYPE_SAUCE => ['name' => 'sauce', 'description' => 'разнообразные соусы для пиццы'],
-        self::PRODUCT_TYPE_CHEESE => ['name' => 'cheese', 'description' => 'сыр для пиццы'],
-        self::PRODUCT_TYPE_INGREDIENTS => ['name' => 'ingredients', 'description' => 'доп. ингредиенты для пиццы'],
-        self::PRODUCT_TYPE_ADD_PRODUCTS => ['name' => 'add. products', 'description' => 'доп. товары для заказа'],
+        self::PRODUCT_TYPE_PIZZA_BASE => ['name' => 'pizza base', 'description' => 'round pizza base'],
+        self::PRODUCT_TYPE_SAUCE => ['name' => 'sauce', 'description' => 'a variety of pizza sauces'],
+        self::PRODUCT_TYPE_CHEESE => ['name' => 'cheese', 'description' => 'cheeses for pizza'],
+        self::PRODUCT_TYPE_INGREDIENTS => ['name' => 'ingredients', 'description' => 'add. pizza ingredients'],
+        self::PRODUCT_TYPE_ADD_PRODUCTS => ['name' => 'add. products', 'description' => 'add. order products'],
     ];
 
 
@@ -58,11 +58,54 @@ class SystemConst
 
     public const USER_ROLES_MAP = [
         0 => [],
-        self::USER_ROLE_ADMIN => ['name' => 'администратор пиццерии', 'slug' => 'admin', 'salary' => 12000],
-        self::USER_ROLE_MANAGER => ['name' => 'менеджер', 'slug' => 'manager', 'salary' => 9000],
-        self::USER_ROLE_CHEF => ['name' => 'старший повар', 'slug' => 'chef', 'salary' => 10000],
-        self::USER_ROLE_COOK => ['name' => 'повар', 'slug' => 'cook', 'salary' => 5000],
-        self::USER_ROLE_COURIER => ['name' => 'курьер', 'slug' => 'courier', 'salary' => 4500],
-        self::USER_ROLE_CUSTOMER => ['name' => 'клиент', 'slug' => 'customer', 'salary' => 0],
+        self::USER_ROLE_ADMIN => ['name' => 'pizzeria administrator', 'slug' => 'admin', 'salary' => 12000],
+        self::USER_ROLE_MANAGER => ['name' => 'manager', 'slug' => 'manager', 'salary' => 9000],
+        self::USER_ROLE_CHEF => ['name' => 'chef', 'slug' => 'chef', 'salary' => 10000],
+        self::USER_ROLE_COOK => ['name' => 'cook', 'slug' => 'cook', 'salary' => 5000],
+        self::USER_ROLE_COURIER => ['name' => 'courier', 'slug' => 'courier', 'salary' => 4500],
+        self::USER_ROLE_CUSTOMER => ['name' => 'customer', 'slug' => 'customer', 'salary' => 0],
+    ];
+
+    public const USERS_START_SEED = [
+        [
+            'name' => 'Admin',
+            'role_id' => self::USER_ROLE_ADMIN,
+            'password' => '12345678',
+            'email' => 'pizza.app.admin@gmail.com',
+            'phone' => '123',
+            'address' => '12345',
+        ],
+        [
+            'name' => 'Manager',
+            'role_id' => self::USER_ROLE_MANAGER,
+            'password' => '12345678',
+            'email' => 'pizza.app.manager@gmail.com',
+            'phone' => '123',
+            'address' => '12345',
+        ],
+        [
+            'name' => 'Chef',
+            'role_id' => self::USER_ROLE_CHEF,
+            'password' => '12345678',
+            'email' => 'pizza.app.chef@gmail.com',
+            'phone' => '123',
+            'address' => '12345',
+        ],
+        [
+            'name' => 'Cook',
+            'role_id' => self::USER_ROLE_COOK,
+            'password' => '12345678',
+            'email' => 'pizza.app.cook@gmail.com',
+            'phone' => '123',
+            'address' => '12345',
+        ],
+        [
+            'name' => 'Courier',
+            'role_id' => self::USER_ROLE_COURIER,
+            'password' => '12345678',
+            'email' => 'pizza.app.courier@gmail.com',
+            'phone' => '123',
+            'address' => '12345',
+        ],
     ];
 }

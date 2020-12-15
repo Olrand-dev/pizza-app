@@ -28,11 +28,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('show-sidebar', function ($user) {
-            return (
-                $user->isAdmin() or
-                $user->isManager() or
-                $user->isChef() or
-                $user->isCook()
+            return Controller::checkPermission(
+                $user,
+                Controller::getUserPermissionsMap(1, 1, 1, 1)
             );
         });
 

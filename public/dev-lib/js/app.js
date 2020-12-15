@@ -2246,10 +2246,6 @@ var CustomerRef = {
     initCustomerData: function initCustomerData() {
       this.customerEdit = this.clone(CustomerRef, true);
     },
-    paginate: function paginate(page) {
-      this.page = page;
-      this.getList();
-    },
     getList: function getList() {
       var resetPage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       this.listUpdating = true;
@@ -2561,10 +2557,6 @@ __webpack_require__.r(__webpack_exports__);
     this.getList();
   },
   methods: {
-    paginate: function paginate(page) {
-      this.page = page;
-      this.getList();
-    },
     onButtonClick: function onButtonClick(index) {
       var item = this.list[index];
       this.$emit('on-button-click', item);
@@ -2929,10 +2921,6 @@ var EmployeeRef = {
   methods: {
     initEmployeeData: function initEmployeeData() {
       this.employeeEdit = this.clone(EmployeeRef, true);
-    },
-    paginate: function paginate(page) {
-      this.page = page;
-      this.getList();
     },
     getRolesList: function getRolesList() {
       axios.get('/employees/get-roles-list').then(function (response) {
@@ -4264,10 +4252,6 @@ var OrderRef = {
         this.$refs.orderIngNew.clearData();
       }
     },
-    paginate: function paginate(page) {
-      this.page = page;
-      this.getList();
-    },
     onSave: function onSave() {
       switch (this.mode) {
         case 'add_new':
@@ -4860,7 +4844,9 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
+/* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
+/* harmony import */ var _mixins_Permissions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../mixins/Permissions */ "./resources/js/mixins/Permissions.js");
+//
 //
 //
 //
@@ -4956,6 +4942,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -4963,7 +4950,7 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   props: ['set-data', 'permissions-list'],
-  mixins: [_mixins_Permissions__WEBPACK_IMPORTED_MODULE_0__["default"]],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"], _mixins_Permissions__WEBPACK_IMPORTED_MODULE_1__["default"]],
   watch: {
     permissionsList: function permissionsList(val) {
       this.permissions = val;
@@ -5448,10 +5435,6 @@ var PizzaSetRef = {
     sortableHeaderClickHandler: function sortableHeaderClickHandler() {
       this.getList();
     },
-    paginate: function paginate(page) {
-      this.page = page;
-      this.getList();
-    },
     getIngredientsList: function getIngredientsList() {
       axios.get('/pizza-sets/get-prods-list').then(function (response) {
         var data = response.data; //console.log(data);
@@ -5874,6 +5857,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _mixins_Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../mixins/Utils */ "./resources/js/mixins/Utils.js");
 //
 //
 //
@@ -5956,8 +5940,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['prod-data']
+  props: ['prod-data'],
+  mixins: [_mixins_Utils__WEBPACK_IMPORTED_MODULE_0__["default"]]
 });
 
 /***/ }),
@@ -6307,10 +6294,6 @@ var ProductRef = {
       axios.get('/products/get-types-list').then(function (response) {
         this.prodTypesList = response.data;
       }.bind(this));
-    },
-    paginate: function paginate(page) {
-      this.page = page;
-      this.getList();
     },
     getList: function getList() {
       var resetPage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -30635,7 +30618,7 @@ var render = function() {
                         ? _c("img", {
                             staticClass: "set-details-image",
                             attrs: {
-                              src: _vm.setData.image_thumbs.w_600,
+                              src: _vm.getImageThumb(_vm.setData.image_thumbs),
                               alt: "set image"
                             }
                           })
@@ -30921,7 +30904,7 @@ var render = function() {
                   _c("img", {
                     staticClass: "set-details-image",
                     attrs: {
-                      src: _vm.setData.image_thumbs.w_600,
+                      src: _vm.getImageThumb(_vm.setData.image_thumbs),
                       alt: "prod image"
                     }
                   })
@@ -31854,7 +31837,7 @@ var render = function() {
                         ? _c("img", {
                             staticClass: "prod-details-image",
                             attrs: {
-                              src: _vm.prodData.image_thumbs.w_600,
+                              src: _vm.getImageThumb(_vm.prodData.image_thumbs),
                               alt: "prod image"
                             }
                           })
@@ -32247,7 +32230,7 @@ var render = function() {
                   _c("img", {
                     staticClass: "prod-details-image",
                     attrs: {
-                      src: _vm.prodData.image_thumbs.w_600,
+                      src: _vm.getImageThumb(_vm.prodData.image_thumbs),
                       alt: "prod image"
                     }
                   })
@@ -46900,6 +46883,18 @@ __webpack_require__.r(__webpack_exports__);
       pagesCount: 1,
       perPage: 10
     };
+  },
+  methods: {
+    paginate: function paginate(page) {
+      this.page = page;
+      this.getList();
+    },
+    checkPagesCount: function checkPagesCount() {
+      if (this.pagesCount > this.page) {
+        this.page = this.pagesCount;
+        this.paginate(this.page);
+      }
+    }
   }
 });
 
@@ -47055,6 +47050,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'array':
           return Array.isArray(val);
       }
+    },
+    getImageThumb: function getImageThumb(images) {
+      //console.log(images);
+      var sizes = [300, 600];
+      var thumb = '';
+      var noPhotoThumb = '';
+      sizes.forEach(function (size) {
+        var thumbName = "w_".concat(size);
+
+        if (images.hasOwnProperty(thumbName)) {
+          if (images[thumbName].includes('no_photo_sm')) {
+            noPhotoThumb = images[thumbName];
+          } else {
+            thumb = images[thumbName];
+          }
+        }
+      });
+      return thumb !== '' ? thumb : noPhotoThumb;
     }
   }
 });

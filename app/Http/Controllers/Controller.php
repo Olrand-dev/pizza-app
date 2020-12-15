@@ -11,6 +11,7 @@ use App\Models\Model;
 use App\Models\Order;
 use App\Models\PizzaSet;
 use App\Models\Product;
+use App\Models\Role;
 use App\Models\User;
 use App\Policies\CustomerPolicy;
 use App\Policies\EmployeePolicy;
@@ -290,7 +291,32 @@ class Controller extends BaseController
     }
 
 
-    protected function makeUserPassword(int $userId, string $pass) : void
+    public static function createEmployee(array $data) : void
+    {
+        $employee = new Employee();
+        $user =  new User();
+
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+
+        $role = Role::find((int) $data['role_id']);
+        if (!empty($role)) {
+            $user->role()->associate($role);
+        }
+
+        $user->save();
+        self::makeUserPassword($user->id, $data['password']);
+
+        $employee->name = $data['name'];
+        $employee->phone = $data['phone'];
+        $employee->address = $data['address'];
+
+        $employee->save();
+        $employee->user()->save($user);
+    }
+
+
+    public static function makeUserPassword(int $userId, string $pass) : void
     {
         $user = User::find($userId);
         $user->password = Hash::make($pass);

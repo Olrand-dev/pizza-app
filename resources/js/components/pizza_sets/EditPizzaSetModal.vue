@@ -26,7 +26,7 @@
 
                                         <div class="col-12">
                                             <img v-if="!setImageChanged" class="set-details-image"
-                                                 :src="setData.image_thumbs.w_600" alt="set image">
+                                                 :src="getImageThumb(setData.image_thumbs)" alt="set image">
                                             <input v-if="setImageChanged" type="file" id="setImage"
                                                    ref="setImageFile"
                                                    @change="handleFileUpload">

@@ -22,7 +22,8 @@
                             <div class="col-12">
 
                                 <div class="col-md-6">
-                                    <img class="prod-details-image" :src="prodData.image_thumbs.w_600" alt="prod image">
+                                    <img class="prod-details-image"
+                                         :src="getImageThumb(prodData.image_thumbs)" alt="prod image">
                                 </div>
 
                                 <div class="col-md-6">
@@ -82,10 +83,16 @@
 
 <script>
 
+    import Utils from '../../mixins/Utils';
+
     export default {
 
         props: [
             'prod-data'
+        ],
+
+        mixins: [
+            Utils,
         ],
     }
 
