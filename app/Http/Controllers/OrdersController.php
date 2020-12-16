@@ -53,7 +53,7 @@ class OrdersController extends Controller
         DB::beginTransaction();
         try {
 
-            $orderData = $request->validated(); //dd($orderData);
+            $orderData = $request->validated();
 
             $order = ($newOrder) ? new Order() : Order::find($orderData['id']);
             $order->cost = (float) $orderData['cost'];
@@ -301,28 +301,31 @@ class OrdersController extends Controller
                 $connectStatus = 'denied';
 
                 if (
-                    (($user->isChef() or  $user->isCook()) and
-                    $item->status->id === SystemConst::ORDER_STATUS_READY) or
-                    ($user->isCourier() and $item->status->id === SystemConst::ORDER_STATUS_DELIVERED)
-                ) {
-                    return;
-                }
-
-                if (
                     $user->isChef() or
                     $user->isCook() or
                     $user->isCourier()
                 ) {
                     $connectStatus = 'allowed';
                 }
+
                 foreach ($item->employees as $index => $employee) {
                     $employee->role_name = $employee->user->role->name;
                     $employee->role_slug = $employee->user->role->slug;
 
                     if ($employee->id === $user->userable->id) {
-                       $connectStatus = ($user->isCourier()) ? 'courier_taken' : 'taken';
+                        $connectStatus = ($user->isCourier()) ? 'courier_taken' : 'taken';
                     }
                 }
+
+                if (
+                    (($user->isChef() or  $user->isCook()) and
+                        ($item->status->id === SystemConst::ORDER_STATUS_ACCEPTED or
+                            $item->status->id === SystemConst::ORDER_STATUS_READY)) or
+                    ($user->isCourier() and $item->status->id === SystemConst::ORDER_STATUS_DELIVERED)
+                ) {
+                    $connectStatus = 'denied';
+                }
+
                 $item->connect_status = $connectStatus;
             });
 

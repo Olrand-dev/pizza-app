@@ -116,7 +116,7 @@ class PizzaSetsController extends Controller
                 $ingredients = [];
 
                 foreach ($item->products as $index => $product) {
-                    if ($product->type_id === SystemConst::PRODUCT_TYPE_PIZZA_BASE) {
+                    if ((int) $product->type_id === SystemConst::PRODUCT_TYPE_PIZZA_BASE) {
                         $item->base_id = $product->id;
                     } else {
                         $ingredients[] = [
@@ -149,7 +149,7 @@ class PizzaSetsController extends Controller
         ];
 
         Product::with('type')->get()->map(function ($product) use (&$list) {
-            $typeId = $product->type_id;
+            $typeId = (int) $product->type_id;
             $ingredientsList = &$list['ingredients_list'];
             $ingTypesList = &$list['ing_types_list'];
 

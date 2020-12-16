@@ -53,7 +53,7 @@ class User extends Authenticatable
 
     private function checkUserRole(int $roleId) : bool
     {
-        return $this->role_id === $roleId;
+        return (int) $this->role_id === $roleId;
     }
 
 

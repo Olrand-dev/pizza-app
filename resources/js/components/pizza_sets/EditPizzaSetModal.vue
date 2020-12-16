@@ -176,12 +176,8 @@
         ],
 
         created() {
-            /*console.log('set data:', this.setData);
-            console.log('bases list:', this.basesList);
-            console.log('ing types list:', this.ingTypesList);
-            console.log('ing list:', this.ingList);*/
-
             this.setEdit = this.clone(this.setData);
+            console.log(this.setEdit);
         },
 
         methods: {

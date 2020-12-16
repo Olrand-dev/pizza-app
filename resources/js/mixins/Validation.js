@@ -72,7 +72,7 @@ export default {
 
         checkSubItemErr(index, name, alias = '') {
             let errList = (alias !== '') ? this.errors[alias] : this.errors;
-            return errList[index] !== undefined && errList[index].hasOwnProperty(name);
+            return errList !== undefined && errList[index] !== undefined && errList[index].hasOwnProperty(name);
         },
 
         getSubItemErr(index, name, alias = '') {
